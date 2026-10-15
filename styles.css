@@ -652,3 +652,52 @@ button, select {
   body { background-attachment: scroll; }
   select, input { font-size: 16px; }
 }
+
+/* Baby Mode star field: crisp white stars with a few red accents only.
+   The black edge keeps each star readable on both black and white artwork. */
+.baby-pattern-stage {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+.baby-pattern-stage > svg {
+  position: relative;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+}
+.baby-star-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  overflow: hidden;
+  pointer-events: none;
+}
+.baby-twinkle-star {
+  position: absolute;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: var(--star-size, 16px);
+  line-height: 1;
+  text-shadow: -1px -1px 0 #050505, 1px -1px 0 #050505, -1px 1px 0 #050505, 1px 1px 0 #050505, 0 0 3px #050505;
+  transform: translate(-50%, -50%) scale(.82) rotate(-8deg);
+  transform-origin: center;
+  animation: baby-star-flicker 2.7s ease-in-out var(--star-delay, 0s) infinite;
+}
+.baby-twinkle-star.is-red {
+  color: #ed1028;
+}
+.baby-emoji-stage .baby-star-layer { z-index: 1; }
+.baby-emoji-symbol { z-index: 2; }
+@keyframes baby-star-flicker {
+  0%, 100% { opacity: .48; transform: translate(-50%, -50%) scale(.78) rotate(-8deg); }
+  45% { opacity: 1; transform: translate(-50%, -50%) scale(1.16) rotate(8deg); }
+  70% { opacity: .72; transform: translate(-50%, -50%) scale(.92) rotate(0deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .baby-twinkle-star { animation: none; opacity: .9; transform: translate(-50%, -50%); }
+}
