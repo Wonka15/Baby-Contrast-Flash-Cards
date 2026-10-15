@@ -271,7 +271,7 @@ function startNatureBed(context) {
   for(let i=0;i<size;i++) channel[i]=(Math.random()*2-1)*0.22;
   musicNoiseSource=context.createBufferSource();musicNoiseSource.buffer=buffer;musicNoiseSource.loop=true;
   const filter=context.createBiquadFilter();filter.type="lowpass";filter.frequency.value=activeMusicPreset===1?520:850;
-  musicNoiseGain=context.createGain();musicNoiseGain.gain.value=activeMusicPreset===1?0.045:0.008;
+  musicNoiseGain=context.createGain();musicNoiseGain.gain.value=(activeMusicPreset===1?0.045:0.008)*(Number(document.getElementById("music-volume").value)/100);
   musicNoiseSource.connect(filter);filter.connect(musicNoiseGain);musicNoiseGain.connect(context.destination);musicNoiseSource.start();
 }
 function playMelodyNote() {
@@ -636,6 +636,7 @@ document.getElementById("music-volume").addEventListener("input", event => {
 document.getElementById("glass-opacity").addEventListener("input", event => {
   const value=Number(event.target.value)/100;
   document.documentElement.style.setProperty("--glass-alpha",String(value));
+  document.documentElement.style.setProperty("--glass-secondary-alpha",String(value*0.5));
   document.documentElement.style.setProperty("--glass-edge-alpha",String(Math.min(1,value+0.25)));
   document.querySelector("#glass-opacity + output").textContent=event.target.value+"%";
 });
