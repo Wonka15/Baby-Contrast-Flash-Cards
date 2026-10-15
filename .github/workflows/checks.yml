@@ -23,6 +23,8 @@ jobs:
           node-version: 22
       - name: Check app.js syntax
         run: node --check app.js
+      - name: Check app structure and card data
+        run: node scripts/check-app.mjs
       - name: Confirm the page assets exist
         run: |
           test -s index.html
