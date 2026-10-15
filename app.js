@@ -20,7 +20,7 @@
 const LANGUAGE_TEXT = {
   en: {
     babyMode: "Baby", toddlerMode: "Toddler",
-    babyCollection: "Shapes, animals & little things",
+    babyCollection: "200 bold contrast designs",
     toddlerCollection: "Letters & numbers",
     babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
     look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
@@ -111,7 +111,8 @@ const EVERYDAY_CARDS = [
 
 /* This collection contains 100 baby cards: 25 patterns, 25 nature cards,
    25 animals, and 25 familiar objects. */
-const BABY_CARDS = [...SHAPE_CARDS,...NATURE_CARDS,...ANIMAL_CARDS,...EVERYDAY_CARDS];
+// Two hundred original vector designs, generated from distinct geometry seeds.
+const BABY_CARDS = Array.from({length:200}, (_,i)=>({name:"Contrast "+String(i+1).padStart(3,"0"),icon:"",description:"Bold black, white, and deep red pattern "+(i+1)+".",type:"pattern",art:"contrast",designIndex:i,group:"Contrast"}));
 
 /* Toddler mode grows with your child: all 26 letters plus numbers 0–20.
    This is intentionally separate from the infant card set. */
@@ -350,6 +351,44 @@ function drawPattern(style) {
   return svg;
 }
 
+/* Draw 200 distinct bold, high-contrast vector designs. */
+function drawContrastDesign(index, reveal = false) {
+  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
+  svg.setAttribute("viewBox","0 0 400 400"); svg.setAttribute("role","img");
+  svg.setAttribute("aria-label","Bold contrast design "+(index+1));
+  const add=(tag,attrs)=>{const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));svg.appendChild(n);return n;};
+  const family=index%10, v=Math.floor(index/10), black="#050505", white="#ffffff", red=reveal?"#ff3046":"#ed1028", bg=reveal?"#a90018":black;
+  add("rect",{x:0,y:0,width:400,height:400,fill:bg});
+  const gap=22+(v%5)*7, accent=red;
+  if(family===0){
+    const cx=200+((v%3)-1)*22,cy=200+((v%4)-1.5)*13;
+    for(let r=190-(v%7)*4,n=0;r>8;r-=22+(v%4)*5,n++)add("circle",{cx,cy,r,fill:n%3===1?bg:n%3===2?accent:white});
+    add("circle",{cx:200,cy:200,r:12+(v%7)*2,fill:accent});
+  }else if(family===1||family===2){
+    const vertical=family===1,step=gap;
+    for(let p=-20,n=0;p<420;p+=step,n++)add("rect",{x:vertical?p:0,y:vertical?0:p,width:vertical?step*(.48+(v%3)*.08):400,height:vertical?400:step*(.48+(v%3)*.08),fill:n%4===v%4?accent:n%2?white:black});
+  }else if(family===3){
+    const cell=28+(v%4)*9;
+    for(let y=0;y<400;y+=cell)for(let x=0;x<400;x+=cell){const n=Math.floor(x/cell)*3+Math.floor(y/cell)+v;add("rect",{x,y,width:cell+1,height:cell+1,fill:n%7===0?accent:(Math.floor(x/cell)+Math.floor(y/cell)+v)%2?white:black});}
+  }else if(family===4){
+    const rays=9+v%10;
+    for(let n=0;n<rays;n++){const a=n/rays*Math.PI*2+v*.13,b=(n+.78)/rays*Math.PI*2+v*.13;add("path",{d:"M200 200 L"+(200+Math.cos(a)*205)+" "+(200+Math.sin(a)*205)+" L"+(200+Math.cos(b)*205)+" "+(200+Math.sin(b)*205)+" Z",fill:n%5===0?accent:n%2?white:black});}
+    add("circle",{cx:200,cy:200,r:28+(v%7)*5,fill:bg,stroke:white,"stroke-width":9});
+  }else if(family===5||family===9){
+    const rows=family===5?9:6+v%5,amp=16+v%5*5;
+    for(let row=0;row<rows;row++){let d="M-10 "+(row*400/rows);for(let x=0;x<=420;x+=8){const y=row*400/rows+Math.sin(x/(24+(v%6)*7)+row*.7+v)*amp;d+=" L"+x+" "+y.toFixed(1);}add("path",{d,fill:"none",stroke:row%4===v%4?accent:row%2?white:black,"stroke-width":12+v%9,"stroke-linecap":"square"});}
+  }else if(family===6){
+    const step=48+(v%4)*10;
+    for(let y=step/2;y<420;y+=step)for(let x=step/2;x<420;x+=step){const n=Math.floor(x/step)+Math.floor(y/step)+v,r=8+((n*7+v*3)%Math.max(12,step*.44));add("circle",{cx:x+((v%3)-1)*5,cy:y,r,fill:n%5===0?accent:n%2?white:black,stroke:n%3===0?white:"none","stroke-width":3});}
+  }else if(family===7){
+    for(let n=0;n<4+v%5;n++){const w=370-n*(24+v%7),x=(400-w)/2,y=370-n*(17+v%5),top=120-n*12;add("path",{d:"M"+x+" "+y+" V"+top+" A"+w/2+" "+w/2+" 0 0 1 "+(x+w)+" "+top+" V"+y,fill:"none",stroke:n%4===v%4?accent:n%2?white:black,"stroke-width":13+v%9});}
+  }else{
+    for(let n=0;n<8+v%5;n++){const size=370-n*(24+v%5),x=(400-size)/2,y=(400-size)/2;add("polygon",{points:"200,"+y+" "+(x+size)+",200 200,"+(y+size)+" "+x+",200",fill:n%4===v%4?accent:n%2?white:black,stroke:bg,"stroke-width":3});}
+  }
+  if(index%3===0)add("circle",{cx:200,cy:200,r:15+(v%4)*5,fill:accent,stroke:white,"stroke-width":5});
+  return svg;
+}
+
 /* Original animal portraits are drawn with SVG—not emoji glyphs.
    Babies see simple black/white shapes with a small red accent; the
    reverse side reveals a friendly color version of the same portrait. */
@@ -470,7 +509,9 @@ function renderCard() {
     ui.colorArtwork.appendChild(drawAnimalFace(card.name, true));
     ui.artwork.style.fontSize = "";
   } else if (isPattern) {
-    ui.artwork.appendChild(drawPattern(card.art));
+    ui.artwork.appendChild(drawContrastDesign(card.designIndex, false));
+    // The reverse reveals a different bold pattern, not a duplicate symbol.
+    ui.colorArtwork.appendChild(drawContrastDesign((card.designIndex + 37) % 200, true));
     ui.artwork.style.fontSize = "";
   } else {
     const picture = document.createElement("span");
@@ -486,7 +527,7 @@ function renderCard() {
   ui.word.textContent = card.name;
   ui.label.textContent = isToddler ? "LETTER & PICTURE" : card.group.toUpperCase();
   ui.backSymbol.textContent = card.symbol || card.icon;
-  ui.backSymbol.hidden = isAnimal || isToddler;
+  ui.backSymbol.hidden = isAnimal || isToddler || isPattern;
   ui.backTitle.textContent = card.type === "letter" ? `Letter ${card.name}` : card.type === "number" ? `Number ${card.name}` : card.name;
   ui.backDescription.textContent = card.description;
   ui.count.innerHTML = `${String(currentIndex + 1).padStart(2,"0")} <span>/ ${currentCards.length}</span>`;
