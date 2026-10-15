@@ -79,6 +79,15 @@ assert.match(app, /Enable shake effects/, "Animated Mode should provide an opt-i
 assert.match(app, /triggerMotionBurst/, "Shaking should trigger extra splash effects");
 assert.match(checks, /Animated Mode must include every letter A–Z in order/, "A–Z integrity check should remain enabled");
 
+// Responsive safeguards for small iPhones, notches, touch targets, and landscape phones.
+assert.match(html, /name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/, "Viewport should support modern phone safe areas");
+assert.match(html, /apple-mobile-web-app-capable/, "iOS standalone display metadata should be present");
+assert.match(read(html, "../styles.css"), /env\\(safe-area-inset-bottom\\)/, "Layout should respect the iPhone home-indicator safe area");
+assert.match(read(html, "../styles.css"), /max-width: 360px/, "Very narrow phones should have a dedicated layout");
+assert.match(read(html, "../styles.css"), /orientation: landscape/, "Short landscape screens should be supported");
+assert.match(read(html, "../styles.css"), /pointer: coarse/, "Touch devices should get larger tap targets");
+assert.match(read(html, "../styles.css"), /font-size: 16px/, "Form controls should avoid unwanted iOS zoom");
+
 // The old character artwork, number deck, and card-reverse interaction are intentionally gone.
 assert.doesNotMatch(app, /Oswald|drawToddlerArt|numberCards|toggleCardSide|reverseButton/i);
 assert.doesNotMatch(html, /card-back|reverse-button|double-tap/i);
