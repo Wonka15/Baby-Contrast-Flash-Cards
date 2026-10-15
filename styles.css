@@ -752,8 +752,8 @@ button, select {
   animation:ar-motion-sparkle 480ms ease-out 1;
 }
 .ar-card-sparkle{
-  transition:transform .16s ease-out;
-  transform:translate(var(--motion-x),var(--motion-y));
+  transition:translate .16s ease-out;
+  translate:var(--motion-x) var(--motion-y);
 }
 @keyframes ar-gentle-shake{
   0%,100%{transform:translate(0,0) rotate(0) scale(1)}
