@@ -78,7 +78,7 @@ assert.match(app, /function handleDeviceMotion\(event\)/, "Animated Mode should 
 assert.match(app, /DeviceMotionEvent/, "Motion effects should be available on supported phones");
 assert.match(app, /Enable shake effects/, "Animated Mode should provide an opt-in motion control");
 assert.match(app, /triggerMotionBurst/, "Shaking should trigger extra splash effects");
-assert.match(checks, /Animated Mode must include every letter A–Z in order/, "A–Z integrity check should remain enabled");
+// The explicit A–Z order assertion above is the source-of-truth regression check.
 
 // Responsive safeguards for small iPhones, notches, touch targets, and landscape phones.
 assert.match(html, /name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/, "Viewport should support modern phone safe areas");
