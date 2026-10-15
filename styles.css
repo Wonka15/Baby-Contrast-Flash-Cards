@@ -771,3 +771,82 @@ button, select {
   .ar-hero.motion-burst:before,.ar-hero.motion-burst .ar-big-emoji{animation:none!important}
   .ar-card-sparkle{transition:none}
 }
+
+
+/* Watch mode: gently dim the page and let the high-contrast card lead.
+   The browser cannot change system brightness, so this creates a dark viewing
+   environment while keeping the card bright and the controls reachable. */
+body.watch-focus-mode {
+  min-height: 100vh;
+  background: #111315 !important;
+  color: #f7f7f3;
+  transition: background-color .35s ease, color .35s ease;
+}
+body.watch-focus-mode .topbar,
+body.watch-focus-mode .radio-panel,
+body.watch-focus-mode .welcome,
+body.watch-focus-mode .mode-switch,
+body.watch-focus-mode .ar-mode-launch,
+body.watch-focus-mode .parent-note,
+body.watch-focus-mode .footer {
+  display: none !important;
+}
+body.watch-focus-mode .app {
+  min-height: 100vh;
+  padding-top: max(12px, env(safe-area-inset-top));
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+body.watch-focus-mode .play-style {
+  max-width: 360px;
+  margin: 0 auto 12px;
+  background: #242729;
+  border: 1px solid #3a3d3f;
+  box-shadow: 0 8px 28px #0005;
+}
+body.watch-focus-mode .play-style-button { color: #c5c9c5; }
+body.watch-focus-mode .play-style-button small { color: #a4aaa5; }
+body.watch-focus-mode .play-style-button.active {
+  color: #17191a;
+  background: #f4f4ef;
+  border-color: #fff;
+}
+body.watch-focus-mode .play-style-button.active small { color: #666b65; }
+body.watch-focus-mode .experience {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0;
+}
+body.watch-focus-mode .collection-row {
+  color: #f6f6f2;
+  margin-bottom: 10px;
+}
+body.watch-focus-mode .collection-kicker { color: #b9c0ba; }
+body.watch-focus-mode .collection-row h2 { color: #fff; }
+body.watch-focus-mode .counter {
+  color: #f5f5f0;
+  background: #2a2d2f;
+  border-color: #424648;
+}
+body.watch-focus-mode .card-area { max-width: 680px; margin: 0 auto; }
+body.watch-focus-mode .flashcard {
+  box-shadow: 0 18px 65px #0009, 0 0 0 1px #ffffff20;
+}
+body.watch-focus-mode .progress-caption { color: #c4c8c3; }
+body.watch-focus-mode .progress-track { background: #383c3e; }
+body.watch-focus-mode .controls { margin-top: 12px; }
+body.watch-focus-mode .control-button.secondary {
+  color: #f2f2ed;
+  background: #292d2f;
+  border-color: #45494b;
+}
+body.watch-focus-mode .sound-note { color: #aeb4af; }
+body.watch-focus-mode .sound-note button { color: #fff; }
+@media (max-width: 600px) {
+  body.watch-focus-mode .app { padding-left: 10px; padding-right: 10px; }
+  body.watch-focus-mode .flashcard { aspect-ratio: 1 / 1.08; }
+  body.watch-focus-mode .collection-row h2 { font-size: 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  body.watch-focus-mode, body.watch-focus-mode * { transition-duration: .01ms !important; }
+}
