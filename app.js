@@ -295,7 +295,7 @@ function addBabyStarLayer(stage) {
   layer.setAttribute("aria-hidden", "true");
   positions.forEach(([left, top, size], index) => {
     const star = document.createElement("span");
-    star.className = "baby-twinkle-star" + (index % 4 === 0 ? " is-red" : "");
+    star.className = "baby-twinkle-star";
     star.textContent = "★";
     star.style.left = left + "%";
     star.style.top = top + "%";
@@ -304,6 +304,56 @@ function addBabyStarLayer(stage) {
     layer.appendChild(star);
   });
   stage.appendChild(layer);
+}
+
+/* Small white dots twinkle quietly across every Baby Mode card. */
+function addBabyDotLayer(stage) {
+  const positions = [
+    [17, 19, 4], [37, 12, 5], [61, 20, 4], [82, 15, 5],
+    [12, 35, 4], [29, 47, 5], [70, 42, 4], [88, 57, 5],
+    [19, 68, 5], [43, 79, 4], [65, 70, 5], [81, 85, 4],
+    [51, 34, 4], [34, 62, 4], [57, 91, 5], [7, 83, 4],
+    [94, 31, 4], [8, 56, 5], [75, 31, 4], [47, 55, 5]
+  ];
+  const layer = document.createElement("div");
+  layer.className = "baby-dot-layer";
+  layer.setAttribute("aria-hidden", "true");
+  positions.forEach(([left, top, size], index) => {
+    const dot = document.createElement("span");
+    dot.className = "baby-white-dot";
+    dot.style.left = left + "%";
+    dot.style.top = top + "%";
+    dot.style.setProperty("--dot-size", size + "px");
+    dot.style.setProperty("--dot-delay", ((index % 7) * -0.31) + "s");
+    layer.appendChild(dot);
+  });
+  stage.appendChild(layer);
+}
+
+/* A touch releases a tiny red-dot sparkle that fades away by itself. */
+function showBabyTouchDots(clientX, clientY) {
+  if (currentMode !== "baby") return;
+  const stage = ui.artwork.querySelector(".baby-pattern-stage, .baby-emoji-stage");
+  if (!stage) return;
+  const bounds = stage.getBoundingClientRect();
+  const x = Math.max(0, Math.min(100, (clientX - bounds.left) / bounds.width * 100));
+  const y = Math.max(0, Math.min(100, (clientY - bounds.top) / bounds.height * 100));
+  const layer = document.createElement("div");
+  layer.className = "baby-touch-dot-layer";
+  layer.setAttribute("aria-hidden", "true");
+  const offsets = [[-22,-13],[-8,-25],[10,-22],[24,-8],[22,12],[8,24],[-12,21],[-25,7],[0,0]];
+  offsets.forEach(([dx, dy], index) => {
+    const dot = document.createElement("span");
+    dot.className = "baby-touch-red-dot";
+    dot.style.left = x + "%";
+    dot.style.top = y + "%";
+    dot.style.setProperty("--dot-x", dx + "px");
+    dot.style.setProperty("--dot-y", dy + "px");
+    dot.style.setProperty("--dot-delay", (index * 18) + "ms");
+    layer.appendChild(dot);
+  });
+  stage.appendChild(layer);
+  window.setTimeout(() => layer.remove(), 850);
 }
 
 function drawContrastDesign(index) {
@@ -558,11 +608,13 @@ function renderCard() {
     const stage = document.createElement("div");
     stage.className = "baby-pattern-stage";
     stage.appendChild(drawContrastDesign(card.designIndex));
+    addBabyDotLayer(stage);
     addBabyStarLayer(stage);
     ui.artwork.appendChild(stage);
   } else if (isBabyEmoji) {
     const stage = document.createElement("div");
     stage.className = "baby-emoji-stage emoji-tone-" + (card.designIndex % 5);
+    addBabyDotLayer(stage);
     addBabyStarLayer(stage);
 
     const emoji = document.createElement("span");
@@ -758,6 +810,7 @@ ui.cardArea.addEventListener("pointerup", event => {
   if (currentMode === "baby" && playStyle === "play" &&
       Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12 &&
       event.target.closest("#flashcard")) {
+    showBabyTouchDots(event.clientX, event.clientY);
     ui.flashcard.classList.remove("baby-card-tap-pop");
     void ui.flashcard.offsetWidth; // Restart the little pop on every tap.
     ui.flashcard.classList.add("baby-card-tap-pop");
