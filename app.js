@@ -113,10 +113,21 @@ const EVERYDAY_CARDS = [
    25 animals, and 25 familiar objects. */
 // Two hundred original vector designs, generated from distinct geometry seeds.
 const BABY_ANIMALS = ["Lion","Elephant","Monkey","Bee","Giraffe","Zebra","Tiger","Panda","Bear","Fox","Rabbit","Cat","Dog","Mouse","Owl","Duck","Penguin","Turtle","Frog","Fish","Whale","Dolphin","Octopus","Butterfly","Ladybug","Snail","Koala","Hippo","Rhino","Crocodile","Parrot","Flamingo","Kangaroo","Gorilla","Cheetah","Deer","Hedgehog","Peacock","Seal","Bat"];
-const BABY_CARDS = [
-  ...BABY_ANIMALS.map((name,i)=>({name,icon:"",description:"Meet the "+name.toLowerCase()+" in bold black, white, and red.",type:"animal",art:"animal",designIndex:i,group:"Animals"})),
-  ...Array.from({length:160},(_,i)=>({name:"Pattern "+String(i+1).padStart(3,"0"),icon:"",description:"A bold black, white, and deep red pattern.",type:"pattern",art:"contrast",designIndex:i,group:"Patterns"}))
-];
+/* Baby Mode has exactly 100 numbered designs. Each front uses a different
+   parameter set; each reverse pairs a unique baby-friendly emoji with a
+   separate red/white/black contrast design. */
+const BABY_BACK_EMOJIS = ["🐼","🐻","🐨","🐯","🦁","🐸","🐵","🐰","🐱","🐶","🐭","🐹","🐷","🐮","🐔","🐧","🐤","🦆","🦉","🦋","🐝","🐞","🐢","🐙","🐠","🐬","🐳","🦀","🐌","🦔","🐘","🦒","🦓","🦛","🦘","🦥","🦦","🦩","🦚","🦜","❤️","🤍","🖤","⭐","🌟","✨","☀️","🌙","☁️","🌈","🍎","🍐","🍊","🍋","🍉","🍇","🍓","🫐","🍒","🍑","🥕","🌽","🥦","🍄","🌻","🌼","🌷","🌹","🌱","🌳","🎈","🎀","🧸","🪁","⚽","🏀","🎾","🪇","🎵","🎶","🚗","🚕","🚌","🚂","🚲","🚀","✈️","🚁","⛵","🚤","🏠","🛏️","🪑","🧦","👒","👟","🍼","🔔","🎁","🧩"];
+
+const BABY_CARDS = Array.from({length:100},(_,i)=>({
+  name: "Pattern "+String(i+1).padStart(3,"0"),
+  icon: BABY_BACK_EMOJIS[i],
+  backEmoji: BABY_BACK_EMOJIS[i],
+  description: "A new high-contrast pattern and a friendly surprise.",
+  type: "pattern",
+  art: "contrast",
+  designIndex: i,
+  group: "Baby Patterns"
+}));
 
 /* Toddler mode grows with your child: all 26 letters plus numbers 0–20.
    This is intentionally separate from the infant card set. */
@@ -569,9 +580,16 @@ function renderCard() {
     // The reverse reveals a separate bold pattern instead of repeating the portrait.\n    ui.colorArtwork.appendChild(drawContrastDesign((card.designIndex * 3 + 29) % 160, true));
     ui.artwork.style.fontSize = "";
   } else if (isPattern) {
+    // Front: one of 100 distinct red, white, and black patterns.
     ui.artwork.appendChild(drawContrastDesign(card.designIndex, false));
-    // The reverse reveals a different bold pattern, not a duplicate symbol.
+    // Back: a different contrast pattern plus this card's unique emoji.
     ui.colorArtwork.appendChild(drawContrastDesign((card.designIndex + 37) % 200, true));
+    const surpriseEmoji = document.createElement("span");
+    surpriseEmoji.className = "surprise-emoji";
+    surpriseEmoji.textContent = card.backEmoji;
+    surpriseEmoji.setAttribute("role", "img");
+    surpriseEmoji.setAttribute("aria-label", "Baby-friendly surprise: " + card.name);
+    ui.colorArtwork.appendChild(surpriseEmoji);
     ui.artwork.style.fontSize = "";
   } else {
     const picture = document.createElement("span");
@@ -596,7 +614,7 @@ function renderCard() {
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
   ui.flashcard.classList.remove("is-flipped");
-  ui.flashcard.setAttribute("aria-label", `${card.name}. Double tap to reveal a different high-contrast design.`);
+  ui.flashcard.setAttribute("aria-label", `${card.name}. Double tap to reveal a unique baby-friendly emoji and contrast pattern.`);
 }
 
 /* Keep the flip animation in one function so both double-tap and the
@@ -668,7 +686,7 @@ function setMode(mode) {
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
   });
-  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "40 animals + 160 unique patterns";
+  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "100 unique patterns + 100 emoji surprises";
   ui.collectionKicker.textContent = mode === "toddler" ? language.toddlerKicker : language.babyKicker;
   renderCard();
   playTone(523.25, 0.12, 0.02);
