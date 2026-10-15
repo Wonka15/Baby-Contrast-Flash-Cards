@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f7f2">
+  <meta name="description" content="Simple, calm, high-contrast black-and-white visual cards for babies.">
+  <title>Baby Contrast Cards</title>
+  <style>
+    :root { color-scheme: light; --ink:#111; --paper:#f7f7f2; --muted:#666; --line:#deded6; }
+    * { box-sizing: border-box; }
+    body { margin:0; min-height:100vh; background:var(--paper); color:var(--ink); font-family: ui-rounded, "SF Pro Rounded", system-ui, -apple-system, sans-serif; }
+    button { font:inherit; touch-action:manipulation; }
+    .app { min-height:100svh; display:flex; flex-direction:column; max-width:900px; margin:0 auto; padding:clamp(16px, 4vw, 32px); gap:18px; }
+    header { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .logo { width:38px; height:38px; border:3px solid #111; border-radius:50%; background:repeating-conic-gradient(#111 0 25%, #fff 0 50%) 50% / 14px 14px; }
+    h1 { font-size:clamp(1.1rem, 3vw, 1.45rem); margin:0; letter-spacing:-.04em; }
+    .eyebrow { color:var(--muted); font-size:.8rem; margin-top:3px; }
+    .quiet-button { border:1px solid var(--line); background:#fff; border-radius:999px; padding:10px 14px; cursor:pointer; font-weight:650; }
+    .stage { flex:1; display:flex; flex-direction:column; justify-content:center; gap:14px; min-height:0; }
+    .card-shell { background:white; border:1px solid var(--line); border-radius:28px; padding:clamp(10px, 2.5vw, 20px); box-shadow:0 12px 40px #1111110a; }
+    .art { width:100%; aspect-ratio:1 / 1; max-height:min(58svh, 560px); display:block; border-radius:18px; overflow:hidden; background:#fff; }
+    .caption { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 4px 2px; }
+    .caption h2 { font-size:clamp(1.1rem, 3vw, 1.45rem); margin:0; letter-spacing:-.03em; }
+    .counter { color:var(--muted); font-size:.92rem; font-variant-numeric:tabular-nums; }
+    .controls { display:grid; grid-template-columns:1fr 1.4fr 1fr; gap:10px; }
+    .nav { min-height:56px; border:0; border-radius:18px; font-weight:750; cursor:pointer; }
+    .nav.secondary { background:#e9e9e2; color:#111; }
+    .nav.primary { background:#111; color:white; }
+    .nav:disabled { opacity:.35; cursor:not-allowed; }
+    .dots { display:flex; justify-content:center; gap:7px; padding:2px 0; }
+    .dot { border:0; width:7px; height:7px; padding:0; border-radius:50%; background:#c6c6bd; cursor:pointer; }
+    .dot.active { background:#111; transform:scale(1.35); }
+    .hint { color:var(--muted); font-size:.82rem; text-align:center; line-height:1.5; margin:0; }
+    .categories { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+    .chip { background:transparent; border:1px solid var(--line); padding:8px 12px; border-radius:999px; font-size:.84rem; cursor:pointer; }
+    .chip[aria-pressed="true"] { background:#111; color:#fff; border-color:#111; }
+    .fullscreen { position:fixed; inset:0; z-index:5; background:#fff; display:none; align-items:center; justify-content:center; padding:12px; }
+    .fullscreen.open { display:flex; }
+    .fullscreen svg { width:min(100%, 100svh); height:auto; max-height:100svh; }
+    .close-full { position:absolute; top:max(14px, env(safe-area-inset-top)); right:14px; border:0; border-radius:999px; background:#111; color:#fff; padding:12px 16px; font-weight:700; }
+    @media (min-width:700px) { .stage { gap:18px; } .card-shell { align-self:center; width:min(100%, 620px); } .controls { align-self:center; width:min(100%, 620px); } .dots, .categories { align-self:center; } }
+    @media (prefers-reduced-motion: no-preference) { .art { animation: arrive .22s ease-out; } @keyframes arrive { from { opacity:.7; transform:scale(.99); } to { opacity:1; transform:scale(1); } } }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div><h1>Baby Contrast Cards</h1><div class="eyebrow">Little looks. Big contrast.</div></div>
+      </div>
+      <button class="quiet-button" id="fullBtn" type="button" aria-label="Open full-screen card">⛶ Full screen</button>
+    </header>
+    <section class="stage" aria-label="Contrast card viewer">
+      <div class="categories" aria-label="Card collections">
+        <button class="chip" data-set="all" aria-pressed="true">All cards</button>
+        <button class="chip" data-set="shapes" aria-pressed="false">Shapes</button>
+        <button class="chip" data-set="patterns" aria-pressed="false">Patterns</button>
+      </div>
+      <div class="card-shell">
+        <svg id="art" class="art" viewBox="0 0 600 600" role="img" aria-label="Black and white contrast pattern" xmlns="http://www.w3.org/2000/svg"></svg>
+        <div class="caption"><h2 id="cardTitle">Bold circles</h2><span class="counter" id="counter">1 / 12</span></div>
+      </div>
+      <div class="dots" id="dots" aria-label="Choose a card"></div>
+      <div class="controls">
+        <button class="nav secondary" id="prev" type="button">← Previous</button>
+        <button class="nav primary" id="next" type="button">Next card →</button>
+        <button class="nav secondary" id="shuffle" type="button" aria-label="Jump to a different card">Surprise</button>
+      </div>
+      <p class="hint">Show one card at a time, at a comfortable distance, with a caregiver nearby. Take breaks and follow your baby's cues.</p>
+    </section>
+  </main>
+  <div class="fullscreen" id="fullscreen" role="dialog" aria-modal="true" aria-label="Full-screen contrast card">
+    <button class="close-full" id="closeFull" type="button">Close ✕</button>
+    <svg id="fullArt" viewBox="0 0 600 600" role="img" aria-label="Full-screen black and white pattern" xmlns="http://www.w3.org/2000/svg"></svg>
+  </div>
+  <script>
+    const NS = "http://www.w3.org/2000/svg";
+    const cards = [
+      { title:"Bold circles", set:"shapes", draw:s=>{ bg(s); for(let r=270;r>=35;r-=39) circle(s,300,300,r,r%78===36?"#fff":"#111"); } },
+      { title:"High-contrast stripes", set:"patterns", draw:s=>{ bg(s); for(let x=0;x<600;x+=100) rect(s,x,0,50,600,x%200===0?"#111":"#fff"); } },
+      { title:"Checkerboard", set:"patterns", draw:s=>{ bg(s); for(let y=0;y<8;y++) for(let x=0;x<8;x++) if((x+y)%2===0) rect(s,x*75,y*75,75,75,"#111"); } },
+      { title:"Big black star", set:"shapes", draw:s=>{ bg(s); polygon(s, starPoints(300,300,245,105,5),"#111"); } },
+      { title:"Wavy lines", set:"patterns", draw:s=>{ bg(s); for(let y=18;y<620;y+=42){ let d="M -20 "+y; for(let x=0;x<=640;x+=20) d+=" Q "+(x+10)+" "+(y+(Math.floor(x/20)%2?18:-18))+" "+(x+20)+" "+y; path(s,d,"none","#111",7); } } },
+      { title:"Bold triangle", set:"shapes", draw:s=>{ bg(s); polygon(s,"300,45 555,535 45,535","#111"); } },
+      { title:"Concentric squares", set:"patterns", draw:s=>{ bg(s); for(let i=0;i<10;i++){ let n=570-i*58; rect(s,(600-n)/2,(600-n)/2,n,n,i%2?"#fff":"#111"); } } },
+      { title:"Two friendly eyes", set:"shapes", draw:s=>{ bg(s); circle(s,190,245,90,"#111"); circle(s,410,245,90,"#111"); circle(s,190,245,35,"#fff"); circle(s,410,245,35,"#fff"); circle(s,190,245,17,"#111"); circle(s,410,245,17,"#111"); path(s,"M 160 390 Q 300 520 440 390","none","#111",24); } },
+      { title:"Polka dots", set:"patterns", draw:s=>{ bg(s); for(let y=60;y<620;y+=120) for(let x=60;x<620;x+=120) circle(s,x,y,38,"#111"); } },
+      { title:"Bold diamond", set:"shapes", draw:s=>{ bg(s); polygon(s,"300,30 570,300 300,570 30,300","#111"); polygon(s,"300,130 470,300 300,470 130,300","#fff"); polygon(s,"300,210 390,300 300,390 210,300","#111"); } },
+      { title:"Zigzag", set:"patterns", draw:s=>{ bg(s); let d="M 0 0"; for(let y=0;y<660;y+=80) d+=" L 75 "+(y+40)+" L 150 "+y+" L 225 "+(y+40)+" L 300 "+y+" L 375 "+(y+40)+" L 450 "+y+" L 525 "+(y+40)+" L 600 "+y; path(s,d,"none","#111",18); } },
+      { title:"Bold heart", set:"shapes", draw:s=>{ bg(s); path(s,"M 300 520 C 245 460 75 335 75 205 C 75 95 220 70 300 180 C 380 70 525 95 525 205 C 525 335 355 460 300 520 Z","#111"); } }
+    ];
+    function el(tag,attrs={}){const n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));return n}
+    function bg(s){s.replaceChildren();s.append(el("rect",{width:600,height:600,fill:"#fff"}))}
+    function circle(s,cx,cy,r,fill){s.append(el("circle",{cx,cy,r,fill}))}
+    function rect(s,x,y,width,height,fill){s.append(el("rect",{x,y,width,height,fill}))}
+    function polygon(s,points,fill){s.append(el("polygon",{points,fill}))}
+    function path(s,d,fill,stroke,sw){s.append(el("path",{d,fill,stroke,"stroke-width":sw,"stroke-linecap":"round","stroke-linejoin":"round"}))}
+    function starPoints(cx,cy,outer,inner,n){let p=[];for(let i=0;i<n*2;i++){let a=-Math.PI/2+i*Math.PI/n,r=i%2?inner:outer;p.push((cx+Math.cos(a)*r)+","+(cy+Math.sin(a)*r))}return p.join(" ")}
+    let activeSet="all", visible=cards.map((_,i)=>i), index=0;
+    const art=document.getElementById("art"), title=document.getElementById("cardTitle"), counter=document.getElementById("counter"), dots=document.getElementById("dots"), prev=document.getElementById("prev"), next=document.getElementById("next");
+    function render(){
+      const card=cards[visible[index]]; card.draw(art); title.textContent=card.title; counter.textContent=(index+1)+" / "+visible.length;
+      prev.disabled=index===0; next.disabled=index===visible.length-1;
+      dots.replaceChildren();
+      visible.forEach((cardIndex,i)=>{const b=document.createElement("button");b.className="dot"+(i===index?" active":"");b.type="button";b.setAttribute("aria-label","Show "+cards[cardIndex].title);b.setAttribute("aria-current",i===index?"true":"false");b.addEventListener("click",()=>{index=i;render()});dots.append(b)});
+      document.getElementById("fullArt").replaceChildren(...Array.from(art.childNodes).map(n=>n.cloneNode(true)));
+    }
+    function setCollection(set){activeSet=set;visible=cards.map((c,i)=>({c,i})).filter(x=>set==="all"||x.c.set===set).map(x=>x.i);index=0;document.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.set===set)));render()}
+    prev.addEventListener("click",()=>{if(index>0){index--;render()}});
+    next.addEventListener("click",()=>{if(index<visible.length-1){index++;render()}});
+    document.getElementById("shuffle").addEventListener("click",()=>{if(visible.length>1){let n;do{n=Math.floor(Math.random()*visible.length)}while(n===index);index=n;render()}});
+    document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>setCollection(b.dataset.set)));
+    const full=document.getElementById("fullscreen");
+    document.getElementById("fullBtn").addEventListener("click",()=>{render();full.classList.add("open");document.getElementById("closeFull").focus()});
+    document.getElementById("closeFull").addEventListener("click",()=>{full.classList.remove("open");document.getElementById("fullBtn").focus()});
+    full.addEventListener("click",e=>{if(e.target===full)full.classList.remove("open")});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")full.classList.remove("open");if(full.classList.contains("open"))return;if(e.key==="ArrowRight"&&index<visible.length-1){index++;render()}if(e.key==="ArrowLeft"&&index>0){index--;render()}});
+    render();
+  </script>
+</body>
+</html>
