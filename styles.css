@@ -701,3 +701,32 @@ button, select {
 @media (prefers-reduced-motion: reduce) {
   .baby-twinkle-star { animation: none; opacity: .9; transform: translate(-50%, -50%); }
 }
+
+
+/* Shake feedback should never hide the animal: soften the dip and let the
+   bright burst fade back to the normal card background automatically. */
+.ar-hero.motion-burst {
+  animation: ar-motion-background-fade 1.35s ease-out both;
+}
+.ar-hero.motion-burst .ar-big-emoji {
+  animation-name: ar-motion-emoji-dunk;
+}
+@keyframes ar-motion-background-fade {
+  0%, 18% {
+    background: radial-gradient(ellipse at 50% 40%, #ffffff 0%, #d8fbff 30%, #8de4ff 68%, #a5caff 100%);
+  }
+  100% {
+    background: radial-gradient(ellipse at 50% 12%, #ffffff 0%, #eff9ff 32%, #d9eeff 70%, #c1e2ff 100%);
+  }
+}
+@keyframes ar-motion-emoji-dunk {
+  0%, 100% { top: 35%; left: 35%; opacity: 1; transform: translate(0, 0) rotate(0) scale(1); }
+  22% { top: 39%; left: 34%; opacity: 1; transform: translate(0, 8px) rotate(-8deg) scale(1.08); }
+  48% { top: 57%; left: 35%; opacity: .88; transform: translate(0, 18px) rotate(10deg) scale(.82); }
+  68% { top: 62%; left: 35%; opacity: .72; transform: translate(0, 28px) rotate(-5deg) scale(.65); }
+  82% { top: 37%; left: 35%; opacity: 1; transform: translate(0, -8px) rotate(4deg) scale(.94); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ar-hero.motion-burst { animation: none !important; }
+  .ar-hero.motion-burst .ar-big-emoji { animation: none !important; opacity: 1; }
+}
