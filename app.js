@@ -138,22 +138,25 @@ const toddlerCards = makeToddlerCards();
 /* Animated Mode uses the exact 26 animals requested. The browser's native
    emoji artwork gets layered shadows and highlights for a 3D-style look. */
 const AR_ANIMALS = [
-  ["Octopus", "🐙"], ["Spider", "🕷️"], ["Fly", "🪰"], ["Snail", "🐌"],
-  ["Ladybug", "🐞"], ["Caterpillar", "🐛"], ["Worm", "🪱"], ["Butterfly", "🦋"],
-  ["Bee", "🐝"], ["Horse", "🐴"], ["Wolf", "🐺"], ["Whale", "🐳"],
-  ["Fish", "🐟"], ["Crab", "🦀"], ["Seal", "🦭"], ["Guide dog", "🦮"],
-  ["Otter", "🦦"], ["Squirrel", "🐿️"], ["Hedgehog", "🦔"], ["Chick", "🐣"],
-  ["Frog", "🐸"], ["Panda", "🐼"], ["Koala", "🐨"], ["Dog", "🐶"],
-  ["Rabbit", "🐰"], ["Fox", "🦊"]
+  // Each card is explicitly paired with its alphabet letter, A through Z.
+  ["A", "Alligator", "🐊"], ["B", "Bear", "🐻"], ["C", "Cat", "🐱"],
+  ["D", "Dog", "🐶"], ["E", "Elephant", "🐘"], ["F", "Fox", "🦊"],
+  ["G", "Giraffe", "🦒"], ["H", "Hippo", "🦛"], ["I", "Iguana", "🦎"],
+  ["J", "Jaguar", "🐆"], ["K", "Kangaroo", "🦘"], ["L", "Lion", "🦁"],
+  ["M", "Monkey", "🐒"], ["N", "Narwhal", "🐋"], ["O", "Owl", "🦉"],
+  ["P", "Penguin", "🐧"], ["Q", "Quail", "🐦"], ["R", "Rabbit", "🐰"],
+  ["S", "Snake", "🐍"], ["T", "Tiger", "🐯"], ["U", "Urchin", "🦔"],
+  ["V", "Vulture", "🦅"], ["W", "Whale", "🐳"], ["X", "X-ray fish", "🐠"],
+  ["Y", "Yak", "🐂"], ["Z", "Zebra", "🦓"]
 ];
 function makeARCards() {
-  return AR_ANIMALS.map(([animal, emoji], designIndex) => ({
-    name: animal,
+  return AR_ANIMALS.map(([letter, animal, emoji], designIndex) => ({
+    name: letter + " is for " + animal,
     animal,
     emoji,
     icon: emoji,
-    symbol: animal.charAt(0).toUpperCase(),
-    description: animal + " in Animated Mode.",
+    symbol: letter,
+    description: letter + " is for " + animal + " in Animated Mode.",
     type: "ar",
     group: "Animated Mode",
     designIndex
