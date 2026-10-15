@@ -112,7 +112,11 @@ const EVERYDAY_CARDS = [
 /* This collection contains 100 baby cards: 25 patterns, 25 nature cards,
    25 animals, and 25 familiar objects. */
 // Two hundred original vector designs, generated from distinct geometry seeds.
-const BABY_CARDS = Array.from({length:200}, (_,i)=>({name:"Contrast "+String(i+1).padStart(3,"0"),icon:"",description:"Bold black, white, and deep red pattern "+(i+1)+".",type:"pattern",art:"contrast",designIndex:i,group:"Contrast"}));
+const BABY_ANIMALS = ["Lion","Elephant","Monkey","Bee","Giraffe","Zebra","Tiger","Panda","Bear","Fox","Rabbit","Cat","Dog","Mouse","Owl","Duck","Penguin","Turtle","Frog","Fish","Whale","Dolphin","Octopus","Butterfly","Ladybug","Snail","Koala","Hippo","Rhino","Crocodile","Parrot","Flamingo","Kangaroo","Gorilla","Cheetah","Deer","Hedgehog","Peacock","Seal","Bat"];
+const BABY_CARDS = [
+  ...BABY_ANIMALS.map((name,i)=>({name,icon:"",description:"Meet the "+name.toLowerCase()+" in bold black, white, and red.",type:"animal",art:"animal",designIndex:i,group:"Animals"})),
+  ...Array.from({length:160},(_,i)=>({name:"Pattern "+String(i+1).padStart(3,"0"),icon:"",description:"A bold black, white, and deep red pattern.",type:"pattern",art:"contrast",designIndex:i,group:"Patterns"}))
+];
 
 /* Toddler mode grows with your child: all 26 letters plus numbers 0–20.
    This is intentionally separate from the infant card set. */
@@ -404,12 +408,12 @@ function drawAnimalFace(name, colored = false) {
     svg.appendChild(node);
     return node;
   };
-  const ink = "#171717";
-  const paper = "#fffdf8";
-  const accent = colored ? "#e96d56" : "#e23e3e";
+  const ink = "#050505";
+  const paper = "#ffffff";
+  const accent = "#ed1028";
   const fur = colored ? ({"Lion":"#e9ae48","Elephant":"#8fb8c8","Giraffe":"#f0c85b","Zebra":"#f7f4eb","Monkey":"#bd8058","Bear":"#a77a58","Panda":"#f7f4eb","Fox":"#e98949","Rabbit":"#f6eee6","Cat":"#d7b5a0","Dog":"#cba77a","Mouse":"#b9a5bd","Owl":"#b58a61","Duck":"#f5d65a","Penguin":"#f5f5ef","Turtle":"#80b878","Frog":"#7cbe76","Fish":"#65bdd0","Whale":"#6ea9d6","Dolphin":"#8ac8d7","Octopus":"#d88ab5","Butterfly":"#b19ae5","Bee":"#f0c84b","Ladybug":"#df665c","Snail":"#d8ad7e"})[name] || "#c7c7c7" : paper;
   const is = (...names) => names.includes(name);
-  add("rect", {x:0,y:0,width:400,height:400,rx:34,fill:colored ? "#fff4df" : paper});
+  add("rect", {x:0,y:0,width:400,height:400,rx:34,fill:colored ? "#a90018" : ink});
   // Distinct silhouettes give each familiar animal its own recognizable outline.
   if (is("Lion")) add("circle",{cx:200,cy:190,r:145,fill:colored?"#c87932":ink});
   if (is("Elephant")) { add("ellipse",{cx:200,cy:250,rx:43,ry:90,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:105,cy:160,rx:43,ry:60,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:295,cy:160,rx:43,ry:60,fill:fur,stroke:ink,"stroke-width":8}); }
@@ -506,7 +510,7 @@ function renderCard() {
     ui.artwork.style.fontSize = "";
   } else if (isAnimal) {
     ui.artwork.appendChild(drawAnimalFace(card.name, false));
-    ui.colorArtwork.appendChild(drawAnimalFace(card.name, true));
+    // The reverse reveals a separate bold pattern instead of repeating the portrait.\n    ui.colorArtwork.appendChild(drawContrastDesign((card.designIndex * 3 + 29) % 160, true));
     ui.artwork.style.fontSize = "";
   } else if (isPattern) {
     ui.artwork.appendChild(drawContrastDesign(card.designIndex, false));
@@ -536,7 +540,7 @@ function renderCard() {
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
   ui.flashcard.classList.remove("is-flipped");
-  ui.flashcard.setAttribute("aria-label", `${card.name}. Double tap to reveal the color picture and description.`);
+  ui.flashcard.setAttribute("aria-label", `${card.name}. Double tap to reveal a different high-contrast design.`);
 }
 
 /* Keep the flip animation in one function so both double-tap and the
@@ -608,7 +612,7 @@ function setMode(mode) {
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
   });
-  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : language.babyCollection;
+  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "40 animals + 160 unique patterns";
   ui.collectionKicker.textContent = mode === "toddler" ? language.toddlerKicker : language.babyKicker;
   renderCard();
   playTone(523.25, 0.12, 0.02);
