@@ -62,6 +62,14 @@ assert.match(app, /return alphabet\.map\(\(\[letter, animal, emoji\]/, "Each tod
 assert.match(app, /className = "toddler-big-letter/, "Toddler cards should show large letters");
 assert.match(app, /className = "toddler-big-emoji/, "Toddler cards should show animal emojis");
 
+// The special AR-style deck contains the 26 requested animal emoji cards.
+const arData = section(app, /const AR_ANIMALS = \[([\\s\\S]*?)\\n\];/, "AR_ANIMALS");
+assert.equal(countMatches(arData, /^\\s*\\["/gm), 26, "Expected 26 AR animal cards");
+assert.match(html, /id="ar-mode-button"/, "AR Mode Deck button should be present");
+assert.match(app, /function drawARFront\(card\)/, "AR cards should have their own visual renderer");
+assert.match(app, /className = "ar-big-letter"/, "AR cards should show bold blue initials");
+assert.match(app, /className = "ar-big-emoji"/, "AR cards should show dimensional-style emojis");
+
 // The old character artwork, number deck, and card-reverse interaction are intentionally gone.
 assert.doesNotMatch(app, /Oswald|drawToddlerArt|numberCards|toggleCardSide|reverseButton/i);
 assert.doesNotMatch(html, /card-back|reverse-button|double-tap/i);
@@ -72,4 +80,5 @@ assert.ok(readme.includes("40 cards"), "README should document the 40 baby cards
 console.log("✓ HTML IDs are unique and all JavaScript ID references exist.");
 console.log("✓ Baby mode has 20 patterns and 20 picture cards.");
 console.log("✓ Toddler mode has 26 letters paired with animal emojis.");
+console.log("✓ AR Mode Deck has 26 requested animals and its own 3D-style renderer.");
 console.log("✓ Character art, number deck, and reverse-card interaction are removed.");
