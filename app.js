@@ -2,15 +2,17 @@
  * Little Look — Baby Contrast Cards
  * ------------------------------------------------------------
  * Beginner guide:
- * 1. CARD COLLECTIONS are the words and pictures shown in the app.
- * 2. renderCard() updates the card when a new one is chosen.
- * 3. moveCard() handles swipe, Back, and Next navigation.
- * 4. sound helpers create soft sounds in the browser—no audio files
- *    are downloaded, and no microphone permission is needed.
+ * 1. CARD DATA lives near the top of this file.
+ * 2. renderCard() draws the selected card and updates its counter.
+ * 3. moveCard() handles Back, Next, and horizontal swipe navigation.
+ * 4. toggleCardSide() shows the card's reverse side.
+ * 5. Sound effects are generated in the browser; no audio files or
+ *    microphone permission are needed.
  *
- * To add a new baby card, add one item to BABY_CARDS below.
- * To add a toddler letter or number, edit makeToddlerCards().
- * Spanish labels can be added later in the LANGUAGE_TEXT object.
+ * To add a baby pattern, edit BABY_PATTERN_NAMES and drawContrastDesign().
+ * To change the baby picture cards, edit BABY_EMOJIS and their names.
+ * To add toddler letters or numbers, edit makeToddlerCards().
+ * Interface translations belong in LANGUAGE_TEXT.
  */
 
 "use strict";
@@ -21,7 +23,7 @@ const LANGUAGE_TEXT = {
   en: {
     babyMode: "Baby", toddlerMode: "Toddler",
     babyCollection: "20 bold patterns + 20 high-contrast emoji cards",
-    toddlerCollection: "A–Z with colorful animal emojis",
+    toddlerCollection: "A–Z + numbers 0–20",
     babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
     look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
 next: "Next card", previous: "Back",
@@ -142,10 +144,8 @@ const BABY_CARDS = [
   }))
 ];
 
-/* Toddler mode grows with your child: all 26 letters plus numbers 0–20.
-   This is intentionally separate from the infant card set. */
-/* Toddler mode is a 26-card picture-book alphabet: every letter pairs Oswald
-   with a different animal and a simple action children can name aloud. */
+/* Toddler mode combines a 26-card animal alphabet with numbers 0–20.
+   Keeping the card data together makes the collection easy to expand. */
 function makeToddlerCards() {
   const alphabet = [
     ["A","Ant","helping an ant carry a leaf","Oswald helps an ant carry a giant leaf."],
@@ -176,10 +176,38 @@ function makeToddlerCards() {
     ["Z","Zebra","dancing to music","Oswald dances with a zebra."]
   ];
   const animalEmojis = ["🐜","🐻","🐱","🦆","🐘","🦊","🦒","🦛","🦎","🐆","🦘","🦁","🐵","🦄","🦉","🐧","🐦","🐰","🦭","🐢","🦄","🦅","🐳","🐠","🐂","🦓"];
-  return alphabet.map(([letter,animal,activity,description], designIndex) => ({
-    name: letter, icon: "", emoji: animalEmojis[designIndex], description,
-    type: "letter", group: "Alphabet", symbol: letter, animal, activity, designIndex
+  const letterCards = alphabet.map(([letter, animal, activity, description], designIndex) => ({
+    name: letter,
+    icon: "",
+    emoji: animalEmojis[designIndex],
+    description,
+    type: "letter",
+    group: "Alphabet",
+    symbol: letter,
+    animal,
+    activity,
+    designIndex
   }));
+
+  // A number card shows the numeral and that many easy-to-count apples.
+  // Zero intentionally shows an empty basket instead of an apple.
+  const numberCards = Array.from({ length: 21 }, (_, number) => ({
+    name: String(number),
+    icon: "",
+    emoji: number === 0 ? "🧺" : "🍎",
+    description: number === 0
+      ? "Zero means there are no apples in the basket."
+      : `Let's count ${number} ${number === 1 ? "apple" : "apples"} together.`,
+    type: "number",
+    group: "Numbers",
+    symbol: String(number),
+    animal: number === 1 ? "apple" : "apples",
+    activity: "counting",
+    designIndex: number,
+    count: number
+  }));
+
+  return [...letterCards, ...numberCards];
 }
 
 /* DOM elements are collected here once, so the rest of the code can
@@ -201,6 +229,10 @@ const ui = {
   surprise: document.getElementById("surprise-button"),
   melody: document.getElementById("melody-button"),
   soundToggle: document.getElementById("sound-toggle"),
+  backFace: document.getElementById("card-back"),
+  backTitle: document.getElementById("card-back-title"),
+  backDescription: document.getElementById("card-back-description"),
+  reverseButton: document.getElementById("reverse-button"),
   modeButtons: [...document.querySelectorAll("[data-mode]")],
   playStyleButtons: [...document.querySelectorAll("[data-play-style]")],
   aboutDialog: document.getElementById("about-dialog")
@@ -212,8 +244,6 @@ let watchTimer = null;
 let currentCards = BABY_CARDS;
 let currentIndex = 0;
 let soundsEnabled = true;
-let touchStartX = 0;
-let touchStartY = 0;
 let audioContext = null;
 /* Return the AudioContext only after a real user action. This respects
    browsers that block sound until a tap or click. */
@@ -263,19 +293,37 @@ let selectedRadioIndex=0;
 let radioIsPlaying=false;
 const radioAudio=document.getElementById("radio-audio");
 const radioFrame=document.getElementById("radio-frame");
-function updateRadioUI(){
-  const station=RADIO_STATIONS[selectedRadioIndex];
-  document.getElementById("radio-station-name").textContent=station.name;
-  document.getElementById("radio-station-subtitle").textContent=station.subtitle;
-  document.getElementById("radio-station-art").textContent=station.art;
-  document.getElementById("radio-status").textContent=radioIsPlaying?"Playing · "+station.name:"Ready to listen";
-  document.getElementById("radio-play").textContent=radioIsPlaying?"Pause":"Play";
-  document.getElementById("radio-play").setAttribute("aria-label",radioIsPlaying?"Pause "+station.name:"Play "+station.name);
-  document.getElementById("radio-open").href=station.url;
-  document.getElementById("radio-open").textContent=station.kind==="youtube"?"Open on YouTube":station.kind==="audio"?"Open station website":"Open full station player";
-  document.getElementById("radio-volume-wrap").hidden=station.kind==="youtube";
-  document.getElementById("radio-station").value=String(selectedRadioIndex);
-  document.getElementById("radio-station-art").classList.toggle("radio-playing",radioIsPlaying);
+function updateRadioUI() {
+  const station = RADIO_STATIONS[selectedRadioIndex];
+  const radioStatus = document.getElementById("radio-status");
+  const radioPlayButton = document.getElementById("radio-play");
+  const melodyButton = ui.melody;
+
+  document.getElementById("radio-station-name").textContent = station.name;
+  document.getElementById("radio-station-subtitle").textContent = station.subtitle;
+  document.getElementById("radio-station-art").textContent = station.art;
+  radioStatus.textContent = radioIsPlaying ? "Playing · " + station.name : "Ready to listen";
+
+  // Keep both music controls in sync for people using touch, sight, or assistive tech.
+  radioPlayButton.textContent = radioIsPlaying ? "Pause" : "Play";
+  radioPlayButton.setAttribute(
+    "aria-label",
+    radioIsPlaying ? "Pause " + station.name : "Play " + station.name
+  );
+  melodyButton.setAttribute("aria-pressed", String(radioIsPlaying));
+  melodyButton.setAttribute("aria-label", radioIsPlaying ? "Stop music" : "Play music");
+  melodyButton.title = radioIsPlaying ? "Stop music" : "Play music";
+
+  document.getElementById("radio-open").href = station.url;
+  document.getElementById("radio-open").textContent =
+    station.kind === "youtube"
+      ? "Open on YouTube"
+      : station.kind === "audio"
+        ? "Open station website"
+        : "Open full station player";
+  document.getElementById("radio-volume-wrap").hidden = station.kind === "youtube";
+  document.getElementById("radio-station").value = String(selectedRadioIndex);
+  document.getElementById("radio-station-art").classList.toggle("radio-playing", radioIsPlaying);
 }
 function stopRadio(){
   radioAudio.pause();radioAudio.removeAttribute("src");radioAudio.load();
@@ -475,37 +523,137 @@ function drawToddlerArt(card, colored = false) {
 function drawToddlerFront(card) {
   const wrap = document.createElement("div");
   wrap.className = "toddler-hero";
-  const letter = document.createElement("div");
-  letter.className = "toddler-big-letter letter-color-" + (card.designIndex % 8);
-  letter.textContent = card.name;
-  const emoji = document.createElement("div");
-  emoji.className = "toddler-big-emoji";
-  emoji.textContent = card.emoji;
-  emoji.setAttribute("role", "img");
-  emoji.setAttribute("aria-label", card.animal);
-  wrap.append(letter, emoji);
+
+  const mainSymbol = document.createElement("div");
+  mainSymbol.className = "toddler-big-letter letter-color-" + (card.designIndex % 8);
+  mainSymbol.textContent = card.name;
+  wrap.appendChild(mainSymbol);
+
+  if (card.type === "number") {
+    // Show the quantity visually as well as the numeral.
+    const objects = document.createElement("div");
+    objects.className = "toddler-number-objects";
+    objects.setAttribute("role", "img");
+    objects.setAttribute(
+      "aria-label",
+      card.count === 0 ? "An empty basket: zero apples" : card.count + (card.count === 1 ? " apple" : " apples")
+    );
+
+    if (card.count === 0) {
+      const basket = document.createElement("span");
+      basket.textContent = "🧺";
+      basket.setAttribute("aria-hidden", "true");
+      objects.appendChild(basket);
+    } else {
+      for (let index = 0; index < card.count; index += 1) {
+        const apple = document.createElement("span");
+        apple.textContent = "🍎";
+        apple.setAttribute("aria-hidden", "true");
+        objects.appendChild(apple);
+      }
+    }
+    wrap.appendChild(objects);
+    return wrap;
+  }
+
+  const animal = document.createElement("div");
+  animal.className = "toddler-big-emoji";
+  animal.textContent = card.emoji;
+  animal.setAttribute("role", "img");
+  animal.setAttribute("aria-label", card.animal);
+  wrap.appendChild(animal);
   return wrap;
 }
 
 /* Every card shares the same layout. Only the illustration and labels
    change. This makes adding cards much simpler than writing new HTML. */
+/* Show the illustration side. Called on card changes and by the Reverse button. */
+function showCardFront() {
+  ui.flashcard.classList.remove("is-reversed");
+  ui.backFace.hidden = true;
+  ui.backFace.setAttribute("aria-hidden", "true");
+  ui.flashcard.querySelector(".card-front").setAttribute("aria-hidden", "false");
+}
+
+/* The reverse side gives a caregiver a simple prompt to say out loud. */
+function toggleCardSide() {
+  const showingBack = !ui.flashcard.classList.contains("is-reversed");
+  ui.flashcard.classList.toggle("is-reversed", showingBack);
+  ui.backFace.hidden = !showingBack;
+  ui.backFace.setAttribute("aria-hidden", String(!showingBack));
+  ui.flashcard.querySelector(".card-front").setAttribute("aria-hidden", String(showingBack));
+  if (showingBack) playTone(392, 0.1, 0.014, "sine");
+}
+
+/* Draw the selected card and synchronize its text, progress, and controls. */
 function renderCard() {
-  const card=currentCards[currentIndex],isToddler=currentMode==="toddler",isPattern=card.type==="pattern",isBabyEmoji=currentMode==="baby"&&card.type==="emoji";
-  ui.artwork.replaceChildren();ui.artwork.classList.toggle("emoji-art",isBabyEmoji);ui.artwork.classList.toggle("toddler-art",isToddler);ui.artwork.classList.toggle("animal-art",false);
-  if(isToddler){
+  const card = currentCards[currentIndex];
+  const isToddler = currentMode === "toddler";
+  const isPattern = card.type === "pattern";
+  const isBabyEmoji = currentMode === "baby" && card.type === "emoji";
+
+  // Always return to the picture side when the selected card changes.
+  showCardFront();
+
+  ui.artwork.replaceChildren();
+  ui.artwork.classList.toggle("emoji-art", isBabyEmoji);
+  ui.artwork.classList.toggle("toddler-art", isToddler);
+  ui.artwork.classList.toggle("animal-art", false);
+
+  if (isToddler) {
     ui.artwork.appendChild(drawToddlerFront(card));
-    const badge=document.createElement("span");badge.className="toddler-count-badge number-color-"+(card.designIndex%8);badge.textContent=String(Math.min(card.designIndex+1,25));badge.setAttribute("aria-label","Number "+badge.textContent);ui.artwork.appendChild(badge);ui.artwork.style.fontSize="";
-  }else if(isPattern){ui.artwork.appendChild(drawContrastDesign(card.designIndex));ui.artwork.style.fontSize="";}
-  else if(isBabyEmoji){
-    const stage=document.createElement("div");stage.className="baby-emoji-stage emoji-tone-"+(card.designIndex%5);
-    const emoji=document.createElement("span");emoji.className="baby-emoji-symbol";emoji.textContent=card.emoji;emoji.setAttribute("role","img");emoji.setAttribute("aria-label",card.name);stage.appendChild(emoji);ui.artwork.appendChild(stage);ui.artwork.style.fontSize="";
-  }else{const picture=document.createElement("span");picture.textContent=card.icon;picture.setAttribute("aria-hidden","true");ui.artwork.appendChild(picture);ui.artwork.style.fontSize="";}
-  ui.word.textContent=isToddler?card.name+" · "+card.animal:card.name;
-  ui.label.textContent=isToddler?"ABC ANIMAL ADVENTURES":isPattern?"20 UNIQUE HIGH-CONTRAST PATTERNS":"";
-  ui.count.innerHTML=String(currentIndex+1).padStart(2,"0")+' <span>/ '+currentCards.length+"</span>";
-  ui.progress.style.width=((currentIndex+1)/currentCards.length*100)+"%";ui.progressLabel.textContent=isToddler?"GROWING TOGETHER":"A LITTLE AT A TIME";
-  ui.previous.disabled=currentIndex===0;ui.next.disabled=currentIndex===currentCards.length-1;
-  ui.flashcard.setAttribute("aria-label",isToddler?card.name+", "+card.animal+", number "+Math.min(card.designIndex+1,25):isPattern?card.name+", high-contrast pattern":card.name+", "+card.emoji);
+  } else if (isPattern) {
+    ui.artwork.appendChild(drawContrastDesign(card.designIndex));
+  } else if (isBabyEmoji) {
+    const stage = document.createElement("div");
+    stage.className = "baby-emoji-stage emoji-tone-" + (card.designIndex % 5);
+
+    const emoji = document.createElement("span");
+    emoji.className = "baby-emoji-symbol";
+    emoji.textContent = card.emoji;
+    emoji.setAttribute("role", "img");
+    emoji.setAttribute("aria-label", card.name);
+    stage.appendChild(emoji);
+    ui.artwork.appendChild(stage);
+  } else {
+    const picture = document.createElement("span");
+    picture.textContent = card.icon;
+    picture.setAttribute("aria-hidden", "true");
+    ui.artwork.appendChild(picture);
+  }
+
+  ui.word.textContent = isToddler
+    ? card.type === "number" ? "Number " + card.name : card.name + " · " + card.animal
+    : card.name;
+  ui.label.textContent = isToddler
+    ? card.type === "number" ? "COUNT TOGETHER" : "ABC ANIMAL ADVENTURES"
+    : isPattern ? "20 UNIQUE HIGH-CONTRAST PATTERNS" : "";
+
+  // Build the counter as text and a span instead of injecting HTML.
+  const currentCount = document.createTextNode(String(currentIndex + 1).padStart(2, "0"));
+  const totalCount = document.createElement("span");
+  totalCount.textContent = " / " + currentCards.length;
+  ui.count.replaceChildren(currentCount, totalCount);
+
+  ui.progress.style.width = ((currentIndex + 1) / currentCards.length * 100) + "%";
+  ui.progressLabel.textContent = isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
+  ui.previous.disabled = currentIndex === 0;
+  ui.next.disabled = currentIndex === currentCards.length - 1;
+
+  const accessibleCardName = isToddler
+    ? card.type === "number"
+      ? "Number " + card.name + ". " + card.description
+      : card.name + ", " + card.animal
+    : isPattern
+      ? card.name + ", high-contrast pattern"
+      : card.name + ", " + card.emoji;
+  ui.flashcard.setAttribute("aria-label", accessibleCardName);
+
+  // The reverse side is useful for grown-ups reading the prompt aloud.
+  ui.backTitle.textContent = card.type === "number"
+    ? "Let's count " + card.name
+    : card.name;
+  ui.backDescription.textContent = card.description;
 }
 
 /* Two tiny two-note sounds make Back and Next feel different.
@@ -540,11 +688,16 @@ function playNavigationSound(direction) {
 /* Move to a card. The matching gentle sound only plays if the card changes. */
 function moveCard(direction) {
   const nextIndex = Math.max(0, Math.min(currentCards.length - 1, currentIndex + direction));
+
+  // At either end, keep the current card and do not play a misleading sound.
   if (nextIndex === currentIndex) return;
+
   currentIndex = nextIndex;
   renderCard();
+
+  // Reading offsetWidth restarts the CSS arrival animation for the new card.
   ui.flashcard.classList.remove("card-changing");
-  void ui.flashcard.offsetWidth; // Restart the small arrival animation.
+  void ui.flashcard.offsetWidth;
   ui.flashcard.classList.add("card-changing");
   playNavigationSound(direction);
 }
@@ -592,13 +745,21 @@ function setMode(mode) {
   currentMode = mode;
   currentCards = mode === "toddler" ? toddlerCards : BABY_CARDS;
   currentIndex = 0;
+
   ui.modeButtons.forEach(button => {
     const selected = button.dataset.mode === mode;
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
   });
-  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "20 unique patterns + 20 emoji cards";
-  ui.collectionKicker.textContent = mode === "toddler" ? language.toddlerKicker : language.babyKicker;
+
+  // Keep the collection heading in sync with the language and card data.
+  ui.collectionTitle.textContent = mode === "toddler"
+    ? language.toddlerCollection
+    : language.babyCollection;
+  ui.collectionKicker.textContent = mode === "toddler"
+    ? language.toddlerKicker
+    : language.babyKicker;
+
   renderCard();
   playTone(523.25, 0.12, 0.02);
 }
@@ -606,20 +767,58 @@ function setMode(mode) {
 ui.previous.addEventListener("click", () => moveCard(-1));
 ui.next.addEventListener("click", () => moveCard(1));
 ui.surprise.addEventListener("click", chooseSurprise);
+ui.reverseButton.addEventListener("click", showCardFront);
 ui.modeButtons.forEach(button => button.addEventListener("click", () => setMode(button.dataset.mode)));
 ui.playStyleButtons.forEach(button => button.addEventListener("click", () => setPlayStyle(button.dataset.playStyle)));
 
 /* Track a horizontal finger movement to change cards. Vertical movement
    is left alone so the page can still scroll naturally. */
-ui.cardArea.addEventListener("touchstart", event => {
-  touchStartX = event.changedTouches[0].clientX;
-  touchStartY = event.changedTouches[0].clientY;
-}, {passive:true});
-ui.cardArea.addEventListener("touchend", event => {
-  const dx = event.changedTouches[0].clientX - touchStartX;
-  const dy = event.changedTouches[0].clientY - touchStartY;
-  if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.25) moveCard(dx < 0 ? 1 : -1);
-}, {passive:true});
+let pointerStartX = 0;
+let pointerStartY = 0;
+let lastTapTime = 0;
+let lastTapX = 0;
+let lastTapY = 0;
+
+/* Pointer events cover touchscreens, trackpads, and a mouse with one handler.
+   Vertical movement remains available for normal page scrolling. */
+ui.cardArea.addEventListener("pointerdown", event => {
+  if (event.target.closest("button")) return;
+  pointerStartX = event.clientX;
+  pointerStartY = event.clientY;
+});
+
+ui.cardArea.addEventListener("pointerup", event => {
+  // The Reverse button has its own click handler and is not a swipe/tap target.
+  if (event.target.closest("button")) return;
+
+  const deltaX = event.clientX - pointerStartX;
+  const deltaY = event.clientY - pointerStartY;
+
+  if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
+    lastTapTime = 0;
+    moveCard(deltaX < 0 ? 1 : -1);
+    return;
+  }
+
+  // Two taps close together on the card reveal or hide its reverse side.
+  const now = Date.now();
+  const tapsAreClose = Math.hypot(event.clientX - lastTapX, event.clientY - lastTapY) < 32;
+  if (now - lastTapTime < 360 && tapsAreClose) {
+    lastTapTime = 0;
+    toggleCardSide();
+    return;
+  }
+
+  lastTapTime = now;
+  lastTapX = event.clientX;
+  lastTapY = event.clientY;
+});
+
+ui.cardArea.addEventListener("pointercancel", () => {
+  pointerStartX = 0;
+  pointerStartY = 0;
+  lastTapTime = 0;
+});
 document.addEventListener("keydown", event => {
   if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
   if (event.key === "ArrowRight") moveCard(1);
