@@ -850,3 +850,22 @@ body.watch-focus-mode .sound-note button { color: #fff; }
 @media (prefers-reduced-motion: reduce) {
   body.watch-focus-mode, body.watch-focus-mode * { transition-duration: .01ms !important; }
 }
+
+
+/* Baby Mode Play: make a card feel responsive when little fingers tap it.
+   This is a brief, gentle enlargement; it does not affect swipe navigation. */
+body:not(.watch-focus-mode) .flashcard.baby-card-tap-pop {
+  animation: baby-card-tap-pop 560ms cubic-bezier(.2,.8,.2,1) both;
+  z-index: 2;
+}
+@keyframes baby-card-tap-pop {
+  0% { transform: scale(1); box-shadow: var(--shadow); }
+  38% { transform: scale(1.045); box-shadow: 0 18px 42px #1d27301e, 0 0 0 2px #ffffff; }
+  100% { transform: scale(1); box-shadow: var(--shadow); }
+}
+@media (prefers-reduced-motion: reduce) {
+  body:not(.watch-focus-mode) .flashcard.baby-card-tap-pop {
+    animation: none;
+    outline: 2px solid #dce5d2;
+  }
+}
