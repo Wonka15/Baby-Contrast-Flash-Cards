@@ -510,3 +510,28 @@ button:disabled{opacity:.38;cursor:not-allowed}
   .ar-hero.water-dunking .ar-big-emoji,.ar-hero.water-dunking .ar-water-effect,
   .ar-hero.water-dunking .ar-water-ripple,.ar-hero.water-dunking .ar-water-drop{animation-duration:.01ms!important}
 }
+
+
+/* Motion controls: a visible opt-in is required before reading device motion. */
+.ar-motion-button{
+  position:relative;z-index:6;margin:12px 0 10px;padding:9px 15px;
+  border:1px solid #ffffffd9;border-radius:999px;
+  background:linear-gradient(145deg,#ffffffef,#d9f1ff);
+  color:#075ea9;font:800 12px/1.2 system-ui,sans-serif;
+  box-shadow:0 4px 12px #1679c226,inset 0 1px 0 #fff;
+  cursor:pointer;touch-action:manipulation;
+}
+.ar-motion-button:focus-visible{outline:3px solid #0878e8;outline-offset:3px}
+.ar-motion-button.is-enabled{background:linear-gradient(145deg,#d9fff3,#a9f2e2);color:#075f57}
+.ar-hero.motion-burst{background:radial-gradient(ellipse at 50% 40%,#ffffff 0%,#d8fbff 30%,#8de4ff 68%,#a5caff 100%)}
+.ar-hero.motion-burst .ar-card-sparkle{animation:ar-motion-sparkle 650ms ease-out 2}
+.ar-hero.motion-burst .ar-big-letter{filter:drop-shadow(0 0 15px #21bfff9c)}
+@keyframes ar-motion-sparkle{
+  0%{opacity:.35;transform:scale(.7) rotate(0)}
+  50%{opacity:1;transform:scale(1.65) rotate(35deg)}
+  100%{opacity:.45;transform:scale(.9) rotate(70deg)}
+}
+@media(prefers-reduced-motion:reduce){
+  .ar-motion-button{transition:none}
+  .ar-hero.motion-burst .ar-card-sparkle{animation:none!important}
+}
