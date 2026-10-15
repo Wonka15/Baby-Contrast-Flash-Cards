@@ -358,3 +358,89 @@ button:disabled{opacity:.38;cursor:not-allowed}
   color: #7f8778;
   background: linear-gradient(150deg, #f2f3ed, #e8eae2);
 }
+
+
+/* Card reverse side: readable, accessible, and easy to return from. */
+.card-back[hidden] {
+  display: none !important;
+}
+.flashcard.is-reversed .card-front {
+  display: none;
+}
+.card-back {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: clamp(22px, 6vw, 42px);
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(237, 16, 40, .20), transparent 45%),
+    linear-gradient(145deg, #171917, #050505 70%);
+  color: #fff;
+  text-align: center;
+}
+.card-back-kicker {
+  color: #ff7a87;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .18em;
+}
+.card-back h3 {
+  margin: 0;
+  font-size: clamp(25px, 6vw, 36px);
+  line-height: 1.05;
+  letter-spacing: -.055em;
+}
+.card-back p {
+  max-width: 34ch;
+  margin: 0;
+  color: #f0f0ec;
+  font-size: clamp(14px, 3.6vw, 17px);
+  line-height: 1.65;
+}
+.reverse-button {
+  min-height: 43px;
+  margin-top: 8px;
+  padding: 10px 18px;
+  border: 1px solid rgba(255,255,255,.7);
+  border-radius: 14px;
+  background: linear-gradient(145deg, #fff, #e9eee3);
+  box-shadow: 0 4px 0 #c5d0bd, 0 8px 18px rgba(0,0,0,.22), inset 0 1px 0 #fff;
+  color: #35442f;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 180ms ease;
+}
+.reverse-button:active {
+  transform: translateY(3px) scale(.985);
+  box-shadow: 0 1px 2px rgba(0,0,0,.2), inset 0 2px 4px rgba(30,35,25,.10);
+}
+.reverse-button:focus-visible {
+  outline: 3px solid #ff8b97;
+  outline-offset: 4px;
+}
+
+/* Toddler counting cards show the quantity, not just a number symbol. */
+.toddler-number-objects {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  align-items: center;
+  justify-items: center;
+  gap: 3px 2px;
+  width: min(88%, 340px);
+  margin-top: 5px;
+}
+.toddler-number-objects span {
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-size: clamp(18px, 5.6vw, 29px);
+  line-height: 1.1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .reverse-button { transition: none; }
+}
