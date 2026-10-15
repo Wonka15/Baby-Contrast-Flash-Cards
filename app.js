@@ -294,9 +294,10 @@ function drawPattern(style) {
   };
   const ink = "#30372b", cream = "#fffdf6", green = "#b7cf98";
   add("rect", {x:0,y:0,width:400,height:400,rx:24,fill:cream});
-  if (style === "rings" || style === "oval") {
+  if (style === "rings") {
     [165,132,99,66,33].forEach((r,i)=>add("circle",{cx:200,cy:200,r,fill:i%2?cream:ink}));
-    if(style==="oval") svg.lastChild.setAttribute("ry","25");
+  } else if (style === "oval") {
+    [165,132,99,66,33].forEach((r,i)=>add("ellipse",{cx:200,cy:200,rx:r,ry:r*.68,fill:i%2?cream:ink}));
   } else if (style === "square" || style === "rectangle" || style === "checker" || style === "woven") {
     if(style==="checker" || style==="woven"){
       for(let y=0;y<8;y++)for(let x=0;x<8;x++)if((x+y)%2===0)add("rect",{x:x*50,y:y*50,width:50,height:50,fill:ink});
@@ -310,7 +311,11 @@ function drawPattern(style) {
       heart:"M200 345 C170 310 45 220 55 125 C65 35 170 45 200 120 C230 45 335 35 345 125 C355 220 230 310 200 345",
       moon:"M260 48 C125 60 90 280 250 345 C100 360 35 240 65 145 C95 60 180 25 260 48"
     };
-    add("polygon",{points:paths[style],fill:style==="heart"?"#d98e83":ink});
+    if (style === "heart" || style === "moon") {
+      add("path",{d:paths[style],fill:style==="heart"?"#d98e83":ink});
+    } else {
+      add("polygon",{points:paths[style],fill:ink});
+    }
   } else if (style === "stripes") {
     for(let x=0;x<400;x+=48)add("rect",{x,y:0,width:24,height:400,fill:ink});
   } else if (style === "zigzag") {
@@ -323,8 +328,10 @@ function drawPattern(style) {
   } else if (style === "dots" || style === "tinyDots" || style === "spots") {
     const step=style==="tinyDots"?25:style==="spots"?95:70;
     for(let y=step/2;y<400;y+=step)for(let x=step/2;x<400;x+=step){const r=style==="tinyDots"?4:style==="spots"?22:13+((x+y)%3)*5;add("circle",{cx:x,cy:y,r,fill:(Math.floor(x/step)+Math.floor(y/step))%2?green:ink});}
-  } else if (style === "arches" || style === "fan") {
+  } else if (style === "arches") {
     for(let i=0;i<7;i++){const width=340-i*42,x=(400-width)/2;add("path",{d:`M${x} 350 V${220-i*17} A${width/2} ${width/2} 0 0 1 ${x+width} ${220-i*17} V350`,fill:"none",stroke:i%2?green:ink,"stroke-width":18,"stroke-linejoin":"round"});}
+  } else if (style === "fan") {
+    for(let i=0;i<9;i++) add("path",{d:`M200 355 L${30+i*42} 80 Q200 20 ${370-i*42} 80 Z`,fill:i%2?green:ink,opacity:.85});
   } else if (style === "burst") {
     for(let i=0;i<24;i++){const a=i*Math.PI/12;add("line",{x1:200+Math.cos(a)*30,y1:200+Math.sin(a)*30,x2:200+Math.cos(a)*170,y2:200+Math.sin(a)*170,stroke:ink,"stroke-width":i%2?7:13,"stroke-linecap":"round"});}
     add("circle",{cx:200,cy:200,r:35,fill:green});
@@ -333,8 +340,6 @@ function drawPattern(style) {
     add("path",{d:"M200 50 A150 150 0 0 0 200 350 Z",fill:ink});
   } else if (style === "cross") {
     add("rect",{x:155,y:45,width:90,height:310,rx:15,fill:ink});add("rect",{x:45,y:155,width:310,height:90,rx:15,fill:ink});
-  } else if (style === "fan") {
-    for(let i=0;i<9;i++)add("path",{d:`M200 355 L${30+i*42} 80 Q200 20 ${370-i*42} 80 Z`,fill:i%2?green:ink,opacity:.85});
   } else {
     [55,125,195,265,335].forEach((x,i)=>add("circle",{cx:x,cy:200,r:22,fill:i%2?green:ink}));
   }
