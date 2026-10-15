@@ -869,3 +869,60 @@ body:not(.watch-focus-mode) .flashcard.baby-card-tap-pop {
     outline: 2px solid #dce5d2;
   }
 }
+
+
+/* Baby Mode: tiny white dots twinkle, then red dots scatter briefly from a tap. */
+.baby-dot-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+}
+.baby-white-dot {
+  position: absolute;
+  width: var(--dot-size, 4px);
+  height: var(--dot-size, 4px);
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #090909;
+  box-shadow: 0 0 3px #fff9;
+  transform: translate(-50%, -50%);
+  animation: baby-dot-twinkle 2.4s ease-in-out var(--dot-delay, 0s) infinite;
+}
+.baby-emoji-stage .baby-dot-layer { z-index: 1; }
+.baby-touch-dot-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  overflow: hidden;
+  pointer-events: none;
+}
+.baby-touch-red-dot {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #ed1028;
+  border: 1px solid #fff;
+  box-shadow: 0 0 4px #ed1028a8;
+  transform: translate(-50%, -50%);
+  animation: baby-red-dot-burst 720ms cubic-bezier(.2,.7,.3,1) var(--dot-delay, 0ms) both;
+}
+@keyframes baby-dot-twinkle {
+  0%, 100% { opacity: .3; transform: translate(-50%, -50%) scale(.7); }
+  45% { opacity: 1; transform: translate(-50%, -50%) scale(1.25); }
+  70% { opacity: .62; transform: translate(-50%, -50%) scale(.9); }
+}
+@keyframes baby-red-dot-burst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.35); }
+  18% { opacity: 1; }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--dot-x)), calc(-50% + var(--dot-y))) scale(.25);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .baby-white-dot { animation: none; opacity: .85; }
+  .baby-touch-red-dot { animation-duration: 320ms; }
+}
