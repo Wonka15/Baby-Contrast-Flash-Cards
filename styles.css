@@ -2,7 +2,7 @@
 :root{
   color-scheme:light;
   --ink:#242722;--muted:#777a72;--paper:#f5f5f0;--line:#ffffffc9;
-  --glass:rgba(255,255,255,.68);--glass-edge:rgba(255,255,255,.88);
+  --glass:rgba(255,255,255,var(--glass-alpha,.68));--glass-edge:rgba(255,255,255,var(--glass-edge-alpha,.88));
   --green:#dff0bc;--green-strong:#b9d98c;--shadow:0 18px 55px rgba(52,61,40,.09);
   --radius-xl:30px;
 }
@@ -140,3 +140,37 @@ button:disabled{opacity:.38;cursor:not-allowed}
 .artwork{overflow:visible}
 .baby-pattern-emoji{position:absolute;inset:0;z-index:3;display:grid;place-items:center;font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif;font-size:clamp(82px,22vw,132px);line-height:1;text-shadow:0 3px 0 #fff,0 7px 0 #000;filter:drop-shadow(0 5px 3px #0005);pointer-events:none}
 .toddler-count-badge{position:absolute;right:2%;bottom:2%;z-index:4;display:grid;place-items:center;width:clamp(44px,12vw,68px);height:clamp(44px,12vw,68px);border:3px solid #fff;border-radius:50%;background:#fff;box-shadow:0 4px 12px #0003;font-family:"Arial Rounded MT Bold","Trebuchet MS",system-ui,sans-serif;font-size:clamp(25px,7vw,38px);font-weight:1000;line-height:1}
+
+
+/* Refined Apple-inspired glass controls and a compact in-app sound player. */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.music-panel{margin:15px 0 7px;padding:16px;border-radius:24px;background:linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.34));border:1px solid rgba(255,255,255,.9);box-shadow:0 10px 30px rgba(43,51,35,.07),inset 0 1px 0 #ffffffd9;backdrop-filter:blur(30px) saturate(1.55);-webkit-backdrop-filter:blur(30px) saturate(1.55)}
+.music-heading,.music-preset-row,.music-actions,.sliders-row{display:flex;align-items:center;gap:12px}
+.music-heading{margin-bottom:14px}
+.music-note-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:14px;background:linear-gradient(145deg,#fff,#e9e5fa);box-shadow:inset 0 1px 0 #fff,0 3px 10px #2520390c;font-size:22px;color:#6154a2}
+.music-heading>div,.music-preset-copy{display:flex;flex:1;flex-direction:column;gap:3px;min-width:0}
+.music-heading strong,.music-preset-copy strong{font-size:12px;letter-spacing:-.02em}
+.music-heading small,.music-preset-copy small{font-size:10px;color:#828579;line-height:1.4}
+.music-live-dot{width:7px;height:7px;border-radius:50%;background:#a4c78b;box-shadow:0 0 0 4px #a4c78b25}
+.music-preset-row{padding:12px 0;border-top:1px solid #ffffffb5;border-bottom:1px solid #ffffffb5}
+.glass-select{max-width:120px;border:1px solid #ffffffdf;border-radius:12px;padding:10px 24px 10px 10px;background:rgba(255,255,255,.64);color:#42463c;font:inherit;font-size:10px;box-shadow:inset 0 1px 0 #fff;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.music-actions{margin:12px 0}
+.glass-action{min-height:39px;padding:10px 14px;border:1px solid #ffffffdb;border-radius:13px;background:rgba(255,255,255,.56);box-shadow:inset 0 1px 0 #fff,0 4px 12px #222b1c09;color:#4d5345;font-size:10px;font-weight:750;cursor:pointer;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);transition:transform .18s,background .18s}
+.glass-action:active{transform:scale(.97)}
+.glass-action.music-play{min-width:78px;background:linear-gradient(135deg,#394332,#20281e);color:#fff;border-color:#ffffff66;box-shadow:0 5px 14px #26301d24}
+.sliders-row{align-items:stretch;gap:16px}
+.range-control{display:flex;flex:1;min-width:0;flex-direction:column;gap:8px;color:#777b70;font-size:9px;font-weight:750}
+.range-control input{width:100%;margin:0;accent-color:#718b59;cursor:pointer}
+.range-control output{color:#989b90;font-size:9px;font-weight:600}
+.music-footnote{margin:12px 0 0;color:#a0a296;font-size:8px;line-height:1.5}
+.baby-emoji-stage{width:100%;height:100%;display:grid;place-items:center;position:relative;overflow:hidden;border-radius:22px;background:#fff}
+.baby-emoji-stage:before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(135deg,#050505 0 22px,#fff 22px 44px);opacity:.13}
+.baby-emoji-stage:after{content:"";position:absolute;inset:0;border:12px solid #ed1028;border-radius:22px;pointer-events:none}
+.baby-emoji-symbol{position:relative;z-index:1;display:grid;place-items:center;width:100%;height:100%;font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif;font-size:clamp(105px,30vw,185px);line-height:1;text-shadow:0 6px 0 #0000000c;filter:drop-shadow(0 8px 7px #00000012)}
+.emoji-tone-1:before{background:repeating-linear-gradient(45deg,#ed1028 0 14px,#fff 14px 28px);opacity:.2}
+.emoji-tone-2:before{background:radial-gradient(circle,#050505 0 10px,transparent 11px);background-size:42px 42px;opacity:.24}
+.emoji-tone-3:after{border-color:#050505;border-width:17px}
+.emoji-tone-4:after{border-color:#ed1028;border-width:6px;box-shadow:inset 0 0 0 8px #fff,inset 0 0 0 14px #050505}
+.card-front .artwork{width:100%;height:100%;max-width:none;max-height:none}
+.card-front .art-backdrop{margin:10px 10px 0}
+@media(max-width:420px){.music-panel{padding:13px;border-radius:20px}.music-actions{gap:8px}.glass-action{padding:9px 10px}.sliders-row{gap:12px}.music-preset-copy small{font-size:9px}}
