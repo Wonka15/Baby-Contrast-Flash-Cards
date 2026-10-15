@@ -162,9 +162,10 @@ function makeToddlerCards() {
     ["Y","Yak","sledding down a hill","Oswald sleds down a hill with a yak."],
     ["Z","Zebra","dancing to music","Oswald dances with a zebra."]
   ];
+  const animalEmojis = ["🐜","🐻","🐱","🦆","🐘","🦊","🦒","🦛","🦎","🐆","🦘","🦁","🐵","🦄","🦉","🐧","🐦","🐰","🦭","🐢","🦄","🦅","🐳","🐠","🐂","🦓"];
   return alphabet.map(([letter,animal,activity,description], designIndex) => ({
-    name: letter, icon: "", description, type: "letter", group: "Alphabet",
-    symbol: letter, animal, activity, designIndex
+    name: letter, icon: "", emoji: animalEmojis[designIndex], description,
+    type: "letter", group: "Alphabet", symbol: letter, animal, activity, designIndex
   }));
 }
 
@@ -559,6 +560,39 @@ function drawToddlerArt(card, colored = false) {
   return svg;
 }
 
+/* Toddler front: a huge colorful letter paired with a crisp system emoji.
+   The emoji font comes from the device, so artwork stays sharp at every size. */
+function drawToddlerFront(card) {
+  const wrap = document.createElement("div");
+  wrap.className = "toddler-hero";
+  const letter = document.createElement("div");
+  letter.className = "toddler-big-letter letter-color-" + (card.designIndex % 8);
+  letter.textContent = card.name;
+  const emoji = document.createElement("div");
+  emoji.className = "toddler-big-emoji";
+  emoji.textContent = card.emoji;
+  emoji.setAttribute("role", "img");
+  emoji.setAttribute("aria-label", card.animal);
+  wrap.append(letter, emoji);
+  return wrap;
+}
+
+function drawToddlerNumber(card) {
+  const wrap = document.createElement("div");
+  wrap.className = "toddler-number-face";
+  const label = document.createElement("div");
+  label.className = "toddler-number-label";
+  label.textContent = "LET'S COUNT!";
+  const number = document.createElement("div");
+  number.className = "toddler-big-number number-color-" + (card.designIndex % 8);
+  number.textContent = String(Math.min(card.designIndex + 1, 25));
+  const stars = document.createElement("div");
+  stars.className = "toddler-number-stars";
+  stars.textContent = ["⭐ 🌈 ⭐","❤️ ⭐ ❤️","🌟 🎈 🌟","🦋 ⭐ 🦋"][card.designIndex % 4];
+  wrap.append(label, number, stars);
+  return wrap;
+}
+
 /* Every card shares the same layout. Only the illustration and labels
    change. This makes adding cards much simpler than writing new HTML. */
 function renderCard() {
@@ -572,8 +606,10 @@ function renderCard() {
   ui.artwork.classList.toggle("toddler-art", isToddler);
   ui.artwork.classList.toggle("animal-art", isAnimal);
   if (isToddler) {
-    ui.artwork.appendChild(drawToddlerArt(card, false));
-    ui.colorArtwork.appendChild(drawContrastDesign((card.designIndex * 7 + 41) % 160, true));
+    // Front shows a giant colorful letter and a large, friendly animal emoji.
+    ui.artwork.appendChild(drawToddlerFront(card));
+    // Reverse teaches counting with a giant number from 1 to 25.
+    ui.colorArtwork.appendChild(drawToddlerNumber(card));
     ui.artwork.style.fontSize = "";
   } else if (isAnimal) {
     ui.artwork.appendChild(drawAnimalFace(card.name, false));
@@ -603,10 +639,10 @@ function renderCard() {
     ui.colorArtwork.appendChild(colorPicture);
   }
   ui.word.textContent = card.name;
-  ui.label.textContent = isToddler ? "OSWALD & ANIMAL FRIENDS" : card.group.toUpperCase();
+  ui.label.textContent = isToddler ? "ABC ANIMAL ADVENTURES" : card.group.toUpperCase();
   ui.backSymbol.textContent = card.symbol || card.icon;
   ui.backSymbol.hidden = isAnimal || isToddler || isPattern;
-  ui.backTitle.textContent = isToddler ? `${card.name} is for ${card.animal}` : card.type === "letter" ? `Letter ${card.name}` : card.type === "number" ? `Number ${card.name}` : card.name;
+  ui.backTitle.textContent = isToddler ? `Number ${Math.min(card.designIndex + 1, 25)}` : card.type === "letter" ? `Letter ${card.name}` : card.type === "number" ? `Number ${card.name}` : card.name;
   ui.backDescription.textContent = card.description;
   ui.count.innerHTML = `${String(currentIndex + 1).padStart(2,"0")} <span>/ ${currentCards.length}</span>`;
   ui.progress.style.width = `${((currentIndex + 1) / currentCards.length) * 100}%`;
@@ -614,7 +650,7 @@ function renderCard() {
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
   ui.flashcard.classList.remove("is-flipped");
-  ui.flashcard.setAttribute("aria-label", `${card.name}. Double tap to reveal a unique baby-friendly emoji and contrast pattern.`);
+  ui.flashcard.setAttribute("aria-label", isToddler ? `${card.name} for ${card.animal}. Double tap to reveal a number.` : `${card.name}. Double tap to reveal a unique baby-friendly emoji and contrast pattern.`);
 }
 
 /* Keep the flip animation in one function so both double-tap and the
