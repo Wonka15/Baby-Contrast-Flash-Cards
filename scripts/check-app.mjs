@@ -89,6 +89,12 @@ assert.match(css, /orientation: landscape/, "Short landscape screens should be s
 assert.match(css, /pointer: coarse/, "Touch devices should get larger tap targets");
 assert.match(css, /font-size: 16px/, "Form controls should avoid unwanted iOS zoom");
 
+assert.match(app, /function addBabyStarLayer\(stage\)/, "Baby Mode should create a decorative star field");
+assert.match(app, /baby-twinkle-star/, "Baby Mode stars should use their dedicated style");
+assert.match(css, /@keyframes baby-star-flicker/, "Baby Mode stars should gently flicker");
+assert.match(css, /prefers-reduced-motion: reduce/, "Star flicker should respect reduced-motion preferences");
+assert.match(css, /\.baby-twinkle-star\.is-red/, "Star accents should use the high-contrast red option");
+
 // The old character artwork, number deck, and card-reverse interaction are intentionally gone.
 assert.doesNotMatch(app, /Oswald|drawToddlerArt|numberCards|toggleCardSide|reverseButton/i);
 assert.doesNotMatch(html, /card-back|reverse-button|double-tap/i);
