@@ -63,8 +63,8 @@ assert.match(app, /className = "toddler-big-letter/, "Toddler cards should show 
 assert.match(app, /className = "toddler-big-emoji/, "Toddler cards should show animal emojis");
 
 // The special AR-style deck contains the 26 requested animal emoji cards.
-const arData = section(app, /const AR_ANIMALS = \[([\\s\\S]*?)\\n\];/, "AR_ANIMALS");
-assert.equal(countMatches(arData, /^\\s*\\["/gm), 26, "Expected 26 AR animal cards");
+const arData = section(app, /const AR_ANIMALS = \[([\s\S]*?)\n\];/, "AR_ANIMALS");
+assert.equal(countMatches(arData, /\["[^"]+",\s*"[^"]+"\]/g), 26, "Expected 26 AR animal cards");
 assert.match(html, /id="ar-mode-button"/, "AR Mode Deck button should be present");
 assert.match(app, /function drawARFront\(card\)/, "AR cards should have their own visual renderer");
 assert.match(app, /className = "ar-big-letter"/, "AR cards should show bold blue initials");
