@@ -667,6 +667,9 @@ function chooseSurprise() {
 /* Watch mode advances gently; Play mode waits for a grown-up or child to interact. */
 function setPlayStyle(style) {
   playStyle = style;
+  // Watch mode becomes a distraction-free viewing stage. Browsers cannot
+  // change the phone hardware brightness, so we dim the surrounding interface. 
+  document.body.classList.toggle("watch-focus-mode", style === "watch");
   ui.playStyleButtons.forEach(button => {
     const selected = button.dataset.playStyle === style;
     button.classList.toggle("active", selected);
