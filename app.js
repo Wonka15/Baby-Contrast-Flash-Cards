@@ -132,11 +132,11 @@ const BABY_PATTERN_NAMES = [
   ["Half-moon rhythm","Large crescents and circles alternate in bands."],
   ["Kaleidoscope","Mirrored geometric petals create a bold rosette."]
 ];
-const BABY_EMOJIS = ["❤️","🤍","🖤","🔴","⚪","⚫","♥️","♦️","♠️","🃏","🥁","🎈","🌹","🍎","🍒","🍓","🐞","🐙","🐼","🦓"];
+const BABY_EMOJIS = ["❤️","🤍","🖤","🔴","⚪","⚫","♥️","♦️","♠️","🐶","🐱","🐰","🐻","🌹","🍎","🍒","🍓","🐞","🐼","🦓"];
 const BABY_CARDS = [
   ...BABY_PATTERN_NAMES.map(([name,description],index)=>({name,description,type:"pattern",art:"contrast",designIndex:index,group:"Baby Patterns"})),
   ...BABY_EMOJIS.map((emoji,index)=>({
-    name:["Red heart","White heart","Black heart","Red circle","White circle","Black circle","Heart symbol","Diamond","Spade","Joker","Drum","Balloon","Rose","Apple","Cherries","Strawberry","Ladybug","Octopus","Panda","Zebra"][index],
+    name:["Red heart","White heart","Black heart","Red circle","White circle","Black circle","Heart symbol","Diamond","Spade","Puppy","Kitten","Bunny","Bear","Rose","Apple","Cherries","Strawberry","Ladybug","Panda","Zebra"][index],
     icon:emoji,emoji,description:"A bold, easy-to-see picture in a black, white and red world.",
     type:"emoji",designIndex:index,group:"Baby Emojis"
   }))
