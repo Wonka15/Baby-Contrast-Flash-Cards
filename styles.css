@@ -74,7 +74,7 @@ button:disabled{opacity:.38;cursor:not-allowed}
 .art-label{position:absolute;z-index:2;bottom:13px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:8px;font-weight:800;letter-spacing:.15em;color:#98998c}
 .sparkle{position:absolute;z-index:2;color:#a2b98b;line-height:1;pointer-events:none}
 .sparkle-one{top:14%;left:14%;font-size:24px;animation:twinkle 4s ease-in-out infinite}
-.sparkle-two{right:13%;bottom:21%;font-size:29px;animation:twinkle 5s ease-in-out infinite reverse}
+.sparkle-two{right:13%;bottom:21%;font-size:29px;animation:twinkle 5s ease-in-out infinite alternate}
 .card-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 20px 18px}
 .card-word{font-size:clamp(19px,4vw,25px);font-weight:800;letter-spacing:-.06em}
 .progress-wrap{padding:18px 5px 0}
