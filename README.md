@@ -12,14 +12,13 @@ A calm, mobile-first flash-card app for sharing visual discoveries with babies a
 - **20 picture cards** featuring simple symbols, everyday fruit, and animals.
 - A clear card counter, progress bar, Back and Next buttons, and a Surprise button.
 
-### Toddler mode — 47 cards
-- **26 animal alphabet cards**, from A to Z, with original vector illustrations.
-- **21 counting cards**, from 0 to 20. Each card shows the numeral and a matching quantity of apples; zero uses an empty basket.
-- The collection counter and progress bar update when you switch modes.
+### Toddler mode — 26 cards
+- The complete **A–Z alphabet**, with one large colorful letter and a matching animal emoji on each card.
+- Familiar animals such as an ant, bear, cat, elephant, giraffe, monkey, rabbit, turtle, whale, and zebra.
+- Simple cards with no character artwork or extra number deck.
 
 ### Touch, sound, and music
 - Swipe horizontally or use Back and Next to navigate.
-- Double-tap a card to read its reverse-side prompt. Tap **Reverse** to return to the picture.
 - Surprise chooses a different card.
 - Gentle navigation sounds can be muted.
 - The music panel includes station pages and YouTube embeds. External playback depends on the provider, browser, and network; use the station link if an embed does not play.
@@ -49,9 +48,9 @@ The card app itself needs no build step, package installation, API key, or backe
 
 | File | Purpose |
 | --- | --- |
-| `index.html` | Page structure, controls, reverse side, music player, and About dialog. |
+| `index.html` | Page structure, collection controls, music player, and About dialog. |
 | `styles.css` | Layout, colors, tactile controls, responsive rules, and animations. |
-| `app.js` | Card data, SVG illustrations, navigation, reverse-side behavior, counting cards, and sound. |
+| `app.js` | Card data, high-contrast SVG patterns, A–Z emoji cards, navigation, and sound. |
 | `scripts/check-app.mjs` | Dependency-free checks for card counts and HTML/JavaScript references. |
 | `.github/workflows/checks.yml` | Runs the JavaScript syntax check and repository checks on pushes and pull requests. |
 | `.github/workflows/deploy-pages.yml` | Publishes the static site to GitHub Pages. |
@@ -66,9 +65,9 @@ The card app itself needs no build step, package installation, API key, or backe
 
 Edit `BABY_EMOJIS` and the matching names in the `BABY_CARDS` mapping. Keep both lists the same length so each picture gets the intended name.
 
-### Add a toddler card
+### Change a toddler letter
 
-Edit the `alphabet` list inside `makeToddlerCards()` to change letter stories. The 0–20 counting cards are generated from one small loop, so changing the range only requires updating the number-card generator and the checks.
+Edit the `alphabet` list inside `makeToddlerCards()`. Each entry contains the letter, animal name, and emoji.
 
 ### Prepare for Spanish
 
