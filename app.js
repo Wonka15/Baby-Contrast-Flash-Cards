@@ -377,12 +377,12 @@ function drawPattern(style) {
 }
 
 /* Draw 200 distinct bold, high-contrast vector designs. */
-function drawContrastDesign(index, reveal = false) {
+function drawContrastDesign(index) {
   const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
   svg.setAttribute("viewBox","0 0 400 400"); svg.setAttribute("role","img");
   svg.setAttribute("aria-label","Bold contrast design "+(index+1));
   const add=(tag,attrs)=>{const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));svg.appendChild(n);return n;};
-  const family=index%10, v=Math.floor(index/10), black="#050505", white="#ffffff", red=reveal?"#ff3046":"#ed1028", bg=reveal?"#a90018":black;
+  const family=index%10, v=Math.floor(index/10), black="#050505", white="#ffffff", red="#ed1028", bg=black;
   add("rect",{x:0,y:0,width:400,height:400,fill:bg});
   const gap=22+(v%5)*7, accent=red;
   if(family===0){
@@ -590,7 +590,7 @@ function renderCard() {
     ui.artwork.appendChild(drawAnimalFace(card.name, false));
     ui.artwork.style.fontSize = "";
   } else if (isPattern) {
-    ui.artwork.appendChild(drawContrastDesign(card.designIndex, false));
+    ui.artwork.appendChild(drawContrastDesign(card.designIndex));
     const emoji = document.createElement("span");
     emoji.className = "baby-pattern-emoji";
     emoji.textContent = card.emoji;
