@@ -20,8 +20,8 @@
 const LANGUAGE_TEXT = {
   en: {
     babyMode: "Baby", toddlerMode: "Toddler",
-    babyCollection: "200 bold contrast designs",
-    toddlerCollection: "A–Z with Oswald & animal friends",
+    babyCollection: "100 unique red, white & black patterns",
+    toddlerCollection: "A–Z with colorful animal emojis",
     babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
     look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
     flipHint: "USE REVERSE TO TURN", next: "Next card", previous: "Back",
