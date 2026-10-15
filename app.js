@@ -131,7 +131,8 @@ const ui = {
   modeButtons: [...document.querySelectorAll("[data-mode]")],
   playStyleButtons: [...document.querySelectorAll("[data-play-style]")],
   aboutDialog: document.getElementById("about-dialog"),
-  arModeButton: document.getElementById("ar-mode-button")
+  arModeButton: document.getElementById("ar-mode-button"),
+  animatedTwoButton: document.getElementById("animated-two-button")
 };
 const toddlerCards = makeToddlerCards();
 
@@ -162,7 +163,44 @@ function makeARCards() {
     designIndex
   }));
 }
+
 const arCards = makeARCards();
+
+/* Animated 2 is a separate deck of ten original, moving high-contrast designs.
+   The motion is made with CSS, so the cards stay crisp on phones and tablets. */
+const ANIMATED_TWO_PATTERNS = [
+  ["Orbit Swirl", "A bold spiral turns through a full 360 degrees.", "swirl"],
+  ["Dancing Zigzags", "Angular lines glide from side to side.", "zigzag"],
+  ["Color Chessboard", "Checker squares slowly cycle through black, white and red.", "chess"],
+  ["Curved Pulse", "Curved bands gently shift between red, white and black.", "curves"],
+  ["Blue Wave", "Blue and white waves travel across a deep black field.", "wave"],
+  ["Orbiting Dots", "Bright dots circle around a calm central point.", "orbits"],
+  ["Sliding Tiles", "Diagonal blocks slide past one another.", "tiles"],
+  ["Expanding Rings", "Concentric rings grow and settle in a slow rhythm.", "rings"],
+  ["Diamond Cascade", "Large diamonds drift down like a geometric waterfall.", "diamonds"],
+  ["Infinity Tunnel", "Nested shapes pulse inward to create a moving tunnel.", "tunnel"]
+];
+const animatedTwoCards = ANIMATED_TWO_PATTERNS.map(([name, description, design], designIndex) => ({
+  name, description, design, designIndex, type: "animated2", group: "Animated 2"
+}));
+
+function drawAnimatedTwoPattern(card) {
+  const scene = document.createElement("div");
+  scene.className = "animated-two-scene pattern-" + card.design;
+  scene.setAttribute("role", "img");
+  scene.setAttribute("aria-label", card.name + ". " + card.description);
+  const core = document.createElement("span");
+  core.className = "animated-two-core";
+  core.setAttribute("aria-hidden", "true");
+  scene.appendChild(core);
+  for (let index = 0; index < 8; index += 1) {
+    const shape = document.createElement("span");
+    shape.className = "animated-two-shape shape-" + (index + 1);
+    shape.setAttribute("aria-hidden", "true");
+    scene.appendChild(shape);
+  }
+  return scene;
+}
 let currentMode = "baby";
 let playStyle = "play";
 let watchTimer = null;
@@ -591,6 +629,7 @@ function renderCard() {
   const card = currentCards[currentIndex];
   const isToddler = currentMode === "toddler";
   const isAR = currentMode === "ar";
+  const isAnimatedTwo = currentMode === "animated2";
   const isPattern = card.type === "pattern";
   const isBabyEmoji = currentMode === "baby" && card.type === "emoji";
 
@@ -598,9 +637,12 @@ function renderCard() {
   ui.artwork.classList.toggle("emoji-art", isBabyEmoji);
   ui.artwork.classList.toggle("toddler-art", isToddler);
   ui.artwork.classList.toggle("ar-art", isAR);
+  ui.artwork.classList.toggle("animated-two-art", isAnimatedTwo);
   ui.artwork.classList.toggle("animal-art", false);
 
-  if (isAR) {
+  if (isAnimatedTwo) {
+    ui.artwork.appendChild(drawAnimatedTwoPattern(card));
+  } else if (isAR) {
     ui.artwork.appendChild(drawARFront(card));
   } else if (isToddler) {
     ui.artwork.appendChild(drawToddlerFront(card));
@@ -631,10 +673,14 @@ function renderCard() {
     ui.artwork.appendChild(picture);
   }
 
-  ui.word.textContent = isAR
+  ui.word.textContent = isAnimatedTwo
+    ? card.name
+    : isAR
     ? card.animal
     : isToddler ? card.name + " · " + card.animal : card.name;
-  ui.label.textContent = isAR
+  ui.label.textContent = isAnimatedTwo
+    ? "ANIMATED 2 · MOVING PATTERNS"
+    : isAR
     ? "ANIMATED MODE · TAP TO SPLASH"
     : isToddler
       ? "ABC ANIMAL FRIENDS"
@@ -647,11 +693,13 @@ function renderCard() {
   ui.count.replaceChildren(currentCount, totalCount);
 
   ui.progress.style.width = ((currentIndex + 1) / currentCards.length * 100) + "%";
-  ui.progressLabel.textContent = isAR ? "SPARKLE · EXPLORE · DISCOVER" : isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
+  ui.progressLabel.textContent = isAnimatedTwo ? "MOVE · WATCH · DISCOVER" : isAR ? "SPARKLE · EXPLORE · DISCOVER" : isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
 
-  const accessibleCardName = isAR
+  const accessibleCardName = isAnimatedTwo
+    ? card.name + ", animated high-contrast pattern. " + card.description
+    : isAR
     ? card.animal + ", animated emoji card, letter " + card.symbol + ". Tap the emoji for a water splash"
     : isToddler
       ? card.name + ", " + card.animal
@@ -752,7 +800,7 @@ document.addEventListener("visibilitychange", () => {
 /* Changing stages always starts the new collection at its first card. */
 function setMode(mode) {
   currentMode = mode;
-  currentCards = mode === "ar" ? arCards : mode === "toddler" ? toddlerCards : BABY_CARDS;
+  currentCards = mode === "animated2" ? animatedTwoCards : mode === "ar" ? arCards : mode === "toddler" ? toddlerCards : BABY_CARDS;
   currentIndex = 0;
 
   ui.modeButtons.forEach(button => {
@@ -763,12 +811,19 @@ function setMode(mode) {
 
   // Keep the special-deck button and collection heading in sync with the mode.
   const isAR = mode === "ar";
+  const isAnimatedTwo = mode === "animated2";
+  ui.animatedTwoButton.classList.toggle("active", isAnimatedTwo);
+  ui.animatedTwoButton.setAttribute("aria-pressed", String(isAnimatedTwo));
   ui.arModeButton.classList.toggle("active", isAR);
   ui.arModeButton.setAttribute("aria-pressed", String(isAR));
-  ui.collectionTitle.textContent = isAR
+  ui.collectionTitle.textContent = isAnimatedTwo
+    ? "10 original moving patterns"
+    : isAR
     ? "26 dimensional animal emojis"
     : mode === "toddler" ? language.toddlerCollection : language.babyCollection;
-  ui.collectionKicker.textContent = isAR
+  ui.collectionKicker.textContent = isAnimatedTwo
+    ? "THE MOVING PATTERN COLLECTION"
+    : isAR
     ? "ANIMATED ANIMAL COLLECTION"
     : mode === "toddler" ? language.toddlerKicker : language.babyKicker;
 
@@ -781,6 +836,7 @@ ui.next.addEventListener("click", () => moveCard(1));
 ui.surprise.addEventListener("click", chooseSurprise);
 ui.modeButtons.forEach(button => button.addEventListener("click", () => setMode(button.dataset.mode)));
 ui.arModeButton.addEventListener("click", () => setMode("ar"));
+ui.animatedTwoButton.addEventListener("click", () => setMode("animated2"));
 ui.playStyleButtons.forEach(button => button.addEventListener("click", () => setPlayStyle(button.dataset.playStyle)));
 
 /* Track a horizontal finger movement to change cards. Vertical movement
