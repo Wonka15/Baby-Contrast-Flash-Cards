@@ -73,6 +73,11 @@ assert.match(app, /className = "ar-big-emoji"/, "Animated cards should show dime
 assert.match(app, /function splashIntoWater\(\)/, "Animated Mode emojis should trigger the water dunk effect");
 assert.match(app, /ar-water-ripple/, "Animated Mode should render water ripple effects");
 assert.match(app, /ar-emoji-dunk/, "Animated Mode should animate the emoji diving into water");
+assert.match(app, /function handleDeviceMotion\(event\)/, "Animated Mode should detect device motion");
+assert.match(app, /DeviceMotionEvent/, "Motion effects should be available on supported phones");
+assert.match(app, /Enable shake effects/, "Animated Mode should provide an opt-in motion control");
+assert.match(app, /triggerMotionBurst/, "Shaking should trigger extra splash effects");
+assert.match(checks, /Animated Mode must include every letter A–Z in order/, "A–Z integrity check should remain enabled");
 
 // The old character artwork, number deck, and card-reverse interaction are intentionally gone.
 assert.doesNotMatch(app, /Oswald|drawToddlerArt|numberCards|toggleCardSide|reverseButton/i);
