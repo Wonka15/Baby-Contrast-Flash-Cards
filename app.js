@@ -331,11 +331,27 @@ function drawARFront(card) {
   const wrap = document.createElement("div");
   wrap.className = "ar-hero";
 
-  const sparkle = document.createElement("span");
-  sparkle.className = "ar-card-sparkle ar-card-sparkle-one";
-  sparkle.setAttribute("aria-hidden", "true");
-  sparkle.textContent = "✦";
-  wrap.appendChild(sparkle);
+  // Scatter a small constellation of differently shaped, colored gems.
+  // CSS gives each sparkle its own timing so the card feels alive, not noisy.
+  const sparkleDesigns = [
+    ["✦", "ar-sparkle-blue", "ar-sparkle-a"],
+    ["◇", "ar-sparkle-violet", "ar-sparkle-b"],
+    ["✧", "ar-sparkle-pink", "ar-sparkle-c"],
+    ["◆", "ar-sparkle-teal", "ar-sparkle-d"],
+    ["✦", "ar-sparkle-gold", "ar-sparkle-e"],
+    ["⋆", "ar-sparkle-blue", "ar-sparkle-f"],
+    ["✧", "ar-sparkle-violet", "ar-sparkle-g"],
+    ["◇", "ar-sparkle-pink", "ar-sparkle-h"],
+    ["✴", "ar-sparkle-teal", "ar-sparkle-i"],
+    ["✦", "ar-sparkle-gold", "ar-sparkle-j"]
+  ];
+  sparkleDesigns.forEach(([shape, color, position]) => {
+    const sparkle = document.createElement("span");
+    sparkle.className = "ar-card-sparkle " + color + " " + position;
+    sparkle.setAttribute("aria-hidden", "true");
+    sparkle.textContent = shape;
+    wrap.appendChild(sparkle);
+  });
 
   const letter = document.createElement("div");
   letter.className = "ar-big-letter";
@@ -355,11 +371,6 @@ function drawARFront(card) {
   caption.textContent = card.animal;
   wrap.appendChild(caption);
 
-  const secondSparkle = document.createElement("span");
-  secondSparkle.className = "ar-card-sparkle ar-card-sparkle-two";
-  secondSparkle.setAttribute("aria-hidden", "true");
-  secondSparkle.textContent = "✧";
-  wrap.appendChild(secondSparkle);
   return wrap;
 }
 
