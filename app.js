@@ -255,68 +255,57 @@ function playTone(frequency = 660, duration = 0.11, volume = 0.035, wave = "sine
   oscillator.stop(context.currentTime + duration + 0.02);
 }
 
-/* In-app soundscapes are generated locally with Web Audio, not external recordings. */
-function stopMusicLayers() {
-  if(melodyTimer) window.clearInterval(melodyTimer);
-  melodyTimer=null;
-  if(musicNoiseSource){try{musicNoiseSource.stop();musicNoiseSource.disconnect();}catch(_){}}
-  musicNoiseSource=null;
-  if(musicNoiseGain){try{musicNoiseGain.disconnect();}catch(_){}}
-  musicNoiseGain=null;
-  if(melodyGain){try{melodyGain.disconnect();}catch(_){}}
-  melodyGain=null;
+/* Radio player: direct streams play in the app; station pages get an in-app
+   player frame plus a reliable open-station fallback if embedding is blocked. */
+const RADIO_STATIONS = [
+  {name:"KUSC Classical",subtitle:"Classical music · Los Angeles",url:"https://radiostationsusa.com/california/los-angeles/kusc-los-angeles/",stream:"https://playerservices.streamtheworld.com/api/livestream-redirect/KUSCMP128_SC",kind:"audio",art:"𝄞"},
+  {name:"Disney Resorts Radio",subtitle:"Disney classics · iHeart",url:"https://www.iheart.com/live/disney-resorts-radio-9414",kind:"page",art:"✦"},
+  {name:"CoComelon",subtitle:"Songs for little ones · iHeart",url:"https://www.iheart.com/artist/cocomelon-33660833",kind:"page",art:"♫"},
+  {name:"Fun Kids Naps",subtitle:"Gentle nap-time music",url:"https://www.funkidslive.com/player/naps/",kind:"page",art:"☾"},
+  {name:"WFMT Classical",subtitle:"Classical music · Chicago",url:"https://www.wfmt.com/listen",stream:"https://stream.wfmt.com/main-mp3",kind:"audio",art:"𝄢"}
+];
+let selectedRadioIndex=0;
+let radioIsPlaying=false;
+const radioAudio=document.getElementById("radio-audio");
+const radioFrame=document.getElementById("radio-frame");
+function updateRadioUI(){
+  const station=RADIO_STATIONS[selectedRadioIndex];
+  document.getElementById("radio-station-name").textContent=station.name;
+  document.getElementById("radio-station-subtitle").textContent=station.subtitle;
+  document.getElementById("radio-station-art").textContent=station.art;
+  document.getElementById("radio-status").textContent=radioIsPlaying?"Playing · "+station.name:"Ready to listen";
+  document.getElementById("radio-play").textContent=radioIsPlaying?"Pause":"Play";
+  document.getElementById("radio-play").setAttribute("aria-label",radioIsPlaying?"Pause "+station.name:"Play "+station.name);
+  document.getElementById("radio-open").href=station.url;
+  document.getElementById("radio-open").textContent=station.kind==="audio"?"Open station website":"Open full station player";
+  document.getElementById("radio-station").value=String(selectedRadioIndex);
+  document.getElementById("radio-station-art").classList.toggle("radio-playing",radioIsPlaying);
 }
-function startNatureBed(context) {
-  const size=context.sampleRate*2,buffer=context.createBuffer(1,size,context.sampleRate),channel=buffer.getChannelData(0);
-  for(let i=0;i<size;i++) channel[i]=(Math.random()*2-1)*0.22;
-  musicNoiseSource=context.createBufferSource();musicNoiseSource.buffer=buffer;musicNoiseSource.loop=true;
-  const filter=context.createBiquadFilter();filter.type="lowpass";filter.frequency.value=activeMusicPreset===1?520:850;
-  musicNoiseGain=context.createGain();musicNoiseGain.gain.value=(activeMusicPreset===1?0.045:0.008)*(Number(document.getElementById("music-volume").value)/100);
-  musicNoiseSource.connect(filter);filter.connect(musicNoiseGain);musicNoiseGain.connect(context.destination);musicNoiseSource.start();
+function stopRadio(){
+  radioAudio.pause();radioAudio.removeAttribute("src");radioAudio.load();
+  radioFrame.src="about:blank";radioFrame.hidden=true;
+  radioIsPlaying=false;updateRadioUI();
 }
-function playMelodyNote() {
-  if(!melodyGain||!audioContext)return;
-  const sets=[
-    [261.63,329.63,392,329.63,293.66,349.23,392,523.25,392,329.63,293.66,261.63],
-    [392,0,523.25,0,440,0,587.33,0,523.25,0,392,0],
-    [523.25,392,349.23,392,440,392,329.63,261.63,392,329.63,293.66,261.63]
-  ];
-  const frequency=sets[activeMusicPreset][melodyStep%sets[activeMusicPreset].length];melodyStep++;
-  if(!frequency)return;
-  const oscillator=audioContext.createOscillator(),noteGain=audioContext.createGain();
-  oscillator.type=activeMusicPreset===0?"triangle":"sine";oscillator.frequency.value=frequency;
-  noteGain.gain.setValueAtTime(0.0001,audioContext.currentTime);
-  noteGain.gain.exponentialRampToValueAtTime(activeMusicPreset===1?0.014:0.035,audioContext.currentTime+0.08);
-  noteGain.gain.exponentialRampToValueAtTime(0.0001,audioContext.currentTime+1.4);
-  oscillator.connect(noteGain);noteGain.connect(melodyGain);oscillator.start();oscillator.stop(audioContext.currentTime+1.45);
+async function playRadio(){
+  const station=RADIO_STATIONS[selectedRadioIndex];
+  if(station.kind==="audio"){
+    radioFrame.src="about:blank";radioFrame.hidden=true;
+    radioAudio.src=station.stream;radioAudio.volume=Number(document.getElementById("radio-volume").value)/100;
+    try{await radioAudio.play();radioIsPlaying=true;updateRadioUI();}
+    catch(error){radioIsPlaying=false;updateRadioUI();document.getElementById("radio-status").textContent="Tap Open station website if playback is blocked";}
+  }else{
+    radioAudio.pause();radioAudio.removeAttribute("src");radioAudio.load();
+    radioFrame.hidden=false;radioFrame.src=station.url;
+    radioIsPlaying=true;updateRadioUI();
+    document.getElementById("radio-status").textContent="Station player opened below · use Open full station player if needed";
+  }
 }
-function startMelody() {
-  const context=getAudioContext();if(!context)return;
-  stopMusicLayers();melodyStep=0;melodyGain=context.createGain();melodyGain.gain.value=Number(document.getElementById("music-volume").value)/100;
-  melodyGain.connect(context.destination);startNatureBed(context);playMelodyNote();
-  melodyTimer=window.setInterval(playMelodyNote,activeMusicPreset===1?1700:1450);
-  ui.melody.setAttribute("aria-pressed","true");ui.melody.setAttribute("aria-label","Stop "+MUSIC_PRESETS[activeMusicPreset].name);
-  document.getElementById("music-status").textContent="Playing · "+MUSIC_PRESETS[activeMusicPreset].name;
-  document.getElementById("music-toggle").textContent="Stop";
+function chooseRadioStation(value){
+  stopRadio();selectedRadioIndex=Number(value)||0;updateRadioUI();
 }
-function stopMelody() {
-  stopMusicLayers();ui.melody.setAttribute("aria-pressed","false");ui.melody.setAttribute("aria-label","Play "+MUSIC_PRESETS[activeMusicPreset].name);
-  document.getElementById("music-status").textContent="Ready · "+MUSIC_PRESETS[activeMusicPreset].name;
-  document.getElementById("music-toggle").textContent="Play";
-}
-function skipMusicPreset() {
-  const wasPlaying=Boolean(melodyTimer);activeMusicPreset=(activeMusicPreset+1)%MUSIC_PRESETS.length;
-  updateMusicPresetUI();if(wasPlaying)startMelody();else stopMelody();
-}
-function chooseMusicPreset(value) {
-  const wasPlaying=Boolean(melodyTimer);activeMusicPreset=Number(value)||0;updateMusicPresetUI();
-  if(wasPlaying)startMelody();else stopMelody();
-}
-function updateMusicPresetUI() {
-  const preset=MUSIC_PRESETS[activeMusicPreset];
-  document.getElementById("music-preset").value=String(activeMusicPreset);
-  document.getElementById("music-preset-name").textContent=preset.name;
-  document.getElementById("music-preset-description").textContent=preset.description;
+function skipRadioStation(){
+  const next=(selectedRadioIndex+1)%RADIO_STATIONS.length;
+  chooseRadioStation(next);playRadio();
 }
 /* Twenty intentionally different hand-designed vector compositions. */
 function drawContrastDesign(index) {
@@ -613,34 +602,26 @@ document.addEventListener("keydown", event => {
   if (event.key === "Escape" && ui.aboutDialog.open) ui.aboutDialog.close();
 });
 
-/* Card sounds and background melody have separate controls. */
+/* Small card tones are optional; radio audio has its own player controls. */
 ui.soundToggle.addEventListener("click", () => {
   soundsEnabled = !soundsEnabled;
   ui.soundToggle.textContent = soundsEnabled ? language.mute : language.unmute;
   ui.soundToggle.setAttribute("aria-pressed", String(soundsEnabled));
   if (soundsEnabled) playTone(523.25, 0.12, 0.02);
 });
-ui.melody.addEventListener("click", () => {
-  if (melodyTimer) stopMelody();
-  else startMelody();
+ui.melody.addEventListener("click", () => { if(radioIsPlaying) stopRadio(); else playRadio(); });
+document.getElementById("radio-play").addEventListener("click", () => { if(radioIsPlaying) stopRadio(); else playRadio(); });
+document.getElementById("radio-next").addEventListener("click", skipRadioStation);
+document.getElementById("radio-station").addEventListener("change", event => chooseRadioStation(event.target.value));
+document.getElementById("radio-volume").addEventListener("input", event => {
+  radioAudio.volume=Number(event.target.value)/100;
+  document.querySelector("#radio-volume + output").textContent=event.target.value+"%";
 });
-document.getElementById("music-toggle").addEventListener("click", () => { if(melodyTimer) stopMelody(); else startMelody(); });
-document.getElementById("music-skip").addEventListener("click", skipMusicPreset);
-document.getElementById("music-preset").addEventListener("change", event => chooseMusicPreset(event.target.value));
-document.getElementById("music-volume").addEventListener("input", event => {
-  const volume=Number(event.target.value)/100;
-  document.querySelector("#music-volume + output").textContent=event.target.value+"%";
-  if(melodyGain) melodyGain.gain.value=volume;
-  if(musicNoiseGain) musicNoiseGain.gain.value=(activeMusicPreset===1?0.045:0.008)*volume;
+radioAudio.addEventListener("ended", () => { radioIsPlaying=false;updateRadioUI(); });
+radioAudio.addEventListener("error", () => {
+  radioIsPlaying=false;updateRadioUI();
+  document.getElementById("radio-status").textContent="Stream unavailable here · try Open station website";
 });
-document.getElementById("glass-opacity").addEventListener("input", event => {
-  const value=Number(event.target.value)/100;
-  document.documentElement.style.setProperty("--glass-alpha",String(value));
-  document.documentElement.style.setProperty("--glass-secondary-alpha",String(value*0.5));
-  document.documentElement.style.setProperty("--glass-edge-alpha",String(Math.min(1,value+0.25)));
-  document.querySelector("#glass-opacity + output").textContent=event.target.value+"%";
-});
-
 /* A tiny About dialog keeps explanatory copy out of the main experience. */
 document.getElementById("about-button").addEventListener("click", () => ui.aboutDialog.showModal());
 document.getElementById("close-about").addEventListener("click", () => ui.aboutDialog.close());
@@ -649,6 +630,6 @@ ui.aboutDialog.addEventListener("click", event => {
   if (event.target === ui.aboutDialog) ui.aboutDialog.close();
 });
 
-/* Start quietly. Browsers only allow generated audio after the first
-   user gesture, so sounds begin when a parent first changes a card. */
+/* Start with the first card and show the selected radio station. */
 renderCard();
+updateRadioUI();
