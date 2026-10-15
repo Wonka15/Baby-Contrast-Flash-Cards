@@ -43,32 +43,21 @@
     </section>
     <section class="experience" aria-label="Flash card player">
       <div class="collection-row">
-        <div><span class="collection-kicker" id="collection-kicker">THE FIRST COLLECTION</span><h2 id="collection-title">100 unique patterns + 100 emoji surprises</h2></div>
+        <div><span class="collection-kicker" id="collection-kicker">THE FIRST COLLECTION</span><h2 id="collection-title">100 unique patterns + 100 emoji companions</h2></div>
         <span id="card-count" class="counter">01 <span>/ 100</span></span>
       </div>
 
       <div class="card-area" id="card-area">
-        <button id="reverse-button" class="reverse-button glass-panel" type="button" aria-label="Turn card back to the picture" title="Turn back">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 7v5h-5"/><path d="M19 12a7 7 0 1 1-2-5l3 5"/></svg>
-          <span>Reverse</span>
-        </button>
-        <button id="flashcard" class="flashcard" type="button" aria-label="Flash card. Use the Reverse button to turn it.">
-          <span class="card-face card-front">
-            <span class="art-backdrop" id="art-backdrop">
-              <span class="sparkle sparkle-one">✦</span><span class="sparkle sparkle-two">✧</span>
-              <span class="artwork" id="artwork" aria-hidden="true"></span>
+        <div id="flashcard" class="flashcard" role="group" aria-label="Flash cards">
+          <div class="card-face card-front">
+            <div class="art-backdrop" id="art-backdrop">
+              <span class="sparkle sparkle-one" aria-hidden="true">✦</span><span class="sparkle sparkle-two" aria-hidden="true">✧</span>
+              <div class="artwork" id="artwork" aria-hidden="true"></div>
               <span class="art-label" id="art-label">LOOK CLOSELY</span>
-            </span>
-            <span class="card-bottom"><span class="card-word" id="card-word">Circle</span><span class="flip-hint">USE REVERSE FOR A SURPRISE <span aria-hidden="true">↗</span></span></span>
-          </span>
-          <span class="card-face card-back">
-            <span class="back-sparkle" aria-hidden="true">✦</span>
-            <span class="back-symbol" id="back-symbol">●</span><span class="color-artwork" id="color-artwork" aria-hidden="true"></span>
-            <span class="back-title" id="back-title">A circle</span>
-            <span class="back-description" id="back-description">Round and smooth, with no corners.</span>
-            <span class="back-prompt">Can you find one together?</span>
-          </span>
-        </button>
+            </div>
+            <div class="card-bottom"><span class="card-word" id="card-word">Pattern 001</span></div>
+          </div>
+        </div>
       </div>
 
       <div class="progress-wrap"><div class="progress-track"><span id="progress-bar"></span></div><div class="progress-caption"><span id="progress-label">A LITTLE AT A TIME</span><span id="swipe-hint">← swipe to explore →</span></div></div>
