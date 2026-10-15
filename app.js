@@ -508,18 +508,20 @@ function playNavigationSound(direction) {
   const context = getAudioContext();
   if (!context) return;
 
-  // Next rises like a little twinkle; Back falls like a soft bubble pop.
-  const notes = direction > 0 ? [523.25, 659.25] : [659.25, 523.25];
+  // Next rises like a little twinkle; Back makes a lower, bubbly plip-plop.
+  const notes = direction > 0
+    ? [{ frequency: 523.25, volume: 0.018 }, { frequency: 659.25, volume: 0.018 }]
+    : [{ frequency: 740, volume: 0.016 }, { frequency: 490, volume: 0.020 }];
   const start = context.currentTime;
-  notes.forEach((frequency, index) => {
+  notes.forEach((note, index) => {
     const oscillator = context.createOscillator();
     const gain = context.createGain();
-    const noteStart = start + index * 0.105;
-    const duration = 0.12;
+    const noteStart = start + index * 0.09;
+    const duration = direction > 0 ? 0.12 : 0.10;
     oscillator.type = "sine";
-    oscillator.frequency.setValueAtTime(frequency, noteStart);
+    oscillator.frequency.setValueAtTime(note.frequency, noteStart);
     gain.gain.setValueAtTime(0.0001, noteStart);
-    gain.gain.exponentialRampToValueAtTime(0.018, noteStart + 0.018);
+    gain.gain.exponentialRampToValueAtTime(note.volume, noteStart + 0.014);
     gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + duration);
     oscillator.connect(gain);
     gain.connect(context.destination);
