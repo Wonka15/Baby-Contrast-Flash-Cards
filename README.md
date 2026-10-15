@@ -29,6 +29,10 @@ A calm, mobile-first flash-card app for sharing visual discoveries with babies a
 - The music panel includes station pages and YouTube embeds. External playback depends on the provider, browser, and network; use the station link if an embed does not play.
 - Responsive glass-inspired styling, visible keyboard focus, and reduced-motion support.
 
+### Device-friendly layout
+
+The interface adapts to narrow iPhones, larger iPhones, iPads, and Android phones such as Google Pixel. Styles account for display cutouts and the home-indicator safe area, keep touch targets comfortable, avoid iOS form-field zoom, and adjust the card for short landscape screens. These are responsive safeguards; actual device/browser testing is still recommended before calling the release fully verified.
+
 ## A small, important note for caregivers
 
 Explore together and keep the screen at a comfortable distance. Pause if your baby looks away or seems unsettled. Your voice, face, and interaction matter most; this app is for shared visual play, not medical advice or a replacement for developmental guidance.
