@@ -32,84 +32,7 @@ next: "Next card", previous: "Back",
 };
 const language = LANGUAGE_TEXT.en;
 
-/* Each item is: name, icon, short description, type, and artwork style.
-   "pattern" cards draw their art with SVG. "picture" cards use emoji
-   illustrations, which keeps this starter project easy to maintain. */
-const SHAPE_CARDS = [
-  ["Circle","●","Round and smooth, with no corners.","pattern","rings"],
-  ["Square","■","Four equal sides and four corners.","pattern","square"],
-  ["Triangle","▲","Three sides meet at three corners.","pattern","triangle"],
-  ["Diamond","◆","A tilted shape with four sides.","pattern","diamond"],
-  ["Star","★","A bright shape with five points.","pattern","star"],
-  ["Heart","♥","A shape that reminds us of love.","pattern","heart"],
-  ["Oval","⬭","A stretched-out, round shape.","pattern","oval"],
-  ["Rectangle","▰","A long shape with four corners.","pattern","rectangle"],
-  ["Spiral","◉","A line that curls around and around.","pattern","spiral"],
-  ["Waves","〰","Lines that rise and fall gently.","pattern","waves"],
-  ["Stripes","▥","A row of bold light and dark bands.","pattern","stripes"],
-  ["Checkerboard","▦","Squares alternate from dark to light.","pattern","checker"],
-  ["Zigzag","〽","A line with playful, pointy turns.","pattern","zigzag"],
-  ["Big dots","●","Large dots stand out on the page.","pattern","dots"],
-  ["Little dots","⠿","Tiny dots make a repeating pattern.","pattern","tinyDots"],
-  ["Arches","∩","Curves sit inside one another.","pattern","arches"],
-  ["Sunburst","☼","Lines spread out from the middle.","pattern","burst"],
-  ["Half and half","◐","One circle, split into two sides.","pattern","half"],
-  ["Concentric rings","◎","Rings travel from outside to inside.","pattern","rings"],
-  ["Cross","✚","Two simple bars make a cross.","pattern","cross"],
-  ["Crescent","☾","A curved sliver like a little moon.","pattern","moon"],
-  ["Hexagon","⬡","A shape with six sides.","pattern","hexagon"],
-  ["Woven lines","▤","Lines cross over and under.","pattern","woven"],
-  ["Spots","⠶","A playful scatter of dark spots.","pattern","spots"],
-  ["Fan","✺","Curved rays open like a paper fan.","pattern","fan"]
-].map(([name, icon, description, type, art]) => ({name, icon, description, type, art, group:"Shapes"}));
-
-const NATURE_CARDS = [
-  ["Sun","☀️","A warm sun brightens the day."],["Moon","🌙","A quiet moon lights the night."],
-  ["Cloud","☁️","A fluffy cloud drifts through the sky."],["Rainbow","🌈","Colors arc across the sky."],
-  ["Starry sky","🌟","Little stars sparkle in the dark."],["Flower","🌼","A flower opens its petals."],
-  ["Sunflower","🌻","A sunny flower with a big center."],["Tulip","🌷","A tulip grows on a tall green stem."],
-  ["Rose","🌹","Soft petals fold around the center."],["Blossom","🌸","A tiny blossom opens in spring."],
-  ["Daisy","🌼","Bright petals surround a sunny middle."],["Leaf","🍃","A leaf dances in the breeze."],
-  ["Fern","🌿","Little leaflets grow along a frond."],["Sprout","🌱","A new plant peeks out of the soil."],
-  ["Tree","🌳","A leafy tree gives shade."],["Pine tree","🌲","A tall evergreen reaches up."],
-  ["Cactus","🌵","A desert plant stores water."],["Carrot","🥕","A crunchy orange root grows underground."],
-  ["Apple","🍎","A crisp fruit grows on a tree."],["Banana","🍌","A yellow fruit is easy to hold."],
-  ["Strawberry","🍓","A little red berry has tiny seeds."],["Orange","🍊","A round citrus fruit smells fresh."],
-  ["Pear","🍐","A sweet fruit with a curvy shape."],["Watermelon","🍉","A juicy melon has a green rind."],
-  ["Mushroom","🍄","A little mushroom has a cap and stem."]
-].map(([name, icon, description]) => ({name,icon,description,type:"picture",group:"Nature"}));
-
-const ANIMAL_CARDS = [
-  ["Elephant","🐘","A gentle giant with a long trunk."],["Lion","🦁","A lion has a fluffy mane."],
-  ["Giraffe","🦒","A tall animal with a long neck."],["Zebra","🦓","Bold stripes cover a zebra."],
-  ["Monkey","🐒","A playful monkey likes to climb."],["Bear","🐻","A bear has round ears and soft fur."],
-  ["Panda","🐼","A panda has black and white patches."],["Fox","🦊","A fox has pointy ears and a bushy tail."],
-  ["Rabbit","🐰","A bunny has long ears."],["Cat","🐱","A cat has whiskers and soft paws."],
-  ["Dog","🐶","A friendly pup loves company."],["Mouse","🐭","A tiny mouse has round ears."],
-  ["Owl","🦉","An owl has big eyes."],["Duck","🦆","A duck paddles across the pond."],
-  ["Penguin","🐧","A penguin waddles in a little tuxedo."],["Turtle","🐢","A turtle carries a shell."],
-  ["Frog","🐸","A frog can hop and splash."],["Fish","🐠","A bright fish swims through water."],
-  ["Whale","🐳","A whale is a huge ocean mammal."],["Dolphin","🐬","A dolphin leaps through the sea."],
-  ["Octopus","🐙","An octopus has eight arms."],["Butterfly","🦋","A butterfly has patterned wings."],
-  ["Bee","🐝","A bee visits flowers."],["Ladybug","🐞","A ladybug has spotted wings."],
-  ["Snail","🐌","A snail carries its shell along."]
-].map(([name,icon,description])=>({name,icon,description,type:"picture",group:"Animals"}));
-
-const EVERYDAY_CARDS = [
-  ["Car","🚗","A little car rolls along the road."],["Bus","🚌","A bus carries people together."],
-  ["Train","🚂","A train travels along its tracks."],["Bicycle","🚲","Two wheels make a bicycle."],
-  ["Airplane","✈️","An airplane travels high in the sky."],["Boat","⛵","A boat floats on the water."],
-  ["Ball","⚽","A ball can roll, bounce, and play."],["Kite","🪁","A kite dances in the wind."],
-  ["Teddy bear","🧸","A cuddly bear is a classic friend."],["Toy blocks","🧱","Blocks stack into towers."],
-  ["Book","📚","Books are full of stories."],["Crayon","🖍️","A crayon makes colorful marks."],
-  ["Umbrella","☂️","An umbrella helps keep the rain away."],["House","🏠","A home is a place to feel safe."],
-  ["Clock","🕒","A clock helps us notice time."],["Cup","🥤","A cup can hold a drink."],
-  ["Spoon","🥄","A spoon helps with little meals."],["Sock","🧦","A cozy sock keeps a foot warm."],
-  ["Hat","🧢","A hat sits on top of the head."],["Shoe","👟","Shoes help protect our feet."],
-  ["Key","🔑","A key can open a lock."],["Lamp","💡","A lamp brings light into a room."],
-  ["Gift","🎁","A gift is a little surprise."],["Drum","🥁","A drum makes a soft beat."],
-  ["Music","🎵","A little melody can make us smile."]
-].map(([name,icon,description])=>({name,icon,description,type:"picture",group:"Everyday"}));
+/* The active infant collection is intentionally defined immediately below. */
 
 /* Baby Mode is a focused 40-card collection: 20 distinct patterns, then 20 emoji cards. */
 const BABY_PATTERN_NAMES = [
@@ -216,7 +139,6 @@ const ui = {
   flashcard: document.getElementById("flashcard"),
   cardArea: document.getElementById("card-area"),
   artwork: document.getElementById("artwork"),
-  backdrop: document.getElementById("art-backdrop"),
   word: document.getElementById("card-word"),
   label: document.getElementById("art-label"),
   count: document.getElementById("card-count"),
@@ -383,62 +305,6 @@ function drawContrastDesign(index) {
 }
 
 /* Original animal portraits use bold vector shapes for infant viewing. */
-function drawAnimalFace(name, colored = false) {
-  const ns = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(ns, "svg");
-  svg.setAttribute("viewBox", "0 0 400 400");
-  svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", colored ? "Color animal portrait: " + name : "High contrast animal portrait: " + name);
-  const add = (tag, attrs) => {
-    const node = document.createElementNS(ns, tag);
-    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
-    svg.appendChild(node);
-    return node;
-  };
-  const ink = "#050505";
-  const paper = "#ffffff";
-  const accent = "#ed1028";
-  const fur = colored ? ({"Lion":"#e9ae48","Elephant":"#8fb8c8","Giraffe":"#f0c85b","Zebra":"#f7f4eb","Monkey":"#bd8058","Bear":"#a77a58","Panda":"#f7f4eb","Fox":"#e98949","Rabbit":"#f6eee6","Cat":"#d7b5a0","Dog":"#cba77a","Mouse":"#b9a5bd","Owl":"#b58a61","Duck":"#f5d65a","Penguin":"#f5f5ef","Turtle":"#80b878","Frog":"#7cbe76","Fish":"#65bdd0","Whale":"#6ea9d6","Dolphin":"#8ac8d7","Octopus":"#d88ab5","Butterfly":"#b19ae5","Bee":"#f0c84b","Ladybug":"#df665c","Snail":"#d8ad7e"})[name] || "#c7c7c7" : paper;
-  const is = (...names) => names.includes(name);
-  add("rect", {x:0,y:0,width:400,height:400,rx:34,fill:colored ? "#a90018" : ink});
-  // Distinct silhouettes give each familiar animal its own recognizable outline.
-  if (is("Lion")) add("circle",{cx:200,cy:190,r:145,fill:colored?"#c87932":ink});
-  if (is("Elephant")) { add("ellipse",{cx:200,cy:250,rx:43,ry:90,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:105,cy:160,rx:43,ry:60,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:295,cy:160,rx:43,ry:60,fill:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Giraffe")) { add("path",{d:"M125 315 L130 130 Q200 70 270 130 L275 315Z",fill:fur,stroke:ink,"stroke-width":8}); add("path",{d:"M145 95 L130 55 M255 95 L270 55",stroke:ink,"stroke-width":12,"stroke-linecap":"round"}); }
-  else if (is("Zebra")) { add("path",{d:"M95 145 Q200 65 305 145 L290 290 Q200 350 110 290Z",fill:fur,stroke:ink,"stroke-width":8}); for(let x=120;x<300;x+=48) add("path",{d:`M${x} 120 l-25 75 30 15 -20 70`,fill:"none",stroke:ink,"stroke-width":17}); }
-  else if (is("Rabbit")) { add("ellipse",{cx:155,cy:85,rx:34,ry:78,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:245,cy:85,rx:34,ry:78,fill:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Fox")) { add("path",{d:"M75 170 L95 65 L170 120 M230 120 L305 65 L325 170",fill:fur,stroke:ink,"stroke-width":9,"stroke-linejoin":"round"}); }
-  else if (is("Cat")) { add("path",{d:"M85 170 L95 65 L175 125 M225 125 L305 65 L315 170",fill:fur,stroke:ink,"stroke-width":9,"stroke-linejoin":"round"}); }
-  else if (is("Bear") || is("Panda") || is("Koala")) { add("circle",{cx:105,cy:115,r:42,fill:is("Panda")?ink:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:295,cy:115,r:42,fill:is("Panda")?ink:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Owl")) { add("circle",{cx:130,cy:175,r:68,fill:colored?"#c79b66":ink}); add("circle",{cx:270,cy:175,r:68,fill:colored?"#c79b66":ink}); }
-  else if (is("Duck")) { add("path",{d:"M275 205 Q350 170 350 220 Q330 250 275 240Z",fill:accent,stroke:ink,"stroke-width":7}); }
-  else if (is("Turtle")) { add("ellipse",{cx:200,cy:245,rx:125,ry:70,fill:colored?"#5b9b63":ink,stroke:ink,"stroke-width":8}); add("circle",{cx:320,cy:230,r:35,fill:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Fish") || is("Whale") || is("Dolphin")) { add("path",{d:"M65 205 Q180 95 295 205 Q180 315 65 205Z",fill:fur,stroke:ink,"stroke-width":8}); add("path",{d:"M285 205 L355 150 L355 260Z",fill:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Octopus")) { for(let i=0;i<6;i++){const x=95+i*42;add("path",{d:`M200 240 Q${x} 280 ${x-12} 335`,fill:"none",stroke:fur,"stroke-width":22,"stroke-linecap":"round"});} }
-  else if (is("Butterfly")) { add("ellipse",{cx:130,cy:170,rx:78,ry:65,fill:colored?"#b5a0e7":ink}); add("ellipse",{cx:270,cy:170,rx:78,ry:65,fill:colored?"#ed9ebd":ink}); }
-  else if (is("Bee")) { add("ellipse",{cx:200,cy:215,rx:95,ry:62,fill:colored?"#f1c744":paper,stroke:ink,"stroke-width":9}); add("path",{d:"M160 160 V270 M220 155 V275",stroke:ink,"stroke-width":19}); }
-  else if (is("Ladybug")) { add("ellipse",{cx:200,cy:215,rx:105,ry:85,fill:accent,stroke:ink,"stroke-width":9}); add("path",{d:"M200 135 V295",stroke:ink,"stroke-width":8}); [[155,185],[245,185],[155,240],[245,240]].forEach(([cx,cy])=>add("circle",{cx,cy,r:13,fill:ink})); }
-  else if (is("Frog")) { add("circle",{cx:140,cy:115,r:45,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:260,cy:115,r:45,fill:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Penguin")) { add("ellipse",{cx:200,cy:210,rx:112,ry:135,fill:ink}); add("ellipse",{cx:200,cy:235,rx:70,ry:95,fill:paper}); }
-  else if (is("Monkey")) { add("circle",{cx:105,cy:150,r:37,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:295,cy:150,r:37,fill:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Mouse")) { add("circle",{cx:125,cy:120,r:45,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:275,cy:120,r:45,fill:fur,stroke:ink,"stroke-width":8}); }
-  else if (is("Lion")) { add("circle",{cx:105,cy:190,r:32,fill:colored?"#e9ae48":ink}); add("circle",{cx:295,cy:190,r:32,fill:colored?"#e9ae48":ink}); }
-  else if (is("Elephant")) { add("path",{d:"M250 200 Q310 225 280 290 Q260 325 230 295",fill:"none",stroke:fur,"stroke-width":42,"stroke-linecap":"round"}); }
-  else { add("circle",{cx:105,cy:145,r:35,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:295,cy:145,r:35,fill:fur,stroke:ink,"stroke-width":8}); }
-  // Head, muzzle and large eyes stay bold enough to read on a small screen.
-  add("ellipse",{cx:200,cy:205,rx:112,ry:118,fill:fur,stroke:ink,"stroke-width":9});
-  if (is("Panda")) { add("ellipse",{cx:151,cy:188,rx:32,ry:43,fill:ink,transform:"rotate(25 151 188)"}); add("ellipse",{cx:249,cy:188,rx:32,ry:43,fill:ink,transform:"rotate(-25 249 188)"}); }
-  else { add("ellipse",{cx:151,cy:190,rx:25,ry:32,fill:ink}); add("ellipse",{cx:249,cy:190,rx:25,ry:32,fill:ink}); }
-  add("circle",{cx:158,cy:181,r:7,fill:paper}); add("circle",{cx:256,cy:181,r:7,fill:paper});
-  add("ellipse",{cx:200,cy:246,rx:55,ry:37,fill:colored?"#fff0d7":paper,stroke:ink,"stroke-width":6});
-  add("path",{d:"M185 239 Q200 254 215 239",fill:"none",stroke:ink,"stroke-width":7,"stroke-linecap":"round"});
-  add("path",{d:"M200 253 V266 Q185 281 171 269 M200 266 Q215 281 229 269",fill:"none",stroke:ink,"stroke-width":6,"stroke-linecap":"round"});
-  add("circle",{cx:120,cy:238,r:13,fill:accent,opacity:colored?.8:.95}); add("circle",{cx:280,cy:238,r:13,fill:accent,opacity:colored?.8:.95});
-  if (is("Giraffe")) [[140,150],[260,155],[125,240],[270,255]].forEach(([cx,cy])=>add("circle",{cx,cy,r:13,fill:colored?"#c88e34":ink}));
-  if (is("Zebra")) [120,155,260,290].forEach((x,i)=>add("path",{d:`M${x} 120 l-18 40 18 12 -15 30`,fill:"none",stroke:ink,"stroke-width":12}));
-  return svg;
-}
-
 /* Toddler cards get a bold, chunky letter plus a hand-drawn vector
    companion. The letter remains the main event; the little illustration
    makes each card feel like a tiny picture-book page. */
@@ -521,6 +387,13 @@ function drawToddlerArt(card, colored = false) {
 /* Toddler front: a huge colorful letter paired with a crisp system emoji.
    The emoji font comes from the device, so artwork stays sharp at every size. */
 function drawToddlerFront(card) {
+  // Letter cards use the hand-drawn story scene; counting cards use a clear grid.
+  if (card.type === "letter") {
+    const storyScene = drawToddlerArt(card, true);
+    storyScene.classList.add("toddler-story-art");
+    return storyScene;
+  }
+
   const wrap = document.createElement("div");
   wrap.className = "toddler-hero";
 
