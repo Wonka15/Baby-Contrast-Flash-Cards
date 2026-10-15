@@ -251,7 +251,13 @@ const RADIO_STATIONS = [
   {name:"KUSC Classical",subtitle:"Classical music · Los Angeles",url:"https://radiostationsusa.com/california/los-angeles/kusc-los-angeles/",stream:"https://playerservices.streamtheworld.com/api/livestream-redirect/KUSCMP128_SC",kind:"audio",art:"𝄞"},
   {name:"Disney Resorts Radio",subtitle:"Disney classics · iHeart",url:"https://www.iheart.com/live/disney-resorts-radio-9414",kind:"page",art:"✦"},
   {name:"CoComelon",subtitle:"Songs for little ones · iHeart",url:"https://www.iheart.com/artist/cocomelon-33660833",kind:"page",art:"♫"},
-  {name:"WFMT Classical",subtitle:"Classical music · Chicago",url:"https://www.wfmt.com/listen/",stream:"https://stream.wfmt.com/main-mp3",kind:"audio",art:"𝄢"}
+  {name:"YouTube music 1",subtitle:"Video 1 · YouTube",url:"https://youtu.be/f5a79JY1wlw",embedUrl:"https://www.youtube-nocookie.com/embed/f5a79JY1wlw?autoplay=1&playsinline=1&rel=0",kind:"youtube",art:"♫"},
+  {name:"YouTube music 2",subtitle:"Video 2 · YouTube",url:"https://youtu.be/sfoEjiH91TE",embedUrl:"https://www.youtube-nocookie.com/embed/sfoEjiH91TE?autoplay=1&playsinline=1&rel=0",kind:"youtube",art:"♫"},
+  {name:"YouTube music 3",subtitle:"Video 3 · YouTube",url:"https://youtu.be/PgyK0roqBSw",embedUrl:"https://www.youtube-nocookie.com/embed/PgyK0roqBSw?autoplay=1&playsinline=1&rel=0",kind:"youtube",art:"♫"},
+  {name:"YouTube music 4",subtitle:"Video 4 · YouTube",url:"https://youtu.be/liWQdYS1hRk",embedUrl:"https://www.youtube-nocookie.com/embed/liWQdYS1hRk?autoplay=1&playsinline=1&rel=0",kind:"youtube",art:"♫"},
+  {name:"YouTube music 5",subtitle:"Video 5 · YouTube",url:"https://youtu.be/hMg80RmpmJc",embedUrl:"https://www.youtube-nocookie.com/embed/hMg80RmpmJc?autoplay=1&playsinline=1&rel=0",kind:"youtube",art:"♫"},
+  {name:"YouTube music 6",subtitle:"Video 6 · YouTube",url:"https://youtu.be/zAFAr2bRn1g",embedUrl:"https://www.youtube-nocookie.com/embed/zAFAr2bRn1g?autoplay=1&playsinline=1&rel=0",kind:"youtube",art:"♫"},
+  {name:"YouTube music 7",subtitle:"Video 7 · YouTube",url:"https://youtu.be/4owTdwvbyNA",embedUrl:"https://www.youtube-nocookie.com/embed/4owTdwvbyNA?autoplay=1&playsinline=1&rel=0",kind:"youtube",art:"♫"}
 ];
 let selectedRadioIndex=0;
 let radioIsPlaying=false;
@@ -266,7 +272,8 @@ function updateRadioUI(){
   document.getElementById("radio-play").textContent=radioIsPlaying?"Pause":"Play";
   document.getElementById("radio-play").setAttribute("aria-label",radioIsPlaying?"Pause "+station.name:"Play "+station.name);
   document.getElementById("radio-open").href=station.url;
-  document.getElementById("radio-open").textContent=station.kind==="audio"?"Open station website":"Open full station player";
+  document.getElementById("radio-open").textContent=station.kind==="youtube"?"Open on YouTube":station.kind==="audio"?"Open station website":"Open full station player";
+  document.getElementById("radio-volume-wrap").hidden=station.kind==="youtube";
   document.getElementById("radio-station").value=String(selectedRadioIndex);
   document.getElementById("radio-station-art").classList.toggle("radio-playing",radioIsPlaying);
 }
@@ -284,9 +291,9 @@ async function playRadio(){
     catch(error){radioIsPlaying=false;updateRadioUI();document.getElementById("radio-status").textContent="Tap Open station website if playback is blocked";}
   }else{
     radioAudio.pause();radioAudio.removeAttribute("src");radioAudio.load();
-    radioFrame.hidden=false;radioFrame.src=station.url;
+    radioFrame.hidden=false;radioFrame.src=station.kind==="youtube"?station.embedUrl:station.url;
     radioIsPlaying=true;updateRadioUI();
-    document.getElementById("radio-status").textContent="Station player opened below · use Open full station player if needed";
+    document.getElementById("radio-status").textContent=station.kind==="youtube"?"YouTube video loaded below · use its player controls":"Station player opened below · use Open full station player if needed";
   }
 }
 function chooseRadioStation(value){
