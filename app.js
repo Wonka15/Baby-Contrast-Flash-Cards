@@ -21,13 +21,12 @@
    throughout the code. English is the first supported language. */
 const LANGUAGE_TEXT = {
   en: {
-    babyMode: "Baby", toddlerMode: "Toddler",
     babyCollection: "20 bold patterns + 20 high-contrast emoji cards",
     toddlerCollection: "A–Z + numbers 0–20",
-    babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
-    look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
-next: "Next card", previous: "Back",
-    mute: "Mute", unmute: "Sound on", melody: "Melody"
+    babyKicker: "THE FIRST COLLECTION",
+    toddlerKicker: "GROWING TOGETHER",
+    mute: "Mute",
+    unmute: "Sound on"
   }
 };
 const language = LANGUAGE_TEXT.en;
@@ -306,9 +305,9 @@ function drawContrastDesign(index) {
 /* Toddler cards get a bold, chunky letter plus a hand-drawn vector
    companion. The letter remains the main event; the little illustration
    makes each card feel like a tiny picture-book page. */
-/* Draw an original storybook scene for each letter. Oswald is shown in
-   the early black-and-white 1927 style, with long ears and white gloves.
-   Each card changes the animal, prop, and pose. */
+/* Draw a distinct storybook scene for each letter. The Oswald-inspired
+   rabbit keeps a recognizable silhouette while the animal, prop, and pose
+   change from card to card. The optional color treatment is for toddler mode. */
 function drawToddlerArt(card, colored = false) {
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
