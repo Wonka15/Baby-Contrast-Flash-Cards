@@ -82,7 +82,7 @@ assert.match(checks, /Animated Mode must include every letter A–Z in order/, "
 // Responsive safeguards for small iPhones, notches, touch targets, and landscape phones.
 assert.match(html, /name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/, "Viewport should support modern phone safe areas");
 assert.match(html, /apple-mobile-web-app-capable/, "iOS standalone display metadata should be present");
-assert.match(read(html, "../styles.css"), /env\\(safe-area-inset-bottom\\)/, "Layout should respect the iPhone home-indicator safe area");
+assert.match(read(html, "../styles.css"), /env\(safe-area-inset-bottom\)/, "Layout should respect the iPhone home-indicator safe area");
 assert.match(read(html, "../styles.css"), /max-width: 360px/, "Very narrow phones should have a dedicated layout");
 assert.match(read(html, "../styles.css"), /orientation: landscape/, "Short landscape screens should be supported");
 assert.match(read(html, "../styles.css"), /pointer: coarse/, "Touch devices should get larger tap targets");
