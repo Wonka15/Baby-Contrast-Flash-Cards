@@ -24,7 +24,7 @@ const LANGUAGE_TEXT = {
     toddlerCollection: "A–Z with Oswald & animal friends",
     babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
     look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
-    flipHint: "TAP TWICE TO TURN", next: "Next card", previous: "Back",
+    flipHint: "USE REVERSE TO TURN", next: "Next card", previous: "Back",
     mute: "Mute", unmute: "Sound on", melody: "Melody"
   }
 };
@@ -204,7 +204,6 @@ let watchTimer = null;
 let currentCards = BABY_CARDS;
 let currentIndex = 0;
 let soundsEnabled = true;
-let lastTapTime = 0;
 let touchStartX = 0;
 let touchStartY = 0;
 let audioContext = null;
@@ -650,14 +649,20 @@ function renderCard() {
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
   ui.flashcard.classList.remove("is-flipped");
-  ui.flashcard.setAttribute("aria-label", isToddler ? `${card.name} for ${card.animal}. Double tap to reveal a number.` : `${card.name}. Double tap to reveal a unique baby-friendly emoji and contrast pattern.`);
+  ui.flashcard.setAttribute("aria-label", isToddler
+    ? `${card.name} for ${card.animal}. Use the Reverse button to see the counting number.`
+    : `${card.name}. Use the Reverse button to see the other side.`);
+  ui.reverse.setAttribute("aria-label", "Show the other side of the card");
+  ui.reverse.setAttribute("title", "Show the other side");
 }
 
 /* Keep the flip animation in one function so both double-tap and the
    Reverse button behave consistently. */
-function flipCard(forceFront = false) {
-  const shouldFlip = forceFront ? false : !ui.flashcard.classList.contains("is-flipped");
+function flipCard() {
+  const shouldFlip = !ui.flashcard.classList.contains("is-flipped");
   ui.flashcard.classList.toggle("is-flipped", shouldFlip);
+  ui.reverse.setAttribute("aria-label", shouldFlip ? "Show the front of the card" : "Show the other side of the card");
+  ui.reverse.setAttribute("title", shouldFlip ? "Show front" : "Show other side");
   if (shouldFlip) playTone(523.25, 0.16, 0.025, "sine");
   else playTone(392, 0.13, 0.022, "sine");
 }
@@ -731,24 +736,8 @@ function setMode(mode) {
 /* Tap twice quickly to flip. A single tap does not accidentally turn the
    card over, so a parent can tap once before swiping to the next card.
    Keyboard activation remains available through Enter or Space. */
-ui.flashcard.addEventListener("pointerup", event => {
-  if (event.pointerType === "mouse") return;
-  const now = Date.now();
-  if (now - lastTapTime < 360) {
-    flipCard();
-    lastTapTime = 0;
-  } else {
-    lastTapTime = now;
-  }
-});
-ui.flashcard.addEventListener("dblclick", event => {
-  event.preventDefault();
-  flipCard();
-});
-ui.flashcard.addEventListener("click", event => {
-  if (event.detail === 0) flipCard(); // Keyboard activation, not a pointer tap.
-});
-ui.reverse.addEventListener("click", () => flipCard(true));
+// Turning the card is a deliberate button action, never a double-tap.
+ui.reverse.addEventListener("click", flipCard);
 ui.previous.addEventListener("click", () => moveCard(-1));
 ui.next.addEventListener("click", () => moveCard(1));
 ui.surprise.addEventListener("click", chooseSurprise);
