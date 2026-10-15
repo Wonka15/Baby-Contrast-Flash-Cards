@@ -98,11 +98,9 @@ function makeToddlerCards() {
     ["Y","Yak","sledding down a hill","Oswald sleds down a hill with a yak."],
     ["Z","Zebra","dancing to music","Oswald dances with a zebra."]
   ];
-  const animalEmojis = ["🐜","🐻","🐱","🦆","🐘","🦊","🦒","🦛","🦎","🐆","🦘","🦁","🐵","🦄","🦉","🐧","🐦","🐰","🦭","🐢","🦄","🦅","🐳","🐠","🐂","🦓"];
   const letterCards = alphabet.map(([letter, animal, activity, description], designIndex) => ({
     name: letter,
     icon: "",
-    emoji: animalEmojis[designIndex],
     description,
     type: "letter",
     group: "Alphabet",
