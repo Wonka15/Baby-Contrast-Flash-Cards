@@ -656,8 +656,7 @@ function renderCard() {
   ui.reverse.setAttribute("title", "Show the other side");
 }
 
-/* Keep the flip animation in one function so both double-tap and the
-   Reverse button behave consistently. */
+/* Keep card turning in one function; the Reverse button calls it. */
 function flipCard() {
   const shouldFlip = !ui.flashcard.classList.contains("is-flipped");
   ui.flashcard.classList.toggle("is-flipped", shouldFlip);
