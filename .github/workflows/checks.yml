@@ -1,0 +1,30 @@
+name: Check app files
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  javascript-syntax:
+    name: Check JavaScript syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check app.js syntax
+        run: node --check app.js
+      - name: Confirm the page assets exist
+        run: |
+          test -s index.html
+          test -s styles.css
+          test -s app.js
