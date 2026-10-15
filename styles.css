@@ -535,3 +535,120 @@ button:disabled{opacity:.38;cursor:not-allowed}
   .ar-motion-button{transition:none}
   .ar-hero.motion-burst .ar-card-sparkle{animation:none!important}
 }
+
+/* Cross-device polish: iPhone, iPad, and Android touchscreens.
+   Keep controls comfortable to tap, prevent narrow-screen overflow, and
+   respect the safe areas around notches and home indicators. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: 12px;
+}
+body {
+  overflow-wrap: anywhere;
+  -webkit-tap-highlight-color: transparent;
+}
+.app {
+  padding-left: max(clamp(12px, 4vw, 34px), env(safe-area-inset-left));
+  padding-right: max(clamp(12px, 4vw, 34px), env(safe-area-inset-right));
+  padding-bottom: max(26px, env(safe-area-inset-bottom));
+}
+button, select, input, a {
+  -webkit-tap-highlight-color: transparent;
+}
+button, select {
+  touch-action: manipulation;
+}
+.radio-select {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  font-size: 16px; /* Avoid iOS Safari's automatic form-control zoom. */
+}
+.radio-volume-control input {
+  min-height: 30px;
+}
+.radio-controls {
+  flex-wrap: wrap;
+}
+.radio-open-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.control-button,
+.mode-button,
+.play-style-button,
+.round-tool,
+.ar-mode-button,
+.ar-motion-button,
+.radio-play,
+.radio-skip,
+.footer button,
+.dialog-close {
+  -webkit-user-select: none;
+  user-select: none;
+}
+.control-button,
+.radio-play,
+.radio-skip {
+  min-height: 48px;
+}
+.flashcard,
+.ar-hero {
+  max-width: 100%;
+}
+.artwork,
+.artwork > *,
+.ar-big-emoji {
+  -webkit-user-select: none;
+  user-select: none;
+}
+@media (max-width: 360px) {
+  .app { padding-left: 10px; padding-right: 10px; }
+  .brand { gap: 7px; }
+  .brand-icon { width: 32px; height: 32px; flex-basis: 32px; }
+  .brand small { max-width: 160px; white-space: normal; line-height: 1.25; }
+  .mode-button { gap: 6px; padding: 9px 6px; }
+  .mode-button strong { font-size: 11px; }
+  .mode-button small { font-size: 9px; }
+  .collection-row { align-items: flex-start; }
+  .collection-row h2 { font-size: 16px; }
+  .counter { padding-top: 3px; font-size: 11px; }
+  .controls { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr) 44px; gap: 6px; }
+  .control-button { gap: 5px; padding-left: 7px; padding-right: 7px; font-size: 10px; }
+  .radio-topline { gap: 9px; }
+  .radio-live-pill { display: none; }
+  .radio-controls { gap: 7px; }
+  .radio-open-link { flex: 1 1 100%; }
+  .ar-hero { min-height: 245px; }
+}
+@media (min-width: 700px) {
+  .app { padding-left: max(28px, env(safe-area-inset-left)); padding-right: max(28px, env(safe-area-inset-right)); }
+  .radio-panel { max-width: 600px; margin-left: auto; margin-right: auto; }
+  .ar-hero { min-height: 360px; }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .welcome { padding-top: 18px; padding-bottom: 12px; }
+  .welcome h1 { font-size: clamp(30px, 5vw, 42px); }
+  .flashcard { aspect-ratio: 1.25 / 1; }
+  .ar-hero { min-height: 220px; }
+  .ar-big-emoji { font-size: clamp(76px, 18vh, 125px); }
+  .radio-embed-wrap iframe { height: min(52vh, 260px); }
+}
+@media (pointer: coarse) {
+  .control-button,
+  .radio-play,
+  .radio-skip,
+  .round-tool,
+  .ar-motion-button {
+    min-height: 44px;
+  }
+  .footer button { min-height: 44px; padding: 8px 2px; }
+}
+@supports (-webkit-touch-callout: none) {
+  body { background-attachment: scroll; }
+  select, input { font-size: 16px; }
+}
