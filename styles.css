@@ -951,7 +951,7 @@ body:not(.watch-focus-mode) .flashcard.baby-card-tap-pop {
 .pattern-chess{background:conic-gradient(#fff 25%,#050505 0 50%,#fff 0 75%,#050505 0);background-size:25% 25%;animation:animTwoChess 3.6s steps(1,end) infinite}
 .pattern-chess:before{inset:0;background:repeating-conic-gradient(#ed1028 0 25%,transparent 0 50%);background-size:25% 25%;opacity:0;animation:animTwoRedPulse 3.6s steps(1,end) infinite}
 .pattern-chess:after{inset:12%;border:10px solid #1677ff;box-shadow:0 0 0 8px #050505,0 0 0 16px #fff;animation:animTwoChessFrame 5s ease-in-out infinite alternate}
-.pattern-curves{background:repeating-radial-gradient(ellipse at 50% 50%,#ed1028 0 13px,#fff 13px 26px,#050505 26px 39px,#1677ff 39px 47px);animation:animTwoCurves 5s ease-in-out infinite alternate}
+.pattern-curves{background:repeating-radial-gradient(ellipse at 50% 50%,#ed1028 0 13px,#fff 13px 26px,#050505 26px 39px,#1677ff 39px 47px);animation:animTwoBreathe 5s ease-in-out infinite alternate}
 .pattern-curves:before{inset:-10%;background:repeating-radial-gradient(ellipse at 25% 60%,transparent 0 22px,#fff 23px 30px,#050505 31px 39px);mix-blend-mode:screen;animation:animTwoSlide 6s ease-in-out infinite alternate}
 .pattern-curves:after{inset:0;background:#ed1028;opacity:0;animation:animTwoRedPulse 4.8s ease-in-out infinite}
 .pattern-wave{background:repeating-radial-gradient(ellipse at 0 50%,#1677ff 0 16px,#fff 17px 27px,#050505 28px 43px);animation:animTwoWave 5s ease-in-out infinite alternate}
@@ -974,7 +974,7 @@ body:not(.watch-focus-mode) .flashcard.baby-card-tap-pop {
 .pattern-tunnel:after{inset:30%;border:10px solid #1677ff;outline:8px solid #fff;background:#050505;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:animTwoRotate 7s linear infinite reverse}
 @keyframes animTwoRotate{to{transform:rotate(360deg)}}
 @keyframes animTwoSlide{from{background-position:0 0;transform:translateX(-4%) rotate(-2deg)}to{background-position:120px 90px;transform:translateX(4%) rotate(2deg)}}
-@keyframes animTwoChess{0%,100%{filter:none}50%{filter:invert(1)}}
+@keyframes animTwoChess{0%,100%{background-color:#050505}50%{background-color:#fff}}
 @keyframes animTwoRedPulse{0%,36%,100%{opacity:0}45%,70%{opacity:.72}}
 @keyframes animTwoChessFrame{from{transform:scale(.88) rotate(0deg)}to{transform:scale(1.03) rotate(6deg)}}
 @keyframes animTwoCurves{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(180deg)}100%{filter:hue-rotate(0deg)}}
