@@ -4,42 +4,61 @@ Welcome! You do not need to be an expert to make a small improvement.
 
 ## The project is intentionally simple
 
-- `index.html` describes the page and its controls.
-- `styles.css` controls colors, layout, glass effects, and animation.
-- `app.js` contains the card collections and interaction logic.
+- `index.html` contains the page structure and accessible controls.
+- `styles.css` contains layout, colors, tactile surfaces, and motion.
+- `app.js` contains card data, SVG artwork, navigation, counting cards, and sound.
+- `scripts/check-app.mjs` checks important links between the HTML and JavaScript.
 
-There is no build step and no dependency installation.
+There is no build step and no third-party dependency installation.
 
 ## A friendly first contribution
 
-1. Open an issue describing the change you would like to make.
+1. Open an issue describing the improvement you would like to make.
 2. Create a branch for your change, or fork the repository.
-3. Make one small change at a time.
-4. Preview the page in a browser on both a narrow phone-sized screen and a wider screen.
-5. Check that buttons work with touch and keyboard.
-6. Open a pull request explaining what changed and how you tested it.
+3. Make one focused change at a time.
+4. Preview the page on a phone-sized screen and a wider tablet/desktop screen.
+5. Check touch, keyboard, sound mute, and reduced-motion behavior.
+6. Run the checks below, then open a pull request describing what changed and how you tested it.
 
 ## Adding cards
 
-Keep names short and descriptions gentle. Use age-appropriate, welcoming imagery. For a new baby illustration, add a row to one of the collections in `app.js`. For a new geometric design, add the card to `SHAPE_CARDS` and draw it in `drawPattern()`.
+- Baby patterns are listed in `BABY_PATTERN_NAMES` and drawn in `drawContrastDesign()`.
+- Baby picture cards are listed in `BABY_EMOJIS`; keep their names in the mapping next to `BABY_CARDS` in the same order.
+- Toddler letter stories live in the `alphabet` list inside `makeToddlerCards()`.
+- Counting cards from 0 through 20 are generated from a loop in that same function.
+
+Keep labels short and descriptions gentle. Use high-contrast infant artwork and welcoming toddler illustrations. Prefer extending the existing renderer over copying markup for each card.
 
 ## Code style
 
 - Prefer descriptive names over unexplained abbreviations.
-- Add a short comment when a function or interaction might be surprising to a beginner.
-- Reuse the existing card renderer rather than copying the HTML for every card.
-- Avoid adding dependencies unless they solve a clear problem.
-- Respect reduced-motion preferences and keep audio optional and quiet.
+- Use small functions with one clear responsibility.
+- Add comments when a decision or interaction might surprise a beginner; explain *why*, not just what the next line does.
+- Avoid dependencies unless they solve a clear problem.
+- Respect reduced-motion preferences and keep sound optional and quiet.
+- Keep documentation in sync with the actual card counts and interactions.
 
-## Testing checklist
+## Run the checks
 
-- [ ] Baby mode shows its cards and the counter is correct.
-- [ ] Toddler mode switches to letters and numbers.
+With Node.js installed, run these from the repository root:
+
+```sh
+node --check app.js
+node scripts/check-app.mjs
+```
+
+GitHub Actions runs the same checks on pushes and pull requests.
+
+## Manual testing checklist
+
+- [ ] Baby mode shows 20 patterns and 20 picture cards.
+- [ ] Toddler mode shows A–Z and numbers 0–20.
 - [ ] Swipe, Back, Next, Surprise, double-tap, and Reverse work.
-- [ ] Sounds can be muted; Melody can be started and stopped.
+- [ ] The counter and progress bar match the selected collection.
+- [ ] Sounds can be muted; music can be started and stopped.
 - [ ] The layout works on a phone and tablet.
 - [ ] The browser console has no new errors.
 
 ## Care and accessibility
 
-The app is intended for shared play with a caregiver. Keep controls clear, respect reduced-motion preferences, and avoid claims that the app improves development or replaces professional advice.
+This app is intended for shared play with a caregiver. Keep controls clear, respect reduced-motion preferences, and avoid claims that the app improves development or replaces professional advice.
