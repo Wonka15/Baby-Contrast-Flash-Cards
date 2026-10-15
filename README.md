@@ -1,5 +1,7 @@
 # Little Look — Baby Contrast Cards
 
+**Current version: 1.5.0** · [Changelog](CHANGELOG.md)
+
 A calm, mobile-first flash-card app for sharing visual discoveries with babies and playful learning with toddlers. It is built with plain HTML, CSS, and JavaScript so a new developer can read the source and make it their own.
 
 **Live app:** https://wonka15.github.io/Baby-Contrast-Flash-Cards/  
@@ -29,7 +31,9 @@ A calm, mobile-first flash-card app for sharing visual discoveries with babies a
 - The music panel includes station pages and YouTube embeds. External playback depends on the provider, browser, and network; use the station link if an embed does not play.
 - Responsive glass-inspired styling, visible keyboard focus, and reduced-motion support.
 
-Baby Mode also has a small animated star field: stars are white with a few red accents, outlined for contrast, and become still when reduced motion is enabled.\n\n### Device-friendly layout
+Baby Mode also has a small animated star field: stars are white with a few red accents, outlined for contrast, and become still when reduced motion is enabled.
+
+### Device-friendly layout
 
 The interface adapts to narrow iPhones, larger iPhones, iPads, and Android phones such as Google Pixel. Styles account for display cutouts and the home-indicator safe area, keep touch targets comfortable, avoid iOS form-field zoom, and adjust the card for short landscape screens. These are responsive safeguards; actual device/browser testing is still recommended before calling the release fully verified.
 
