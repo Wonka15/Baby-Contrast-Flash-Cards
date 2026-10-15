@@ -446,3 +446,67 @@ button:disabled{opacity:.38;cursor:not-allowed}
   .ar-big-emoji,.ar-card-sparkle{animation:none!important}
   .ar-big-emoji{top:33%;left:35%;transform:none}
 }
+
+
+/* Playful water dunk: touch an animal to dive it into a tiny animated pool. */
+.ar-big-emoji{cursor:pointer;touch-action:manipulation;outline-offset:5px}
+.ar-big-emoji:focus-visible{outline:3px solid #168bff;border-radius:18px}
+.ar-hero.water-dunking .ar-big-emoji{
+  z-index:2;
+  animation:ar-emoji-dunk 1.15s cubic-bezier(.45,0,.55,1) both;
+  will-change:top,left,transform,opacity;
+}
+.ar-water-effect{position:absolute;inset:0;z-index:3;overflow:hidden;pointer-events:none;opacity:0}
+.ar-water-ripple{
+  position:absolute;left:50%;bottom:23%;width:20px;height:10px;
+  border:3px solid #ffffffd9;border-radius:50%;
+  box-shadow:0 0 0 3px #52c8ff8a,0 0 16px #8eeaff;
+  transform:translateX(-50%) scale(.2);
+}
+.ar-water-drop{
+  position:absolute;left:50%;bottom:27%;width:11px;height:17px;
+  border:1px solid #e7fcffb8;border-radius:70% 30% 65% 35%;
+  background:linear-gradient(135deg,#ffffff,#5ce0ff 45%,#168bff);
+  box-shadow:0 2px 5px #0878d95c;
+  opacity:0;
+}
+.ar-hero.water-dunking .ar-water-effect{opacity:1;animation:ar-water-show 1.2s ease-out both}
+.ar-hero.water-dunking .ar-water-ripple{animation:ar-water-ripple 1.05s ease-out both}
+.ar-hero.water-dunking .ar-water-drop{animation:ar-water-drop 760ms cubic-bezier(.2,.7,.3,1) both}
+.ar-water-drop-1{--drop-x:-105px;--drop-y:-62px;--drop-r:-30deg}
+.ar-water-drop-2{--drop-x:-72px;--drop-y:-92px;--drop-r:25deg;animation-delay:25ms!important}
+.ar-water-drop-3{--drop-x:-35px;--drop-y:-112px;--drop-r:-12deg;animation-delay:55ms!important}
+.ar-water-drop-4{--drop-x:20px;--drop-y:-105px;--drop-r:22deg;animation-delay:15ms!important}
+.ar-water-drop-5{--drop-x:62px;--drop-y:-88px;--drop-r:-25deg;animation-delay:40ms!important}
+.ar-water-drop-6{--drop-x:102px;--drop-y:-58px;--drop-r:30deg;animation-delay:65ms!important}
+.ar-water-drop-7{--drop-x:-128px;--drop-y:-30px;--drop-r:12deg;animation-delay:75ms!important}
+.ar-water-drop-8{--drop-x:126px;--drop-y:-26px;--drop-r:-18deg;animation-delay:30ms!important}
+.ar-hero.water-dunking .ar-card-sparkle{z-index:4}
+.ar-hero.water-dunking .ar-animal-name{z-index:5}
+@keyframes ar-emoji-dunk{
+  0%{top:35%;left:35%;opacity:1;transform:translate(0,0) rotate(0) scale(1)}
+  22%{top:39%;left:34%;opacity:1;transform:translate(0,8px) rotate(-8deg) scale(1.08)}
+  48%{top:57%;left:35%;opacity:.95;transform:translate(0,18px) rotate(10deg) scale(.82)}
+  68%{top:62%;left:35%;opacity:.18;transform:translate(0,28px) rotate(-5deg) scale(.65)}
+  82%{top:37%;left:35%;opacity:1;transform:translate(0,-8px) rotate(4deg) scale(.94)}
+  100%{top:35%;left:35%;opacity:1;transform:translate(0,0) rotate(0) scale(1)}
+}
+@keyframes ar-water-show{
+  0%,100%{opacity:0}
+  24%,72%{opacity:1}
+}
+@keyframes ar-water-ripple{
+  0%{opacity:0;transform:translateX(-50%) scale(.2)}
+  24%{opacity:1}
+  100%{opacity:0;transform:translateX(-50%) scale(8,3)}
+}
+@keyframes ar-water-drop{
+  0%{opacity:0;transform:translate(0,0) scale(.4) rotate(0)}
+  18%{opacity:1}
+  75%{opacity:1}
+  100%{opacity:0;transform:translate(var(--drop-x),var(--drop-y)) scale(.8) rotate(var(--drop-r))}
+}
+@media(prefers-reduced-motion:reduce){
+  .ar-hero.water-dunking .ar-big-emoji,.ar-hero.water-dunking .ar-water-effect,
+  .ar-hero.water-dunking .ar-water-ripple,.ar-hero.water-dunking .ar-water-drop{animation-duration:.01ms!important}
+}
