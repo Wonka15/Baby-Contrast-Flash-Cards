@@ -145,7 +145,7 @@ const AR_ANIMALS = [
   ["J", "Jaguar", "🐆"], ["K", "Kangaroo", "🦘"], ["L", "Lion", "🦁"],
   ["M", "Monkey", "🐒"], ["N", "Narwhal", "🐋"], ["O", "Owl", "🦉"],
   ["P", "Penguin", "🐧"], ["Q", "Quail", "🐦"], ["R", "Rabbit", "🐰"],
-  ["S", "Snake", "🐍"], ["T", "Tiger", "🐯"], ["U", "Urchin", "🦔"],
+  ["S", "Snake", "🐍"], ["T", "Tiger", "🐯"], ["U", "Unicorn", "🦄"],
   ["V", "Vulture", "🦅"], ["W", "Whale", "🐳"], ["X", "X-ray fish", "🐠"],
   ["Y", "Yak", "🐂"], ["Z", "Zebra", "🦓"]
 ];
