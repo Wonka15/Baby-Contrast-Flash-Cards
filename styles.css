@@ -926,3 +926,59 @@ body:not(.watch-focus-mode) .flashcard.baby-card-tap-pop {
   .baby-white-dot { animation: none; opacity: .85; }
   .baby-touch-red-dot { animation-duration: 320ms; }
 }
+
+
+/* Animated 2: ten distinct slow-moving, high-contrast pattern designs.
+   Blue, black and white lead the palette; red is used for selected accents. */
+.animated-two-launch{margin-top:10px}
+.animated-two-button{background:linear-gradient(115deg,#07172f,#174b9a 58%,#dceaff);border:1px solid #8fb9f7;color:#fff;box-shadow:0 8px 22px #174b9a24}
+.animated-two-button .ar-mode-gem{background:#ffffff20;color:#fff}
+.animated-two-button .ar-mode-copy small{color:#d8e8ff}
+.animated-two-button .ar-mode-arrow{color:#fff}
+.animated-two-button.active{outline:2px solid #2e75d5;outline-offset:2px}
+.artwork.animated-two-art{width:100%;height:100%;max-width:none;max-height:none;filter:none;overflow:hidden}
+.animated-two-scene{position:relative;width:100%;height:100%;min-height:220px;overflow:hidden;isolation:isolate;background:#050505;border-radius:20px;--blue:#1677ff;--white:#fff;--red:#ed1028}
+.animated-two-scene:before,.animated-two-scene:after{content:"";position:absolute;inset:-25%;pointer-events:none}
+.animated-two-core{position:absolute;z-index:1;left:50%;top:50%;width:20%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:#fff;box-shadow:0 0 0 8px #1677ff,0 0 0 16px #050505,0 0 0 24px #fff}
+.animated-two-shape{position:absolute;z-index:2;display:block;pointer-events:none}
+.pattern-swirl{background:repeating-conic-gradient(from 0deg,#fff 0deg 16deg,#050505 16deg 32deg,#1677ff 32deg 40deg,#050505 40deg 48deg)}
+.pattern-swirl:before{inset:10%;border-radius:50%;background:repeating-conic-gradient(#050505 0deg 24deg,#fff 24deg 48deg,#1677ff 48deg 60deg);animation:animTwoRotate 7s linear infinite}
+.pattern-swirl:after{inset:31%;border:12px solid #fff;border-left-color:#1677ff;border-bottom-color:#050505;border-radius:50%;animation:animTwoRotate 4s linear infinite reverse}
+.pattern-swirl .animated-two-core{background:#050505;border:8px solid #fff;box-shadow:0 0 0 8px #1677ff}
+.pattern-zigzag{background:repeating-linear-gradient(135deg,#050505 0 24px,#fff 24px 44px,#1677ff 44px 54px,#050505 54px 72px)}
+.pattern-zigzag:before{inset:-10% -60%;background:repeating-linear-gradient(135deg,transparent 0 30px,#fff 30px 44px,#050505 44px 60px,#1677ff 60px 68px);animation:animTwoSlide 3.5s ease-in-out infinite alternate}
+.pattern-zigzag:after{inset:0;background:repeating-linear-gradient(45deg,transparent 0 43px,#fff 43px 51px,transparent 51px 78px);animation:animTwoSlide 4.5s ease-in-out infinite alternate-reverse}
+.pattern-chess{background:conic-gradient(#fff 25%,#050505 0 50%,#fff 0 75%,#050505 0);background-size:25% 25%;animation:animTwoChess 3.6s steps(1,end) infinite}
+.pattern-chess:before{inset:0;background:repeating-conic-gradient(#ed1028 0 25%,transparent 0 50%);background-size:25% 25%;opacity:0;animation:animTwoRedPulse 3.6s steps(1,end) infinite}
+.pattern-chess:after{inset:12%;border:10px solid #1677ff;box-shadow:0 0 0 8px #050505,0 0 0 16px #fff;animation:animTwoChessFrame 5s ease-in-out infinite alternate}
+.pattern-curves{background:repeating-radial-gradient(ellipse at 50% 50%,#ed1028 0 13px,#fff 13px 26px,#050505 26px 39px,#1677ff 39px 47px);animation:animTwoCurves 5s ease-in-out infinite alternate}
+.pattern-curves:before{inset:-10%;background:repeating-radial-gradient(ellipse at 25% 60%,transparent 0 22px,#fff 23px 30px,#050505 31px 39px);mix-blend-mode:screen;animation:animTwoSlide 6s ease-in-out infinite alternate}
+.pattern-curves:after{inset:0;background:#ed1028;opacity:0;animation:animTwoRedPulse 4.8s ease-in-out infinite}
+.pattern-wave{background:repeating-radial-gradient(ellipse at 0 50%,#1677ff 0 16px,#fff 17px 27px,#050505 28px 43px);animation:animTwoWave 5s ease-in-out infinite alternate}
+.pattern-wave:before{inset:-20% -40%;background:repeating-linear-gradient(0deg,transparent 0 22px,#fff 22px 28px,#1677ff 28px 39px,#050505 39px 54px);transform:rotate(-17deg);animation:animTwoSlide 5.5s ease-in-out infinite alternate}
+.pattern-wave:after{inset:15% 8%;border-top:8px solid #fff;border-bottom:8px solid #1677ff;border-radius:50%;animation:animTwoBreathe 3s ease-in-out infinite alternate}
+.pattern-orbits{background:radial-gradient(circle at center,#fff 0 7%,#050505 7.5% 13%,#1677ff 13.5% 15%,transparent 15.5%),#050505}
+.pattern-orbits:before{inset:8%;border:8px solid #fff;border-radius:50%;box-shadow:0 0 0 8px #050505,0 0 0 15px #1677ff,0 0 0 23px #050505,0 0 0 30px #fff;animation:animTwoRotate 9s linear infinite}
+.pattern-orbits:after{inset:0;background:radial-gradient(circle at 20% 50%,#1677ff 0 7px,transparent 8px),radial-gradient(circle at 80% 50%,#fff 0 8px,transparent 9px),radial-gradient(circle at 50% 20%,#fff 0 6px,transparent 7px),radial-gradient(circle at 50% 80%,#1677ff 0 8px,transparent 9px);animation:animTwoRotate 6s linear infinite reverse}
+.pattern-tiles{background:repeating-linear-gradient(45deg,#050505 0 25px,#fff 25px 50px,#1677ff 50px 63px,#050505 63px 88px);background-size:140% 140%;animation:animTwoSlide 4s ease-in-out infinite alternate}
+.pattern-tiles:before{inset:0;background:repeating-linear-gradient(-45deg,transparent 0 30px,#fff 30px 44px,#050505 44px 65px);animation:animTwoSlide 5s ease-in-out infinite alternate-reverse}
+.pattern-tiles:after{inset:18%;border:9px solid #1677ff;outline:7px solid #fff;box-shadow:0 0 0 18px #050505;transform:rotate(45deg);animation:animTwoRotate 8s linear infinite}
+.pattern-rings{background:repeating-radial-gradient(circle at center,#050505 0 13px,#fff 14px 24px,#1677ff 25px 33px,#050505 34px 44px);animation:animTwoBreathe 3.8s ease-in-out infinite alternate}
+.pattern-rings:before{inset:13%;border:8px solid #fff;border-radius:50%;box-shadow:0 0 0 8px #1677ff,0 0 0 16px #050505;animation:animTwoBreathe 2.8s ease-in-out infinite alternate-reverse}
+.pattern-rings:after{inset:32%;border:8px solid #1677ff;border-radius:50%;box-shadow:0 0 0 8px #fff;animation:animTwoBreathe 3.2s ease-in-out infinite alternate}
+.pattern-diamonds{background:repeating-linear-gradient(135deg,#050505 0 28px,#fff 28px 48px,#1677ff 48px 62px,#050505 62px 84px)}
+.pattern-diamonds:before{inset:-40% 0;background:repeating-linear-gradient(45deg,transparent 0 28px,#fff 28px 49px,#1677ff 49px 63px,#050505 63px 84px);animation:animTwoFall 5s linear infinite}
+.pattern-diamonds:after{inset:15%;background:repeating-conic-gradient(from 45deg,#fff 0 25%,#050505 0 50%,#1677ff 0 62.5%,#050505 0 100%);clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:animTwoRotate 10s linear infinite}
+.pattern-tunnel{background:repeating-conic-gradient(from 45deg,#fff 0 25%,#050505 0 50%,#1677ff 0 62.5%,#050505 0 100%);animation:animTwoRotate 12s linear infinite}
+.pattern-tunnel:before{inset:12%;border:12px solid #fff;outline:8px solid #1677ff;background:#050505;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:animTwoBreathe 3.5s ease-in-out infinite alternate}
+.pattern-tunnel:after{inset:30%;border:10px solid #1677ff;outline:8px solid #fff;background:#050505;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%);animation:animTwoRotate 7s linear infinite reverse}
+@keyframes animTwoRotate{to{transform:rotate(360deg)}}
+@keyframes animTwoSlide{from{background-position:0 0;transform:translateX(-4%) rotate(-2deg)}to{background-position:120px 90px;transform:translateX(4%) rotate(2deg)}}
+@keyframes animTwoChess{0%,100%{filter:none}50%{filter:invert(1)}}
+@keyframes animTwoRedPulse{0%,36%,100%{opacity:0}45%,70%{opacity:.72}}
+@keyframes animTwoChessFrame{from{transform:scale(.88) rotate(0deg)}to{transform:scale(1.03) rotate(6deg)}}
+@keyframes animTwoCurves{0%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(180deg)}100%{filter:hue-rotate(0deg)}}
+@keyframes animTwoWave{from{background-position:0 0}to{background-position:100px 65px}}
+@keyframes animTwoBreathe{from{transform:scale(.86)}to{transform:scale(1.08)}}
+@keyframes animTwoFall{from{transform:translateY(-12%)}to{transform:translateY(12%)}}
+@media(prefers-reduced-motion:reduce){.animated-two-scene,.animated-two-scene:before,.animated-two-scene:after,.animated-two-shape{animation:none!important;transition:none!important}}
