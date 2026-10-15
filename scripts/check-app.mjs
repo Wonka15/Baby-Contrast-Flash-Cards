@@ -26,8 +26,7 @@ function section(source, expression, description) {
   return match[1];
 }
 
-// HTML IDs must be unique. Duplicate IDs make selectors and assistive
-// technology unreliable, especially when the same control appears twice.
+// HTML IDs must be unique so controls and assistive technology work reliably.
 const ids = [...html.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1]);
 assert.equal(new Set(ids).size, ids.length, "index.html contains duplicate IDs");
 
@@ -38,7 +37,7 @@ const referencedIds = new Set(
 const missingIds = [...referencedIds].filter((id) => !ids.includes(id));
 assert.deepEqual(missingIds, [], "app.js references HTML IDs that do not exist");
 
-// The baby collections should stay at 20 patterns and 20 picture cards.
+// Baby mode should keep its 20 patterns and 20 picture cards.
 const patternData = section(
   app,
   /const BABY_PATTERN_NAMES = \[([\s\S]*?)\n\];/,
@@ -52,24 +51,25 @@ const emojiData = section(
 assert.equal(countMatches(patternData, /^\s*\["/gm), 20, "Expected 20 baby patterns");
 assert.equal(countMatches(emojiData, /"(?:[^"\\]|\\.)*"/g), 20, "Expected 20 baby picture cards");
 
-// Toddler mode contains 26 letter stories and generated counting cards from 0 to 20.
+// Toddler mode is the simple A–Z set: 26 letters paired with animal emojis.
 const alphabetData = section(
   app,
   /const alphabet = \[([\s\S]*?)\n  \];/,
   "toddler alphabet"
 );
 assert.equal(countMatches(alphabetData, /^\s*\["[A-Z]",/gm), 26, "Expected A–Z toddler cards");
-assert.match(app, /Array\.from\(\{ length: 21 \}/, "Expected 21 counting cards (0–20)");
-assert.match(app, /return \[\.\.\.letterCards, \.\.\.numberCards\]/, "Toddler cards should include letters and numbers");
+assert.match(app, /return alphabet\.map\(\(\[letter, animal, emoji\]/, "Each toddler letter should include an emoji");
+assert.match(app, /className = "toddler-big-letter/, "Toddler cards should show large letters");
+assert.match(app, /className = "toddler-big-emoji/, "Toddler cards should show animal emojis");
 
-// Keep the reverse side, documentation, and card-count claims from drifting apart.
-assert.ok(html.includes('id="card-back"'), "The reverse side must exist in index.html");
-assert.ok(html.includes('id="reverse-button"'), "The Reverse button must exist in index.html");
-assert.ok(app.includes("function toggleCardSide()"), "Double-tap reverse behavior must exist in app.js");
+// The old character artwork, number deck, and card-reverse interaction are intentionally gone.
+assert.doesNotMatch(app, /Oswald|drawToddlerArt|numberCards|toggleCardSide|reverseButton/i);
+assert.doesNotMatch(html, /card-back|reverse-button|double-tap/i);
+assert.doesNotMatch(readme, /Oswald|47 cards|reverse-side|numbers 0–20/i);
+assert.ok(readme.includes("26 cards"), "README should document the 26 toddler cards");
 assert.ok(readme.includes("40 cards"), "README should document the 40 baby cards");
-assert.ok(readme.includes("47 cards"), "README should document the 47 toddler cards");
 
 console.log("✓ HTML IDs are unique and all JavaScript ID references exist.");
 console.log("✓ Baby mode has 20 patterns and 20 picture cards.");
-console.log("✓ Toddler mode has 26 letters and numbers 0–20 (47 cards total).");
-console.log("✓ Reverse-side interaction and README card counts are present.");
+console.log("✓ Toddler mode has 26 letters paired with animal emojis.");
+console.log("✓ Character art, number deck, and reverse-card interaction are removed.");
