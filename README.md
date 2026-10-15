@@ -17,6 +17,11 @@ A calm, mobile-first flash-card app for sharing visual discoveries with babies a
 - Familiar animals such as an ant, bear, cat, elephant, giraffe, monkey, rabbit, turtle, whale, and zebra.
 - Simple cards with no character artwork or extra number deck.
 
+### AR Mode Deck — 26 dimensional-style animal cards
+- A dedicated **AR Mode Deck** button opens a special set featuring the 26 requested animals, in the requested order.
+- Each card pairs a bold blue initial with a native device emoji, glossy highlights, layered shadows, and twinkling blue diamond accents.
+- This is a visual 3D-style effect built with CSS and system emoji—not a camera-based augmented-reality experience or custom 3D model.
+
 ### Touch, sound, and music
 - Swipe horizontally or use Back and Next to navigate.
 - Surprise chooses a different card.
@@ -50,7 +55,7 @@ The card app itself needs no build step, package installation, API key, or backe
 | --- | --- |
 | `index.html` | Page structure, collection controls, music player, and About dialog. |
 | `styles.css` | Layout, colors, tactile controls, responsive rules, and animations. |
-| `app.js` | Card data, high-contrast SVG patterns, A–Z emoji cards, navigation, and sound. |
+| `app.js` | Card data, high-contrast SVG patterns, A–Z emoji cards, AR Mode Deck, navigation, and sound. |
 | `scripts/check-app.mjs` | Dependency-free checks for card counts and HTML/JavaScript references. |
 | `.github/workflows/checks.yml` | Runs the JavaScript syntax check and repository checks on pushes and pull requests. |
 | `.github/workflows/deploy-pages.yml` | Publishes the static site to GitHub Pages. |
