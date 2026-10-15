@@ -32,7 +32,12 @@ button:disabled{opacity:.38;cursor:not-allowed}
 .welcome h1{font-size:clamp(34px,7vw,53px);letter-spacing:-.075em;line-height:1.02;margin:0 0 12px;font-weight:800}
 .welcome h1 span{color:#82976b}
 .welcome-copy{max-width:410px;color:#74786d;font-size:13px;line-height:1.7;margin:0}
-.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:6px;border-radius:22px;margin:0 0 25px}
+.mode-switch{display:grid;grid-template-columns:1fr 1fr;gap:7px;padding:6px;border-radius:22px;margin:0 0 12px}
+.play-style{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:5px;border-radius:18px;margin:0 auto 25px;max-width:600px}
+.play-style-button{display:flex;align-items:center;justify-content:center;gap:9px;padding:9px 12px;border:1px solid transparent;border-radius:13px;background:transparent;color:#6e7367;text-align:left;cursor:pointer}
+.play-style-button.active{background:#fff;border-color:#fff;box-shadow:0 4px 13px #434d3510;color:var(--ink)}
+.play-style-button>span:first-child{display:grid;place-items:center;width:29px;height:29px;border-radius:10px;background:#eef0e7;font-size:15px}
+.play-style-button strong,.play-style-button small{display:block}.play-style-button strong{font-size:11px}.play-style-button small{font-size:9px;color:#888d80;margin-top:2px}
 .mode-button{position:relative;display:flex;align-items:center;gap:11px;text-align:left;min-width:0;padding:12px;border:1px solid transparent;border-radius:16px;background:transparent;color:#666b60;cursor:pointer;transition:background .25s,box-shadow .25s,transform .25s}
 .mode-button.active{background:#ffffffd9;border-color:#fff;box-shadow:0 5px 17px #434d3510;color:var(--ink)}
 .mode-button:active{transform:scale(.985)}
@@ -60,6 +65,11 @@ button:disabled{opacity:.38;cursor:not-allowed}
 .artwork{position:relative;z-index:1;display:grid;place-items:center;width:78%;height:78%;font-size:clamp(90px,24vw,170px);line-height:1;filter:drop-shadow(0 12px 10px #47483212);user-select:none;transition:transform .4s cubic-bezier(.2,.8,.2,1)}
 .artwork.emoji-art{font-family:"Apple Color Emoji","Segoe UI Emoji",sans-serif}
 .artwork svg{display:block;width:100%;height:100%;max-width:320px;max-height:320px;overflow:visible}
+.artwork.animal-art{width:83%;height:83%;filter:none}
+.artwork.toddler-art{width:94%;height:94%;filter:none}
+.color-artwork{display:grid;place-items:center;width:min(66%,230px);aspect-ratio:1;margin:8px auto 12px}
+.color-artwork svg{display:block;width:100%;height:100%;max-width:230px;max-height:230px}
+.color-artwork span{font-size:clamp(70px,17vw,100px);line-height:1}
 .art-label{position:absolute;z-index:2;bottom:13px;left:50%;transform:translateX(-50%);white-space:nowrap;font-size:8px;font-weight:800;letter-spacing:.15em;color:#98998c}
 .sparkle{position:absolute;z-index:2;color:#a2b98b;line-height:1;pointer-events:none}
 .sparkle-one{top:14%;left:14%;font-size:24px;animation:twinkle 4s ease-in-out infinite}
@@ -70,7 +80,9 @@ button:disabled{opacity:.38;cursor:not-allowed}
 .flip-hint span{font-size:13px;margin-left:3px}
 .card-back{align-items:center;justify-content:center;padding:28px;background:linear-gradient(145deg,#eaf0df,#f8f2e6);transform:rotateY(180deg);text-align:center}
 .back-sparkle{position:absolute;top:13%;right:15%;font-size:28px;color:#91aa76}
-.back-symbol{font-size:clamp(62px,15vw,100px);line-height:1;margin-bottom:18px;filter:drop-shadow(0 6px 5px #3332)}
+.back-symbol{font-size:clamp(62px,15vw,100px);line-height:1;margin-bottom:8px;filter:drop-shadow(0 6px 5px #3332)}
+.card-back .color-artwork:empty{display:none}
+.card-back .back-description{margin-top:7px}
 .back-title{font-size:clamp(23px,5vw,33px);letter-spacing:-.06em;font-weight:800}
 .back-description{max-width:290px;margin-top:10px;color:#656d5b;font-size:13px;line-height:1.65}
 .back-prompt{margin-top:24px;padding:9px 13px;border-radius:999px;background:#ffffff8c;font-size:10px;font-weight:700;color:#6c765f}
@@ -111,5 +123,5 @@ button:disabled{opacity:.38;cursor:not-allowed}
 @keyframes twinkle{0%,100%{opacity:.55;transform:scale(.9) rotate(-5deg)}50%{opacity:1;transform:scale(1.12) rotate(8deg)}}
 @keyframes cardArrive{0%{opacity:.78;transform:translateX(12px) scale(.99)}100%{opacity:1;transform:translateX(0) scale(1)}}
 @media(min-width:700px){.app{padding-top:28px}.welcome{padding-top:38px}.flashcard{aspect-ratio:1/1.02}.artwork{font-size:170px}.experience{max-width:600px;margin:0 auto}.welcome{max-width:600px;margin:0 auto}.mode-switch{max-width:600px;margin-left:auto;margin-right:auto}.topbar{max-width:600px;margin:0 auto}}
-@media(max-width:420px){.app{padding:12px 12px 22px}.topbar{padding:10px 11px}.brand small{font-size:9px}.brand strong{font-size:15px}.round-tool{padding:9px 10px}.welcome{padding-top:27px}.mode-button{gap:8px;padding:10px 8px}.mode-emoji{width:34px;height:34px}.new-tag{display:none}.collection-row h2{font-size:18px}.flashcard{border-radius:24px}.card-face{border-radius:23px}.art-backdrop{margin:8px 8px 0;border-radius:18px}.card-bottom{padding:13px 15px 15px}.flip-hint{font-size:7px}.reverse-button{top:10px;right:10px;padding:8px 9px}.controls{grid-template-columns:1fr 1.55fr 44px;gap:7px}.control-button{min-height:46px;padding:10px 8px}.parent-note{padding:14px;gap:10px}.footer{gap:8px;font-size:8px}.footer button{font-size:8px}}
+@media(max-width:420px){.app{padding:12px 12px 22px}.play-style-button{padding:8px 7px;gap:6px}.play-style-button>span:first-child{width:26px;height:26px}.play-style-button small{font-size:8px}.topbar{padding:10px 11px}.brand small{font-size:9px}.brand strong{font-size:15px}.round-tool{padding:9px 10px}.welcome{padding-top:27px}.mode-button{gap:8px;padding:10px 8px}.mode-emoji{width:34px;height:34px}.new-tag{display:none}.collection-row h2{font-size:18px}.flashcard{border-radius:24px}.card-face{border-radius:23px}.art-backdrop{margin:8px 8px 0;border-radius:18px}.card-bottom{padding:13px 15px 15px}.flip-hint{font-size:7px}.reverse-button{top:10px;right:10px;padding:8px 9px}.controls{grid-template-columns:1fr 1.55fr 44px;gap:7px}.control-button{min-height:46px;padding:10px 8px}.parent-note{padding:14px;gap:10px}.footer{gap:8px;font-size:8px}.footer button{font-size:8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
