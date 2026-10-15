@@ -501,7 +501,34 @@ function renderCard() {
   ui.flashcard.setAttribute("aria-label",isToddler?card.name+", "+card.animal+", number "+Math.min(card.designIndex+1,25):isPattern?card.name+", high-contrast pattern":card.name+", "+card.emoji);
 }
 
-/* Move to a card. Direction determines the soft swipe sound pitch. */
+/* Two tiny two-note sounds make Back and Next feel different.
+   They use the browser's audio engine, so no sound files need downloading. */
+function playNavigationSound(direction) {
+  if (!soundsEnabled) return;
+  const context = getAudioContext();
+  if (!context) return;
+
+  // Next rises like a little twinkle; Back falls like a soft bubble pop.
+  const notes = direction > 0 ? [523.25, 659.25] : [659.25, 523.25];
+  const start = context.currentTime;
+  notes.forEach((frequency, index) => {
+    const oscillator = context.createOscillator();
+    const gain = context.createGain();
+    const noteStart = start + index * 0.105;
+    const duration = 0.12;
+    oscillator.type = "sine";
+    oscillator.frequency.setValueAtTime(frequency, noteStart);
+    gain.gain.setValueAtTime(0.0001, noteStart);
+    gain.gain.exponentialRampToValueAtTime(0.018, noteStart + 0.018);
+    gain.gain.exponentialRampToValueAtTime(0.0001, noteStart + duration);
+    oscillator.connect(gain);
+    gain.connect(context.destination);
+    oscillator.start(noteStart);
+    oscillator.stop(noteStart + duration + 0.015);
+  });
+}
+
+/* Move to a card. The matching gentle sound only plays if the card changes. */
 function moveCard(direction) {
   const nextIndex = Math.max(0, Math.min(currentCards.length - 1, currentIndex + direction));
   if (nextIndex === currentIndex) return;
@@ -510,7 +537,7 @@ function moveCard(direction) {
   ui.flashcard.classList.remove("card-changing");
   void ui.flashcard.offsetWidth; // Restart the small arrival animation.
   ui.flashcard.classList.add("card-changing");
-  playTone(direction > 0 ? 659.25 : 587.33, 0.10, 0.022, "sine");
+  playNavigationSound(direction);
 }
 function chooseSurprise() {
   if (currentCards.length < 2) return;
