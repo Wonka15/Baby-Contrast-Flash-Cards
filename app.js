@@ -215,16 +215,6 @@ let soundsEnabled = true;
 let touchStartX = 0;
 let touchStartY = 0;
 let audioContext = null;
-let melodyTimer = null;
-let streamSource = null;
-let streamGain = null;
-let melodyGain = null;
-let melodyStep = 0;
-let activeMusicPreset = 0;
-let musicNoiseSource = null;
-let musicNoiseGain = null;
-const MUSIC_PRESETS = [{name:"Classical-inspired",description:"A gentle original piano-like melody"},{name:"Soothing nature",description:"Soft rain-like ambience and airy tones"},{name:"Baby lullaby",description:"A slow, simple music-box lullaby"}];
-
 /* Return the AudioContext only after a real user action. This respects
    browsers that block sound until a tap or click. */
 function getAudioContext() {
