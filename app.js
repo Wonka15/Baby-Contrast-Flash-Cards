@@ -114,12 +114,12 @@ const EVERYDAY_CARDS = [
 // Two hundred original vector designs, generated from distinct geometry seeds.
 const BABY_ANIMALS = ["Lion","Elephant","Monkey","Bee","Giraffe","Zebra","Tiger","Panda","Bear","Fox","Rabbit","Cat","Dog","Mouse","Owl","Duck","Penguin","Turtle","Frog","Fish","Whale","Dolphin","Octopus","Butterfly","Ladybug","Snail","Koala","Hippo","Rhino","Crocodile","Parrot","Flamingo","Kangaroo","Gorilla","Cheetah","Deer","Hedgehog","Peacock","Seal","Bat"];
 /* Baby Mode has 100 distinct contrast patterns and 100 unique emoji companions. */
-const BABY_BACK_EMOJIS = ["🐼","🐻","🐨","🐯","🦁","🐸","🐵","🐰","🐱","🐶","🐭","🐹","🐷","🐮","🐔","🐧","🐤","🦆","🦉","🦋","🐝","🐞","🐢","🐙","🐠","🐬","🐳","🦀","🐌","🦔","🐘","🦒","🦓","🦛","🦘","🦥","🦦","🦩","🦚","🦜","❤️","🤍","🖤","⭐","🌟","✨","☀️","🌙","☁️","🌈","🍎","🍐","🍊","🍋","🍉","🍇","🍓","🫐","🍒","🍑","🥕","🌽","🥦","🍄","🌻","🌼","🌷","🌹","🌱","🌳","🎈","🎀","🧸","🪁","⚽","🏀","🎾","🪇","🎵","🎶","🚗","🚕","🚌","🚂","🚲","🚀","✈️","🚁","⛵","🚤","🏠","🛏️","🪑","🧦","👒","👟","🍼","🔔","🎁","🧩"];
+const BABY_EMOJIS = ["🐼","🐻","🐨","🐯","🦁","🐸","🐵","🐰","🐱","🐶","🐭","🐹","🐷","🐮","🐔","🐧","🐤","🦆","🦉","🦋","🐝","🐞","🐢","🐙","🐠","🐬","🐳","🦀","🐌","🦔","🐘","🦒","🦓","🦛","🦘","🦥","🦦","🦩","🦚","🦜","❤️","🤍","🖤","⭐","🌟","✨","☀️","🌙","☁️","🌈","🍎","🍐","🍊","🍋","🍉","🍇","🍓","🫐","🍒","🍑","🥕","🌽","🥦","🍄","🌻","🌼","🌷","🌹","🌱","🌳","🎈","🎀","🧸","🪁","⚽","🏀","🎾","🪇","🎵","🎶","🚗","🚕","🚌","🚂","🚲","🚀","✈️","🚁","⛵","🚤","🏠","🛏️","🪑","🧦","👒","👟","🍼","🔔","🎁","🧩"];
 
 const BABY_CARDS = Array.from({length:100},(_,i)=>({
   name: "Pattern "+String(i+1).padStart(3,"0"),
-  icon: BABY_BACK_EMOJIS[i],
-  backEmoji: BABY_BACK_EMOJIS[i],
+  icon: BABY_EMOJIS[i],
+  emoji: BABY_EMOJIS[i],
   description: "A new high-contrast pattern and a friendly surprise.",
   type: "pattern",
   art: "contrast",
@@ -593,9 +593,9 @@ function renderCard() {
     ui.artwork.appendChild(drawContrastDesign(card.designIndex, false));
     const emoji = document.createElement("span");
     emoji.className = "baby-pattern-emoji";
-    emoji.textContent = card.backEmoji;
+    emoji.textContent = card.emoji;
     emoji.setAttribute("role", "img");
-    emoji.setAttribute("aria-label", "Baby-friendly emoji: " + card.backEmoji);
+    emoji.setAttribute("aria-label", "Baby-friendly emoji: " + card.emoji);
     ui.artwork.appendChild(emoji);
     ui.artwork.style.fontSize = "";
   } else {
@@ -614,7 +614,7 @@ function renderCard() {
   ui.next.disabled = currentIndex === currentCards.length - 1;
   ui.flashcard.setAttribute("aria-label", isToddler
     ? `${card.name}, ${card.animal}, number ${Math.min(card.designIndex + 1, 25)}`
-    : isPattern ? `${card.name}, high-contrast pattern with emoji ${card.backEmoji}` : card.name);
+    : isPattern ? `${card.name}, high-contrast pattern with emoji ${card.emoji}` : card.name);
 }
 
 /* Move to a card. Direction determines the soft swipe sound pitch. */
@@ -677,7 +677,7 @@ function setMode(mode) {
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
   });
-  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "100 unique patterns + 100 emoji surprises";
+  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "100 unique patterns + 100 emoji companions";
   ui.collectionKicker.textContent = mode === "toddler" ? language.toddlerKicker : language.babyKicker;
   renderCard();
   playTone(523.25, 0.12, 0.02);
