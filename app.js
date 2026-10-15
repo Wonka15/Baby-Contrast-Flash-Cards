@@ -362,9 +362,47 @@ function drawARFront(card) {
   const animal = document.createElement("div");
   animal.className = "ar-big-emoji";
   animal.textContent = card.emoji;
-  animal.setAttribute("role", "img");
-  animal.setAttribute("aria-label", card.animal);
+  animal.setAttribute("role", "button");
+  animal.setAttribute("tabindex", "0");
+  animal.setAttribute("aria-label", "Tap " + card.animal + " to dunk into water");
+  animal.setAttribute("aria-pressed", "false");
   wrap.appendChild(animal);
+
+  // A little pool sits behind the emoji. Tapping the animal makes it dive,
+  // throws up droplets, and sends a ripple across the water.
+  const water = document.createElement("div");
+  water.className = "ar-water-effect";
+  water.setAttribute("aria-hidden", "true");
+  const ripple = document.createElement("span");
+  ripple.className = "ar-water-ripple";
+  water.appendChild(ripple);
+  for (let dropIndex = 0; dropIndex < 8; dropIndex += 1) {
+    const drop = document.createElement("span");
+    drop.className = "ar-water-drop ar-water-drop-" + (dropIndex + 1);
+    water.appendChild(drop);
+  }
+  wrap.appendChild(water);
+
+  let splashTimer;
+  function splashIntoWater() {
+    // Restart cleanly if a child taps more than once during the splash.
+    window.clearTimeout(splashTimer);
+    wrap.classList.remove("water-dunking");
+    void wrap.offsetWidth;
+    wrap.classList.add("water-dunking");
+    animal.setAttribute("aria-pressed", "true");
+    splashTimer = window.setTimeout(() => {
+      wrap.classList.remove("water-dunking");
+      animal.setAttribute("aria-pressed", "false");
+    }, 1250);
+  }
+  animal.addEventListener("click", splashIntoWater);
+  animal.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      splashIntoWater();
+    }
+  });
 
   const caption = document.createElement("div");
   caption.className = "ar-animal-name";
@@ -418,7 +456,7 @@ function renderCard() {
     ? card.animal
     : isToddler ? card.name + " · " + card.animal : card.name;
   ui.label.textContent = isAR
-    ? "AR MODE DECK · DIMENSIONAL ANIMALS"
+    ? "ANIMATED MODE · TAP TO SPLASH"
     : isToddler
       ? "ABC ANIMAL FRIENDS"
       : isPattern ? "20 UNIQUE HIGH-CONTRAST PATTERNS" : "";
@@ -435,7 +473,7 @@ function renderCard() {
   ui.next.disabled = currentIndex === currentCards.length - 1;
 
   const accessibleCardName = isAR
-    ? card.animal + ", dimensional emoji card, letter " + card.symbol
+    ? card.animal + ", animated emoji card, letter " + card.symbol + ". Tap the emoji for a water splash"
     : isToddler
       ? card.name + ", " + card.animal
       : isPattern
