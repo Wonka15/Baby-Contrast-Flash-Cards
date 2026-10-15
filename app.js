@@ -24,7 +24,7 @@ const LANGUAGE_TEXT = {
     toddlerCollection: "A–Z with colorful animal emojis",
     babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
     look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
-    flipHint: "USE REVERSE TO TURN", next: "Next card", previous: "Back",
+next: "Next card", previous: "Back",
     mute: "Mute", unmute: "Sound on", melody: "Melody"
   }
 };
@@ -113,9 +113,7 @@ const EVERYDAY_CARDS = [
    25 animals, and 25 familiar objects. */
 // Two hundred original vector designs, generated from distinct geometry seeds.
 const BABY_ANIMALS = ["Lion","Elephant","Monkey","Bee","Giraffe","Zebra","Tiger","Panda","Bear","Fox","Rabbit","Cat","Dog","Mouse","Owl","Duck","Penguin","Turtle","Frog","Fish","Whale","Dolphin","Octopus","Butterfly","Ladybug","Snail","Koala","Hippo","Rhino","Crocodile","Parrot","Flamingo","Kangaroo","Gorilla","Cheetah","Deer","Hedgehog","Peacock","Seal","Bat"];
-/* Baby Mode has exactly 100 numbered designs. Each front uses a different
-   parameter set; each reverse pairs a unique baby-friendly emoji with a
-   separate red/white/black contrast design. */
+/* Baby Mode has 100 distinct contrast patterns and 100 unique emoji companions. */
 const BABY_BACK_EMOJIS = ["🐼","🐻","🐨","🐯","🦁","🐸","🐵","🐰","🐱","🐶","🐭","🐹","🐷","🐮","🐔","🐧","🐤","🦆","🦉","🦋","🐝","🐞","🐢","🐙","🐠","🐬","🐳","🦀","🐌","🦔","🐘","🦒","🦓","🦛","🦘","🦥","🦦","🦩","🦚","🦜","❤️","🤍","🖤","⭐","🌟","✨","☀️","🌙","☁️","🌈","🍎","🍐","🍊","🍋","🍉","🍇","🍓","🫐","🍒","🍑","🥕","🌽","🥦","🍄","🌻","🌼","🌷","🌹","🌱","🌳","🎈","🎀","🧸","🪁","⚽","🏀","🎾","🪇","🎵","🎶","🚗","🚕","🚌","🚂","🚲","🚀","✈️","🚁","⛵","🚤","🏠","🛏️","🪑","🧦","👒","👟","🍼","🔔","🎁","🧩"];
 
 const BABY_CARDS = Array.from({length:100},(_,i)=>({
@@ -175,21 +173,16 @@ const ui = {
   flashcard: document.getElementById("flashcard"),
   cardArea: document.getElementById("card-area"),
   artwork: document.getElementById("artwork"),
-  colorArtwork: document.getElementById("color-artwork"),
   backdrop: document.getElementById("art-backdrop"),
   word: document.getElementById("card-word"),
   label: document.getElementById("art-label"),
   count: document.getElementById("card-count"),
   collectionTitle: document.getElementById("collection-title"),
   collectionKicker: document.getElementById("collection-kicker"),
-  backSymbol: document.getElementById("back-symbol"),
-  backTitle: document.getElementById("back-title"),
-  backDescription: document.getElementById("back-description"),
   progress: document.getElementById("progress-bar"),
   progressLabel: document.getElementById("progress-label"),
   previous: document.getElementById("previous-button"),
   next: document.getElementById("next-button"),
-  reverse: document.getElementById("reverse-button"),
   surprise: document.getElementById("surprise-button"),
   melody: document.getElementById("melody-button"),
   soundToggle: document.getElementById("sound-toggle"),
@@ -225,7 +218,7 @@ function getAudioContext() {
   return audioContext;
 }
 
-/* A short, soft tone used for card swipes and reversing a card. */
+/* A short, soft tone used for card navigation. */
 function playTone(frequency = 660, duration = 0.11, volume = 0.035, wave = "sine") {
   if (!soundsEnabled) return;
   const context = getAudioContext();
@@ -421,9 +414,7 @@ function drawContrastDesign(index, reveal = false) {
   return svg;
 }
 
-/* Original animal portraits are drawn with SVG—not emoji glyphs.
-   Babies see simple black/white shapes with a small red accent; the
-   reverse side reveals a friendly color version of the same portrait. */
+/* Original animal portraits use bold vector shapes for infant viewing. */
 function drawAnimalFace(name, colored = false) {
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
@@ -576,55 +567,36 @@ function drawToddlerFront(card) {
   return wrap;
 }
 
-function drawToddlerNumber(card) {
-  const wrap = document.createElement("div");
-  wrap.className = "toddler-number-face";
-  const label = document.createElement("div");
-  label.className = "toddler-number-label";
-  label.textContent = "LET'S COUNT!";
-  const number = document.createElement("div");
-  number.className = "toddler-big-number number-color-" + (card.designIndex % 8);
-  number.textContent = String(Math.min(card.designIndex + 1, 25));
-  const stars = document.createElement("div");
-  stars.className = "toddler-number-stars";
-  stars.textContent = ["⭐ 🌈 ⭐","❤️ ⭐ ❤️","🌟 🎈 🌟","🦋 ⭐ 🦋"][card.designIndex % 4];
-  wrap.append(label, number, stars);
-  return wrap;
-}
-
 /* Every card shares the same layout. Only the illustration and labels
    change. This makes adding cards much simpler than writing new HTML. */
 function renderCard() {
   const card = currentCards[currentIndex];
-  const isPattern = card.type === "pattern";
   const isToddler = currentMode === "toddler";
   const isAnimal = currentMode === "baby" && card.group === "Animals";
+  const isPattern = card.type === "pattern";
   ui.artwork.replaceChildren();
-  ui.colorArtwork.replaceChildren();
   ui.artwork.classList.toggle("emoji-art", false);
   ui.artwork.classList.toggle("toddler-art", isToddler);
   ui.artwork.classList.toggle("animal-art", isAnimal);
   if (isToddler) {
-    // Front shows a giant colorful letter and a large, friendly animal emoji.
     ui.artwork.appendChild(drawToddlerFront(card));
-    // Reverse teaches counting with a giant number from 1 to 25.
-    ui.colorArtwork.appendChild(drawToddlerNumber(card));
+    const badge = document.createElement("span");
+    badge.className = "toddler-count-badge number-color-" + (card.designIndex % 8);
+    badge.textContent = String(Math.min(card.designIndex + 1, 25));
+    badge.setAttribute("aria-label", "Number " + badge.textContent);
+    ui.artwork.appendChild(badge);
     ui.artwork.style.fontSize = "";
   } else if (isAnimal) {
     ui.artwork.appendChild(drawAnimalFace(card.name, false));
-    // The reverse reveals a separate bold pattern instead of repeating the portrait.\n    ui.colorArtwork.appendChild(drawContrastDesign((card.designIndex * 3 + 29) % 160, true));
     ui.artwork.style.fontSize = "";
   } else if (isPattern) {
-    // Front: one of 100 distinct red, white, and black patterns.
     ui.artwork.appendChild(drawContrastDesign(card.designIndex, false));
-    // Back: a different contrast pattern plus this card's unique emoji.
-    ui.colorArtwork.appendChild(drawContrastDesign((card.designIndex + 37) % 200, true));
-    const surpriseEmoji = document.createElement("span");
-    surpriseEmoji.className = "surprise-emoji";
-    surpriseEmoji.textContent = card.backEmoji;
-    surpriseEmoji.setAttribute("role", "img");
-    surpriseEmoji.setAttribute("aria-label", "Baby-friendly surprise: " + card.name);
-    ui.colorArtwork.appendChild(surpriseEmoji);
+    const emoji = document.createElement("span");
+    emoji.className = "baby-pattern-emoji";
+    emoji.textContent = card.backEmoji;
+    emoji.setAttribute("role", "img");
+    emoji.setAttribute("aria-label", "Baby-friendly emoji: " + card.backEmoji);
+    ui.artwork.appendChild(emoji);
     ui.artwork.style.fontSize = "";
   } else {
     const picture = document.createElement("span");
@@ -632,38 +604,17 @@ function renderCard() {
     picture.setAttribute("aria-hidden", "true");
     ui.artwork.appendChild(picture);
     ui.artwork.style.fontSize = "";
-    const colorPicture = document.createElement("span");
-    colorPicture.textContent = card.icon;
-    colorPicture.setAttribute("aria-hidden", "true");
-    ui.colorArtwork.appendChild(colorPicture);
   }
-  ui.word.textContent = card.name;
-  ui.label.textContent = isToddler ? "ABC ANIMAL ADVENTURES" : card.group.toUpperCase();
-  ui.backSymbol.textContent = card.symbol || card.icon;
-  ui.backSymbol.hidden = isAnimal || isToddler || isPattern;
-  ui.backTitle.textContent = isToddler ? `Number ${Math.min(card.designIndex + 1, 25)}` : card.type === "letter" ? `Letter ${card.name}` : card.type === "number" ? `Number ${card.name}` : card.name;
-  ui.backDescription.textContent = card.description;
+  ui.word.textContent = isToddler ? card.name + " · " + card.animal : card.name;
+  ui.label.textContent = isToddler ? "ABC ANIMAL ADVENTURES" : (isPattern ? "HIGH-CONTRAST PATTERN" : card.group.toUpperCase());
   ui.count.innerHTML = `${String(currentIndex + 1).padStart(2,"0")} <span>/ ${currentCards.length}</span>`;
   ui.progress.style.width = `${((currentIndex + 1) / currentCards.length) * 100}%`;
   ui.progressLabel.textContent = isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
-  ui.flashcard.classList.remove("is-flipped");
   ui.flashcard.setAttribute("aria-label", isToddler
-    ? `${card.name} for ${card.animal}. Use the Reverse button to see the counting number.`
-    : `${card.name}. Use the Reverse button to see the other side.`);
-  ui.reverse.setAttribute("aria-label", "Show the other side of the card");
-  ui.reverse.setAttribute("title", "Show the other side");
-}
-
-/* Keep card turning in one function; the Reverse button calls it. */
-function flipCard() {
-  const shouldFlip = !ui.flashcard.classList.contains("is-flipped");
-  ui.flashcard.classList.toggle("is-flipped", shouldFlip);
-  ui.reverse.setAttribute("aria-label", shouldFlip ? "Show the front of the card" : "Show the other side of the card");
-  ui.reverse.setAttribute("title", shouldFlip ? "Show front" : "Show other side");
-  if (shouldFlip) playTone(523.25, 0.16, 0.025, "sine");
-  else playTone(392, 0.13, 0.022, "sine");
+    ? `${card.name}, ${card.animal}, number ${Math.min(card.designIndex + 1, 25)}`
+    : isPattern ? `${card.name}, high-contrast pattern with emoji ${card.backEmoji}` : card.name);
 }
 
 /* Move to a card. Direction determines the soft swipe sound pitch. */
@@ -732,11 +683,6 @@ function setMode(mode) {
   playTone(523.25, 0.12, 0.02);
 }
 
-/* Tap twice quickly to flip. A single tap does not accidentally turn the
-   card over, so a parent can tap once before swiping to the next card.
-   Keyboard activation remains available through Enter or Space. */
-// Turning the card is a deliberate button action, never a double-tap.
-ui.reverse.addEventListener("click", flipCard);
 ui.previous.addEventListener("click", () => moveCard(-1));
 ui.next.addEventListener("click", () => moveCard(1));
 ui.surprise.addEventListener("click", chooseSurprise);
