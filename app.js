@@ -281,6 +281,31 @@ function skipRadioStation(){
   chooseRadioStation(next);playRadio();
 }
 /* Twenty intentionally different hand-designed vector compositions. */
+/* Decorative stars are limited to white and red to preserve Baby Mode's
+   strict high-contrast palette. Positions are fixed so they feel calm and familiar. */
+function addBabyStarLayer(stage) {
+  const positions = [
+    [10, 13, 19], [25, 8, 13], [48, 13, 16], [74, 9, 12],
+    [89, 22, 18], [9, 43, 12], [91, 52, 13], [14, 75, 17],
+    [31, 91, 12], [53, 86, 19], [76, 91, 14], [88, 73, 16],
+    [35, 27, 10], [68, 37, 12], [27, 61, 11], [72, 67, 10]
+  ];
+  const layer = document.createElement("div");
+  layer.className = "baby-star-layer";
+  layer.setAttribute("aria-hidden", "true");
+  positions.forEach(([left, top, size], index) => {
+    const star = document.createElement("span");
+    star.className = "baby-twinkle-star" + (index % 4 === 0 ? " is-red" : "");
+    star.textContent = "★";
+    star.style.left = left + "%";
+    star.style.top = top + "%";
+    star.style.setProperty("--star-size", size + "px");
+    star.style.setProperty("--star-delay", ((index % 6) * -0.43) + "s");
+    layer.appendChild(star);
+  });
+  stage.appendChild(layer);
+}
+
 function drawContrastDesign(index) {
   const ns="http://www.w3.org/2000/svg",svg=document.createElementNS(ns,"svg");
   svg.setAttribute("viewBox","0 0 400 400");svg.setAttribute("role","img");
@@ -517,10 +542,15 @@ function renderCard() {
   } else if (isToddler) {
     ui.artwork.appendChild(drawToddlerFront(card));
   } else if (isPattern) {
-    ui.artwork.appendChild(drawContrastDesign(card.designIndex));
+    const stage = document.createElement("div");
+    stage.className = "baby-pattern-stage";
+    stage.appendChild(drawContrastDesign(card.designIndex));
+    addBabyStarLayer(stage);
+    ui.artwork.appendChild(stage);
   } else if (isBabyEmoji) {
     const stage = document.createElement("div");
     stage.className = "baby-emoji-stage emoji-tone-" + (card.designIndex % 5);
+    addBabyStarLayer(stage);
 
     const emoji = document.createElement("span");
     emoji.className = "baby-emoji-symbol";
