@@ -251,8 +251,7 @@ const RADIO_STATIONS = [
   {name:"KUSC Classical",subtitle:"Classical music · Los Angeles",url:"https://radiostationsusa.com/california/los-angeles/kusc-los-angeles/",stream:"https://playerservices.streamtheworld.com/api/livestream-redirect/KUSCMP128_SC",kind:"audio",art:"𝄞"},
   {name:"Disney Resorts Radio",subtitle:"Disney classics · iHeart",url:"https://www.iheart.com/live/disney-resorts-radio-9414",kind:"page",art:"✦"},
   {name:"CoComelon",subtitle:"Songs for little ones · iHeart",url:"https://www.iheart.com/artist/cocomelon-33660833",kind:"page",art:"♫"},
-  {name:"Fun Kids Naps",subtitle:"Gentle nap-time music",url:"https://www.funkidslive.com/player/naps/",kind:"page",art:"☾"},
-  {name:"WFMT Classical",subtitle:"Classical music · Chicago",url:"https://www.wfmt.com/listen",stream:"https://stream.wfmt.com/main-mp3",kind:"audio",art:"𝄢"}
+  {name:"WFMT Classical",subtitle:"Classical music · Chicago",url:"https://www.wfmt.com/listen/",stream:"https://stream.wfmt.com/main-mp3",kind:"audio",art:"𝄢"}
 ];
 let selectedRadioIndex=0;
 let radioIsPlaying=false;
@@ -495,7 +494,7 @@ function renderCard() {
     const emoji=document.createElement("span");emoji.className="baby-emoji-symbol";emoji.textContent=card.emoji;emoji.setAttribute("role","img");emoji.setAttribute("aria-label",card.name);stage.appendChild(emoji);ui.artwork.appendChild(stage);ui.artwork.style.fontSize="";
   }else{const picture=document.createElement("span");picture.textContent=card.icon;picture.setAttribute("aria-hidden","true");ui.artwork.appendChild(picture);ui.artwork.style.fontSize="";}
   ui.word.textContent=isToddler?card.name+" · "+card.animal:card.name;
-  ui.label.textContent=isToddler?"ABC ANIMAL ADVENTURES":isPattern?"20 UNIQUE HIGH-CONTRAST PATTERNS":"20 HIGH-CONTRAST EMOJI CARDS";
+  ui.label.textContent=isToddler?"ABC ANIMAL ADVENTURES":isPattern?"20 UNIQUE HIGH-CONTRAST PATTERNS":"";
   ui.count.innerHTML=String(currentIndex+1).padStart(2,"0")+' <span>/ '+currentCards.length+"</span>";
   ui.progress.style.width=((currentIndex+1)/currentCards.length*100)+"%";ui.progressLabel.textContent=isToddler?"GROWING TOGETHER":"A LITTLE AT A TIME";
   ui.previous.disabled=currentIndex===0;ui.next.disabled=currentIndex===currentCards.length-1;
