@@ -211,3 +211,109 @@ button:disabled{opacity:.38;cursor:not-allowed}
 .radio-note{margin:12px 2px 0;color:#999ba5;font-size:9px;line-height:1.55}
 @media(max-width:420px){.radio-panel{padding:14px;border-radius:24px}.radio-now-playing{padding:11px}.radio-station-art{width:54px;height:54px}.radio-play{min-width:94px}.radio-open-link{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.radio-station-art.radio-playing{animation:none}.radio-play,.radio-skip{transition:none}}
+
+
+/* Tactile polish: soft raised edges, a quiet halo, and a real press-down feel. */
+.control-button,
+.mode-button,
+.play-style-button,
+.round-tool,
+.radio-play,
+.radio-skip {
+  -webkit-tap-highlight-color: transparent;
+  transform: translateY(0);
+  transition:
+    transform 150ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    border-color 180ms ease,
+    filter 180ms ease;
+}
+.control-button {
+  border-color: rgba(255,255,255,.82);
+  box-shadow:
+    0 5px 0 rgba(54,62,45,.09),
+    0 8px 18px rgba(43,51,35,.10),
+    inset 0 1px 0 rgba(255,255,255,.92);
+}
+.control-button.secondary {
+  background: linear-gradient(160deg, #fff, #f3f4ed);
+  box-shadow:
+    0 4px 0 #dfe2d7,
+    0 7px 15px rgba(43,51,35,.09),
+    inset 0 1px 0 #fff;
+}
+.control-button.primary {
+  background: linear-gradient(150deg, #46563a, #293526);
+  border-color: rgba(255,255,255,.36);
+  box-shadow:
+    0 4px 0 #20291d,
+    0 7px 18px rgba(48,65,38,.24),
+    0 0 0 1px rgba(255,255,255,.28),
+    0 0 18px rgba(134,164,102,.20),
+    inset 0 1px 0 rgba(255,255,255,.26);
+}
+@media (hover:hover) {
+  .control-button:hover,
+  .radio-play:hover,
+  .radio-skip:hover,
+  .round-tool:hover {
+    filter: brightness(1.035);
+  }
+  .control-button.primary:hover {
+    box-shadow:
+      0 4px 0 #20291d,
+      0 9px 22px rgba(48,65,38,.26),
+      0 0 0 1px rgba(255,255,255,.34),
+      0 0 24px rgba(134,164,102,.30),
+      inset 0 1px 0 rgba(255,255,255,.30);
+  }
+}
+.control-button:active,
+.radio-play:active,
+.radio-skip:active,
+.round-tool:active {
+  transform: translateY(3px) scale(.985);
+  box-shadow: 0 1px 2px rgba(35,42,30,.13), inset 0 2px 4px rgba(30,35,25,.10);
+}
+.control-button:disabled {
+  opacity: .42;
+  cursor: not-allowed;
+  filter: saturate(.55);
+  box-shadow: 0 2px 0 rgba(54,62,45,.05), inset 0 1px 0 rgba(255,255,255,.7);
+}
+.control-button:focus-visible,
+.mode-button:focus-visible,
+.play-style-button:focus-visible,
+.round-tool:focus-visible,
+.radio-play:focus-visible,
+.radio-skip:focus-visible {
+  outline: 3px solid rgba(132,151,218,.75);
+  outline-offset: 3px;
+}
+.mode-button.active,
+.play-style-button.active {
+  box-shadow:
+    0 4px 0 rgba(74,85,61,.07),
+    0 7px 17px rgba(43,51,35,.08),
+    0 0 0 1px rgba(255,255,255,.9),
+    0 0 17px rgba(162,183,137,.16),
+    inset 0 1px 0 #fff;
+}
+.mode-button:active,
+.play-style-button:active {
+  transform: translateY(2px) scale(.99);
+}
+.radio-play {
+  box-shadow:
+    0 4px 0 #111218,
+    0 8px 18px rgba(37,38,49,.22),
+    0 0 17px rgba(120,123,180,.16),
+    inset 0 1px 0 rgba(255,255,255,.30);
+}
+.radio-skip {
+  box-shadow:
+    0 4px 0 #dedfe8,
+    0 7px 14px rgba(34,37,53,.08),
+    inset 0 1px 0 #fff;
+}
