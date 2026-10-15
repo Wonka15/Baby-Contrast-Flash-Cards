@@ -390,3 +390,60 @@ button:disabled{opacity:.38;cursor:not-allowed}
 @keyframes ar-sparkle-twinkle{0%,100%{opacity:.45;transform:scale(.82) rotate(0)}50%{opacity:1;transform:scale(1.14) rotate(12deg)}}
 @media(max-width:420px){.ar-mode-button{gap:10px;padding:12px;border-radius:19px}.ar-mode-gem{width:41px;height:41px;flex-basis:41px}.ar-mode-copy strong{font-size:13px}.ar-mode-copy small{font-size:9px}.ar-hero{min-height:270px;border-radius:19px}}
 @media(prefers-reduced-motion:reduce){.ar-mode-button:before,.ar-big-emoji,.ar-card-sparkle{animation:none!important}}
+
+
+/* AR polish pass: cleaner letter edges, traveling animal, and colorful gems. */
+.ar-hero{overflow:hidden;contain:paint}
+.ar-big-letter{
+  position:absolute;top:12%;left:12%;z-index:2;margin:0;
+  color:#0878e8;
+  -webkit-text-stroke:0;
+  text-shadow:0 2px 0 #d8efff,0 4px 0 #7bbcff,0 7px 0 #398fe0,0 9px 12px #075eb52b;
+  filter:none;
+  transform:none;
+  letter-spacing:-.065em;
+}
+.ar-big-emoji{
+  position:absolute;z-index:2;top:35%;left:35%;margin:0;
+  width:30%;height:35%;display:grid;place-items:center;
+  font-size:clamp(100px,29vw,174px);line-height:1;
+  filter:drop-shadow(0 4px 0 #ffffffd9) drop-shadow(0 8px 6px #086fc42e);
+  transform:none;
+  animation:ar-animal-corner-tour 12s cubic-bezier(.45,0,.55,1) infinite;
+  will-change:top,left,transform;
+}
+@keyframes ar-animal-corner-tour{
+  0%,100%{top:35%;left:35%;transform:translate(-5%,-4%) rotate(-3deg) scale(1)}
+  22%{top:18%;left:57%;transform:translate(-5%,0) rotate(5deg) scale(.92)}
+  48%{top:43%;left:58%;transform:translate(0,-3%) rotate(2deg) scale(1.04)}
+  73%{top:43%;left:12%;transform:translate(0,-3%) rotate(-5deg) scale(.94)}
+}
+.ar-animal-name{position:absolute;left:50%;bottom:11%;z-index:4;transform:translateX(-50%);white-space:nowrap}
+.ar-card-sparkle{z-index:3;display:grid;place-items:center;line-height:1;animation:ar-color-twinkle 2.8s ease-in-out infinite}
+.ar-card-sparkle.ar-sparkle-blue{color:#138bff;text-shadow:0 0 5px #fff,0 0 14px #4caaff}
+.ar-card-sparkle.ar-sparkle-violet{color:#9a71ff;text-shadow:0 0 5px #fff,0 0 13px #a58aff}
+.ar-card-sparkle.ar-sparkle-pink{color:#ff6eb4;text-shadow:0 0 5px #fff,0 0 13px #ff9bce}
+.ar-card-sparkle.ar-sparkle-teal{color:#19c9c2;text-shadow:0 0 5px #fff,0 0 13px #73eee7}
+.ar-card-sparkle.ar-sparkle-gold{color:#ffbf43;text-shadow:0 0 5px #fff,0 0 13px #ffdc7a}
+.ar-sparkle-a{top:15%;left:47%;font-size:25px;animation-delay:-.3s}
+.ar-sparkle-b{top:13%;right:15%;font-size:25px;animation-delay:-1.1s}
+.ar-sparkle-c{top:34%;right:8%;font-size:20px;animation-delay:-.7s}
+.ar-sparkle-d{top:56%;right:16%;font-size:23px;animation-delay:-1.8s}
+.ar-sparkle-e{right:27%;bottom:14%;font-size:26px;animation-delay:-.4s}
+.ar-sparkle-f{left:21%;bottom:19%;font-size:32px;animation-delay:-1.5s}
+.ar-sparkle-g{top:48%;left:9%;font-size:24px;animation-delay:-.9s}
+.ar-sparkle-h{top:25%;left:20%;font-size:19px;animation-delay:-2s}
+.ar-sparkle-i{top:67%;left:43%;font-size:18px;animation-delay:-1.3s}
+.ar-sparkle-j{top:19%;left:8%;font-size:15px;animation-delay:-.6s}
+@keyframes ar-color-twinkle{
+  0%,100%{opacity:.42;transform:scale(.72) rotate(-8deg)}
+  48%{opacity:1;transform:scale(1.22) rotate(18deg)}
+}
+@media(max-width:420px){
+  .ar-big-emoji{font-size:clamp(100px,29vw,145px);width:35%;height:38%}
+  .ar-big-letter{top:12%;left:12%;font-size:clamp(76px,22vw,118px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .ar-big-emoji,.ar-card-sparkle{animation:none!important}
+  .ar-big-emoji{top:33%;left:35%;transform:none}
+}
