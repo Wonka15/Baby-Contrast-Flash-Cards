@@ -135,7 +135,7 @@ const ui = {
 };
 const toddlerCards = makeToddlerCards();
 
-/* AR Mode Deck uses the exact 26 animals requested. The browser's native
+/* Animated Mode uses the exact 26 animals requested. The browser's native
    emoji artwork gets layered shadows and highlights for a 3D-style look. */
 const AR_ANIMALS = [
   ["Octopus", "🐙"], ["Spider", "🕷️"], ["Fly", "🪰"], ["Snail", "🐌"],
@@ -153,9 +153,9 @@ function makeARCards() {
     emoji,
     icon: emoji,
     symbol: animal.charAt(0).toUpperCase(),
-    description: animal + " in the AR Mode Deck.",
+    description: animal + " in Animated Mode.",
     type: "ar",
-    group: "AR Mode Deck",
+    group: "Animated Mode",
     designIndex
   }));
 }
@@ -549,7 +549,7 @@ function setMode(mode) {
     ? "26 dimensional animal emojis"
     : mode === "toddler" ? language.toddlerCollection : language.babyCollection;
   ui.collectionKicker.textContent = isAR
-    ? "THE SPARKLING 3D-STYLE COLLECTION"
+    ? "ANIMATED ANIMAL COLLECTION"
     : mode === "toddler" ? language.toddlerKicker : language.babyKicker;
 
   renderCard();
