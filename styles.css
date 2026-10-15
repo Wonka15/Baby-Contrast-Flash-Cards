@@ -317,3 +317,44 @@ button:disabled{opacity:.38;cursor:not-allowed}
     0 7px 14px rgba(34,37,53,.08),
     inset 0 1px 0 #fff;
 }
+
+
+/* Back button: a soft sage companion to Next, with a clear directional cue. */
+#previous-button {
+  position: relative;
+  overflow: hidden;
+  gap: 9px;
+  color: #43583c;
+  border-color: rgba(255,255,255,.95);
+  background: linear-gradient(150deg, #f8fbf2 0%, #e4eddc 100%);
+  box-shadow:
+    0 4px 0 #c9d7bf,
+    0 7px 15px rgba(63,86,53,.10),
+    inset 0 1px 0 rgba(255,255,255,.98);
+}
+#previous-button svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  padding: 2px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.66);
+  filter: drop-shadow(0 1px 0 rgba(255,255,255,.65));
+}
+@media (hover:hover) {
+  #previous-button:hover {
+    background: linear-gradient(150deg, #fff 0%, #e0ecd6 100%);
+    box-shadow:
+      0 4px 0 #c2d2b7,
+      0 9px 19px rgba(63,86,53,.14),
+      0 0 15px rgba(142,184,127,.16),
+      inset 0 1px 0 #fff;
+  }
+}
+#previous-button:active {
+  box-shadow: 0 1px 2px rgba(35,42,30,.13), inset 0 2px 4px rgba(30,35,25,.10);
+}
+#previous-button:disabled {
+  color: #7f8778;
+  background: linear-gradient(150deg, #f2f3ed, #e8eae2);
+}
