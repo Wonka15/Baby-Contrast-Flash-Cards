@@ -35,17 +35,23 @@
         <option value="0">KUSC Classical · Los Angeles</option>
         <option value="1">Disney Resorts Radio · iHeart</option>
         <option value="2">CoComelon · iHeart</option>
-        <option value="3">WFMT Classical</option>
+        <option value="3">YouTube music video 1</option>
+        <option value="4">YouTube music video 2</option>
+        <option value="5">YouTube music video 3</option>
+        <option value="6">YouTube music video 4</option>
+        <option value="7">YouTube music video 5</option>
+        <option value="8">YouTube music video 6</option>
+        <option value="9">YouTube music video 7</option>
       </select>
       <div class="radio-controls">
         <button id="radio-next" class="radio-skip" type="button" aria-label="Next station" title="Next station">‹‹</button>
         <button id="radio-play" class="radio-play" type="button" aria-label="Play selected station"><span aria-hidden="true">▶</span><span>Play</span></button>
         <a id="radio-open" class="radio-open-link" href="https://radiostationsusa.com/california/los-angeles/kusc-los-angeles/" target="_blank" rel="noopener noreferrer">Open station website</a>
       </div>
-      <label class="radio-volume-control" for="radio-volume"><span>Volume</span><input id="radio-volume" type="range" min="0" max="100" value="65" aria-label="Radio volume"><output>65%</output></label>
+      <label id="radio-volume-wrap" class="radio-volume-control" for="radio-volume"><span>Volume</span><input id="radio-volume" type="range" min="0" max="100" value="65" aria-label="Radio volume"><output>65%</output></label>
       <audio id="radio-audio" preload="none" playsinline></audio>
       <div class="radio-embed-wrap"><iframe id="radio-frame" title="Selected station web player" hidden allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe></div>
-      <p class="radio-note">Live stations need an internet connection. Some providers may open their own player or require their website.</p>
+      <p class="radio-note">Streaming needs an internet connection. YouTube videos play in the player below; if a video cannot be embedded, use Open on YouTube.</p>
     </section>
 
     <section class="welcome">
