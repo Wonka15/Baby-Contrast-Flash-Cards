@@ -170,6 +170,10 @@ let currentCards = BABY_CARDS;
 let currentIndex = 0;
 let soundsEnabled = true;
 let audioContext = null;
+let motionEffectsEnabled = false;
+let lastMotionBurstAt = 0;
+let lastGravity = null;
+let motionBurstTimer = null;
 /* Return the AudioContext only after a real user action. This respects
    browsers that block sound until a tap or click. */
 function getAudioContext() {
@@ -412,7 +416,84 @@ function drawARFront(card) {
   caption.textContent = card.animal;
   wrap.appendChild(caption);
 
+  // Motion permission must be requested from a direct tap on iOS Safari.
+  const motionButton = document.createElement("button");
+  motionButton.className = "ar-motion-button";
+  motionButton.type = "button";
+  motionButton.textContent = motionEffectsEnabled ? "Shake effects on" : "Enable shake effects";
+  motionButton.setAttribute("aria-label", "Enable motion-controlled splash effects");
+  motionButton.addEventListener("click", async () => {
+    const MotionEvent = window.DeviceMotionEvent;
+    if (!MotionEvent) {
+      motionButton.textContent = "Tap for extra effects";
+      triggerMotionBurst(wrap);
+      return;
+    }
+    try {
+      if (typeof MotionEvent.requestPermission === "function") {
+        const permission = await MotionEvent.requestPermission();
+        if (permission !== "granted") {
+          motionButton.textContent = "Tap for extra effects";
+          return;
+        }
+      }
+      motionEffectsEnabled = true;
+      motionButton.textContent = "Shake effects on";
+      motionButton.classList.add("is-enabled");
+      if (!window.__littleLookMotionListenerAdded) {
+        window.addEventListener("devicemotion", handleDeviceMotion, { passive: true });
+        window.__littleLookMotionListenerAdded = true;
+      }
+    } catch {
+      motionButton.textContent = "Tap for extra effects";
+    }
+  });
+  wrap.appendChild(motionButton);
+
   return wrap;
+}
+
+/* Shake detection is deliberately thresholded and throttled so ordinary
+   hand movement does not overwhelm little learners with constant effects. */
+function triggerMotionBurst(hero) {
+  if (!hero || currentMode !== "ar") return;
+  window.clearTimeout(motionBurstTimer);
+  hero.classList.remove("water-dunking", "motion-burst");
+  void hero.offsetWidth;
+  hero.classList.add("water-dunking", "motion-burst");
+  motionBurstTimer = window.setTimeout(() => {
+    hero.classList.remove("water-dunking", "motion-burst");
+  }, 1350);
+}
+
+function handleDeviceMotion(event) {
+  if (!motionEffectsEnabled || currentMode !== "ar" || document.hidden) return;
+  const now = Date.now();
+  if (now - lastMotionBurstAt < 950) return;
+
+  // Prefer gravity-free acceleration; compare gravity readings as a fallback.
+  let strength = 0;
+  if (event.acceleration && Number.isFinite(event.acceleration.x)) {
+    const { x = 0, y = 0, z = 0 } = event.acceleration;
+    strength = Math.sqrt(x * x + y * y + z * z);
+  } else if (event.accelerationIncludingGravity) {
+    const { x = 0, y = 0, z = 0 } = event.accelerationIncludingGravity;
+    const current = { x, y, z };
+    if (lastGravity) {
+      strength = Math.sqrt(
+        (x - lastGravity.x) ** 2 +
+        (y - lastGravity.y) ** 2 +
+        (z - lastGravity.z) ** 2
+      );
+    }
+    lastGravity = current;
+  }
+
+  if (strength > 12) {
+    lastMotionBurstAt = now;
+    triggerMotionBurst(ui.artwork.querySelector(".ar-hero"));
+    playTone(740, 0.08, 0.012, "sine");
+  }
 }
 
 /* Every card shares the same layout. Only the illustration and labels
