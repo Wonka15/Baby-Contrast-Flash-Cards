@@ -20,7 +20,7 @@
 const LANGUAGE_TEXT = {
   en: {
     babyMode: "Baby", toddlerMode: "Toddler",
-    babyCollection: "Shapes & little things",
+    babyCollection: "Shapes, animals & little things",
     toddlerCollection: "Letters & numbers",
     babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
     look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
@@ -141,6 +141,7 @@ const ui = {
   flashcard: document.getElementById("flashcard"),
   cardArea: document.getElementById("card-area"),
   artwork: document.getElementById("artwork"),
+  colorArtwork: document.getElementById("color-artwork"),
   backdrop: document.getElementById("art-backdrop"),
   word: document.getElementById("card-word"),
   label: document.getElementById("art-label"),
@@ -159,10 +160,13 @@ const ui = {
   melody: document.getElementById("melody-button"),
   soundToggle: document.getElementById("sound-toggle"),
   modeButtons: [...document.querySelectorAll("[data-mode]")],
+  playStyleButtons: [...document.querySelectorAll("[data-play-style]")],
   aboutDialog: document.getElementById("about-dialog")
 };
 const toddlerCards = makeToddlerCards();
 let currentMode = "baby";
+let playStyle = "play";
+let watchTimer = null;
 let currentCards = BABY_CARDS;
 let currentIndex = 0;
 let soundsEnabled = true;
@@ -346,14 +350,126 @@ function drawPattern(style) {
   return svg;
 }
 
+/* Original animal portraits are drawn with SVG—not emoji glyphs.
+   Babies see simple black/white shapes with a small red accent; the
+   reverse side reveals a friendly color version of the same portrait. */
+function drawAnimalFace(name, colored = false) {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 400 400");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", colored ? "Color animal portrait: " + name : "High contrast animal portrait: " + name);
+  const add = (tag, attrs) => {
+    const node = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+    svg.appendChild(node);
+    return node;
+  };
+  const ink = "#171717";
+  const paper = "#fffdf8";
+  const accent = colored ? "#e96d56" : "#e23e3e";
+  const fur = colored ? ({"Lion":"#e9ae48","Elephant":"#8fb8c8","Giraffe":"#f0c85b","Zebra":"#f7f4eb","Monkey":"#bd8058","Bear":"#a77a58","Panda":"#f7f4eb","Fox":"#e98949","Rabbit":"#f6eee6","Cat":"#d7b5a0","Dog":"#cba77a","Mouse":"#b9a5bd","Owl":"#b58a61","Duck":"#f5d65a","Penguin":"#f5f5ef","Turtle":"#80b878","Frog":"#7cbe76","Fish":"#65bdd0","Whale":"#6ea9d6","Dolphin":"#8ac8d7","Octopus":"#d88ab5","Butterfly":"#b19ae5","Bee":"#f0c84b","Ladybug":"#df665c","Snail":"#d8ad7e"})[name] || "#c7c7c7" : paper;
+  const is = (...names) => names.includes(name);
+  add("rect", {x:0,y:0,width:400,height:400,rx:34,fill:colored ? "#fff4df" : paper});
+  // Distinct silhouettes give each familiar animal its own recognizable outline.
+  if (is("Lion")) add("circle",{cx:200,cy:190,r:145,fill:colored?"#c87932":ink});
+  if (is("Elephant")) { add("ellipse",{cx:200,cy:250,rx:43,ry:90,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:105,cy:160,rx:43,ry:60,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:295,cy:160,rx:43,ry:60,fill:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Giraffe")) { add("path",{d:"M125 315 L130 130 Q200 70 270 130 L275 315Z",fill:fur,stroke:ink,"stroke-width":8}); add("path",{d:"M145 95 L130 55 M255 95 L270 55",stroke:ink,"stroke-width":12,"stroke-linecap":"round"}); }
+  else if (is("Zebra")) { add("path",{d:"M95 145 Q200 65 305 145 L290 290 Q200 350 110 290Z",fill:fur,stroke:ink,"stroke-width":8}); for(let x=120;x<300;x+=48) add("path",{d:`M${x} 120 l-25 75 30 15 -20 70`,fill:"none",stroke:ink,"stroke-width":17}); }
+  else if (is("Rabbit")) { add("ellipse",{cx:155,cy:85,rx:34,ry:78,fill:fur,stroke:ink,"stroke-width":8}); add("ellipse",{cx:245,cy:85,rx:34,ry:78,fill:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Fox")) { add("path",{d:"M75 170 L95 65 L170 120 M230 120 L305 65 L325 170",fill:fur,stroke:ink,"stroke-width":9,"stroke-linejoin":"round"}); }
+  else if (is("Cat")) { add("path",{d:"M85 170 L95 65 L175 125 M225 125 L305 65 L315 170",fill:fur,stroke:ink,"stroke-width":9,"stroke-linejoin":"round"}); }
+  else if (is("Bear") || is("Panda") || is("Koala")) { add("circle",{cx:105,cy:115,r:42,fill:is("Panda")?ink:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:295,cy:115,r:42,fill:is("Panda")?ink:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Owl")) { add("circle",{cx:130,cy:175,r:68,fill:colored?"#c79b66":ink}); add("circle",{cx:270,cy:175,r:68,fill:colored?"#c79b66":ink}); }
+  else if (is("Duck")) { add("path",{d:"M275 205 Q350 170 350 220 Q330 250 275 240Z",fill:accent,stroke:ink,"stroke-width":7}); }
+  else if (is("Turtle")) { add("ellipse",{cx:200,cy:245,rx:125,ry:70,fill:colored?"#5b9b63":ink,stroke:ink,"stroke-width":8}); add("circle",{cx:320,cy:230,r:35,fill:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Fish") || is("Whale") || is("Dolphin")) { add("path",{d:"M65 205 Q180 95 295 205 Q180 315 65 205Z",fill:fur,stroke:ink,"stroke-width":8}); add("path",{d:"M285 205 L355 150 L355 260Z",fill:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Octopus")) { for(let i=0;i<6;i++){const x=95+i*42;add("path",{d:`M200 240 Q${x} 280 ${x-12} 335`,fill:"none",stroke:fur,"stroke-width":22,"stroke-linecap":"round"});} }
+  else if (is("Butterfly")) { add("ellipse",{cx:130,cy:170,rx:78,ry:65,fill:colored?"#b5a0e7":ink}); add("ellipse",{cx:270,cy:170,rx:78,ry:65,fill:colored?"#ed9ebd":ink}); }
+  else if (is("Bee")) { add("ellipse",{cx:200,cy:215,rx:95,ry:62,fill:colored?"#f1c744":paper,stroke:ink,"stroke-width":9}); add("path",{d:"M160 160 V270 M220 155 V275",stroke:ink,"stroke-width":19}); }
+  else if (is("Ladybug")) { add("ellipse",{cx:200,cy:215,rx:105,ry:85,fill:accent,stroke:ink,"stroke-width":9}); add("path",{d:"M200 135 V295",stroke:ink,"stroke-width":8}); [[155,185],[245,185],[155,240],[245,240]].forEach(([cx,cy])=>add("circle",{cx,cy,r:13,fill:ink})); }
+  else if (is("Frog")) { add("circle",{cx:140,cy:115,r:45,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:260,cy:115,r:45,fill:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Penguin")) { add("ellipse",{cx:200,cy:210,rx:112,ry:135,fill:ink}); add("ellipse",{cx:200,cy:235,rx:70,ry:95,fill:paper}); }
+  else if (is("Monkey")) { add("circle",{cx:105,cy:150,r:37,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:295,cy:150,r:37,fill:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Mouse")) { add("circle",{cx:125,cy:120,r:45,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:275,cy:120,r:45,fill:fur,stroke:ink,"stroke-width":8}); }
+  else if (is("Lion")) { add("circle",{cx:105,cy:190,r:32,fill:colored?"#e9ae48":ink}); add("circle",{cx:295,cy:190,r:32,fill:colored?"#e9ae48":ink}); }
+  else if (is("Elephant")) { add("path",{d:"M250 200 Q310 225 280 290 Q260 325 230 295",fill:"none",stroke:fur,"stroke-width":42,"stroke-linecap":"round"}); }
+  else { add("circle",{cx:105,cy:145,r:35,fill:fur,stroke:ink,"stroke-width":8}); add("circle",{cx:295,cy:145,r:35,fill:fur,stroke:ink,"stroke-width":8}); }
+  // Head, muzzle and large eyes stay bold enough to read on a small screen.
+  add("ellipse",{cx:200,cy:205,rx:112,ry:118,fill:fur,stroke:ink,"stroke-width":9});
+  if (is("Panda")) { add("ellipse",{cx:151,cy:188,rx:32,ry:43,fill:ink,transform:"rotate(25 151 188)"}); add("ellipse",{cx:249,cy:188,rx:32,ry:43,fill:ink,transform:"rotate(-25 249 188)"}); }
+  else { add("ellipse",{cx:151,cy:190,rx:25,ry:32,fill:ink}); add("ellipse",{cx:249,cy:190,rx:25,ry:32,fill:ink}); }
+  add("circle",{cx:158,cy:181,r:7,fill:paper}); add("circle",{cx:256,cy:181,r:7,fill:paper});
+  add("ellipse",{cx:200,cy:246,rx:55,ry:37,fill:colored?"#fff0d7":paper,stroke:ink,"stroke-width":6});
+  add("path",{d:"M185 239 Q200 254 215 239",fill:"none",stroke:ink,"stroke-width":7,"stroke-linecap":"round"});
+  add("path",{d:"M200 253 V266 Q185 281 171 269 M200 266 Q215 281 229 269",fill:"none",stroke:ink,"stroke-width":6,"stroke-linecap":"round"});
+  add("circle",{cx:120,cy:238,r:13,fill:accent,opacity:colored?.8:.95}); add("circle",{cx:280,cy:238,r:13,fill:accent,opacity:colored?.8:.95});
+  if (is("Giraffe")) [[140,150],[260,155],[125,240],[270,255]].forEach(([cx,cy])=>add("circle",{cx,cy,r:13,fill:colored?"#c88e34":ink}));
+  if (is("Zebra")) [120,155,260,290].forEach((x,i)=>add("path",{d:`M${x} 120 l-18 40 18 12 -15 30`,fill:"none",stroke:ink,"stroke-width":12}));
+  return svg;
+}
+
+/* Toddler cards get a bold, chunky letter plus a hand-drawn vector
+   companion. The letter remains the main event; the little illustration
+   makes each card feel like a tiny picture-book page. */
+function drawToddlerArt(card, colored = false) {
+  const ns = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(ns, "svg");
+  svg.setAttribute("viewBox", "0 0 400 400");
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", card.name + " with its picture");
+  const add = (tag, attrs) => {
+    const node = document.createElementNS(ns, tag);
+    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
+    svg.appendChild(node); return node;
+  };
+  const colors = ["#ef7662","#f3c94f","#71b8a2","#8b9ee8","#e79ac0"];
+  const color = colors[(card.name.charCodeAt(0) + card.name.charCodeAt(card.name.length-1)) % colors.length];
+  add("rect",{x:0,y:0,width:400,height:400,rx:30,fill:colored?"#fff0d9":"#fffdf8"});
+  add("text",{x:195,y:290,"text-anchor":"middle","font-family":"Trebuchet MS,Arial,sans-serif","font-size":250,"font-weight":1000,fill:colored?color:"#171717","stroke":colored?"#fff0d9":"#fffdf8","stroke-width":2,"paint-order":"stroke"});
+  // A playful colored medallion holds a tiny original picture in the corner.
+  add("circle",{cx:292,cy:112,r:73,fill:colored?color:"#fffdf8",stroke:"#171717","stroke-width":8});
+  const subject = card.description.replace(/^[A-Z]s+iss+fors+/i,"").replace(/.$/,"").split(" ")[0].toLowerCase();
+  if (["apple","orange","nut","berry","fruit"].some(word=>subject.includes(word))) {
+    add("circle",{cx:292,cy:119,r:39,fill:colored?"#e85b4d":"#fffdf8",stroke:"#171717","stroke-width":7});
+    add("path",{d:"M292 82 Q290 63 308 62",fill:"none",stroke:"#171717","stroke-width":8,"stroke-linecap":"round"});
+    add("ellipse",{cx:313,cy:70,rx:13,ry:7,fill:colored?"#5a9a58":"#fffdf8",stroke:"#171717","stroke-width":4});
+  } else if (["sun","star","moon"].some(word=>subject.includes(word))) {
+    add("circle",{cx:292,cy:112,r:39,fill:colored?"#f4c94e":"#fffdf8",stroke:"#171717","stroke-width":7});
+    for(let a=0;a<8;a++){const angle=a*Math.PI/4;add("line",{x1:292+Math.cos(angle)*48,y1:112+Math.sin(angle)*48,x2:292+Math.cos(angle)*60,y2:112+Math.sin(angle)*60,stroke:"#171717","stroke-width":6,"stroke-linecap":"round"});}
+  } else if (["house","home"].some(word=>subject.includes(word))) {
+    add("path",{d:"M248 115 L292 76 L336 115 V151 H248Z",fill:colored?"#e98668":"#fffdf8",stroke:"#171717","stroke-width":7,"stroke-linejoin":"round"});
+    add("rect",{x:283,y:125,width:20,height:26,fill:colored?"#f3c94f":"#fffdf8",stroke:"#171717","stroke-width":4});
+  } else {
+    add("ellipse",{cx:292,cy:112,rx:42,ry:34,fill:colored?color:"#fffdf8",stroke:"#171717","stroke-width":7});
+    add("circle",{cx:278,cy:105,r:5,fill:"#171717"}); add("circle",{cx:306,cy:105,r:5,fill:"#171717"});
+    add("path",{d:"M280 123 Q292 135 305 123",fill:"none",stroke:"#171717","stroke-width":5,"stroke-linecap":"round"});
+    add("path",{d:"M265 82 L258 66 M320 82 L327 66",fill:"none",stroke:"#171717","stroke-width":6,"stroke-linecap":"round"});
+  }
+  return svg;
+}
+
 /* Every card shares the same layout. Only the illustration and labels
    change. This makes adding cards much simpler than writing new HTML. */
 function renderCard() {
   const card = currentCards[currentIndex];
   const isPattern = card.type === "pattern";
+  const isToddler = currentMode === "toddler";
+  const isAnimal = currentMode === "baby" && card.group === "Animals";
   ui.artwork.replaceChildren();
-  ui.artwork.classList.toggle("emoji-art", !isPattern);
-  if (isPattern) {
+  ui.colorArtwork.replaceChildren();
+  ui.artwork.classList.toggle("emoji-art", false);
+  ui.artwork.classList.toggle("toddler-art", isToddler);
+  ui.artwork.classList.toggle("animal-art", isAnimal);
+  if (isToddler) {
+    ui.artwork.appendChild(drawToddlerArt(card, false));
+    ui.colorArtwork.appendChild(drawToddlerArt(card, true));
+    ui.artwork.style.fontSize = "";
+  } else if (isAnimal) {
+    ui.artwork.appendChild(drawAnimalFace(card.name, false));
+    ui.colorArtwork.appendChild(drawAnimalFace(card.name, true));
+    ui.artwork.style.fontSize = "";
+  } else if (isPattern) {
     ui.artwork.appendChild(drawPattern(card.art));
     ui.artwork.style.fontSize = "";
   } else {
@@ -361,20 +477,25 @@ function renderCard() {
     picture.textContent = card.icon;
     picture.setAttribute("aria-hidden", "true");
     ui.artwork.appendChild(picture);
-    ui.artwork.style.fontSize = card.type === "letter" || card.type === "number" ? "clamp(100px,28vw,190px)" : "";
+    ui.artwork.style.fontSize = "";
+    const colorPicture = document.createElement("span");
+    colorPicture.textContent = card.icon;
+    colorPicture.setAttribute("aria-hidden", "true");
+    ui.colorArtwork.appendChild(colorPicture);
   }
   ui.word.textContent = card.name;
-  ui.label.textContent = currentMode === "toddler" ? card.group.toUpperCase() : card.group.toUpperCase();
+  ui.label.textContent = isToddler ? "LETTER & PICTURE" : card.group.toUpperCase();
   ui.backSymbol.textContent = card.symbol || card.icon;
+  ui.backSymbol.hidden = isAnimal || isToddler;
   ui.backTitle.textContent = card.type === "letter" ? `Letter ${card.name}` : card.type === "number" ? `Number ${card.name}` : card.name;
   ui.backDescription.textContent = card.description;
   ui.count.innerHTML = `${String(currentIndex + 1).padStart(2,"0")} <span>/ ${currentCards.length}</span>`;
   ui.progress.style.width = `${((currentIndex + 1) / currentCards.length) * 100}%`;
-  ui.progressLabel.textContent = currentMode === "toddler" ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
+  ui.progressLabel.textContent = isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
   ui.flashcard.classList.remove("is-flipped");
-  ui.flashcard.setAttribute("aria-label", `${card.name}. Double tap to turn the card over.`);
+  ui.flashcard.setAttribute("aria-label", `${card.name}. Double tap to reveal the color picture and description.`);
 }
 
 /* Keep the flip animation in one function so both double-tap and the
@@ -405,6 +526,36 @@ function chooseSurprise() {
   renderCard();
   playTone(784, 0.13, 0.022, "sine");
 }
+
+/* Watch mode advances gently; Play mode waits for a grown-up or child to interact. */
+function setPlayStyle(style) {
+  playStyle = style;
+  ui.playStyleButtons.forEach(button => {
+    const selected = button.dataset.playStyle === style;
+    button.classList.toggle("active", selected);
+    button.setAttribute("aria-pressed", String(selected));
+  });
+  if (watchTimer) window.clearInterval(watchTimer);
+  watchTimer = null;
+  if (style === "watch") {
+    watchTimer = window.setInterval(() => {
+      if (currentIndex >= currentCards.length - 1) currentIndex = -1;
+      currentIndex += 1;
+      renderCard();
+      ui.flashcard.classList.add("card-changing");
+      playTone(523.25, 0.14, 0.012, "sine");
+    }, 4200);
+  }
+}
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden && watchTimer) {
+    window.clearInterval(watchTimer);
+    watchTimer = null;
+  } else if (!document.hidden && playStyle === "watch" && !watchTimer) {
+    setPlayStyle("watch");
+  }
+});
 
 /* Changing stages always starts the new collection at its first card. */
 function setMode(mode) {
@@ -447,6 +598,7 @@ ui.previous.addEventListener("click", () => moveCard(-1));
 ui.next.addEventListener("click", () => moveCard(1));
 ui.surprise.addEventListener("click", chooseSurprise);
 ui.modeButtons.forEach(button => button.addEventListener("click", () => setMode(button.dataset.mode)));
+ui.playStyleButtons.forEach(button => button.addEventListener("click", () => setPlayStyle(button.dataset.playStyle)));
 
 /* Track a horizontal finger movement to change cards. Vertical movement
    is left alone so the page can still scroll naturally. */
