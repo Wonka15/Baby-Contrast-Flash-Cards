@@ -5,13 +5,12 @@
  * 1. CARD DATA lives near the top of this file.
  * 2. renderCard() draws the selected card and updates its counter.
  * 3. moveCard() handles Back, Next, and horizontal swipe navigation.
- * 4. toggleCardSide() shows the card's reverse side.
  * 5. Sound effects are generated in the browser; no audio files or
  *    microphone permission are needed.
  *
  * To add a baby pattern, edit BABY_PATTERN_NAMES and drawContrastDesign().
  * To change the baby picture cards, edit BABY_EMOJIS and their names.
- * To add toddler letters or numbers, edit makeToddlerCards().
+ * To change toddler letter-and-emoji cards, edit makeToddlerCards().
  * Interface translations belong in LANGUAGE_TEXT.
  */
 
@@ -22,7 +21,7 @@
 const LANGUAGE_TEXT = {
   en: {
     babyCollection: "20 bold patterns + 20 high-contrast emoji cards",
-    toddlerCollection: "A–Z + numbers 0–20",
+    toddlerCollection: "A–Z animal emojis",
     babyKicker: "THE FIRST COLLECTION",
     toddlerKicker: "GROWING TOGETHER",
     mute: "Mute",
@@ -66,68 +65,49 @@ const BABY_CARDS = [
   }))
 ];
 
-/* Toddler mode combines a 26-card animal alphabet with numbers 0–20.
-   Keeping the card data together makes the collection easy to expand. */
+/* Toddler mode is a simple A–Z alphabet: one large colorful letter
+   paired with a familiar animal emoji. Keep each entry easy to scan. */
 function makeToddlerCards() {
   const alphabet = [
-    ["A","Ant","helping an ant carry a leaf","Oswald helps an ant carry a giant leaf."],
-    ["B","Bear","sharing a berry picnic","Oswald shares berries with a bear."],
-    ["C","Cat","playing a tiny drum","Oswald plays a drum while a cat dances."],
-    ["D","Duck","sailing a paper boat","Oswald sails a paper boat beside a duck."],
-    ["E","Elephant","painting with its trunk","Oswald paints a picture with an elephant."],
-    ["F","Fox","flying a kite","Oswald flies a kite with a fox."],
-    ["G","Giraffe","reaching for a balloon","Oswald helps a giraffe catch a balloon."],
-    ["H","Hippo","blowing bubbles","Oswald blows bubbles with a hippo."],
-    ["I","Iguana","watering a tiny garden","Oswald waters a garden with an iguana."],
-    ["J","Jaguar","juggling colorful balls","Oswald juggles balls with a jaguar."],
-    ["K","Kangaroo","bouncing over puddles","Oswald hops over puddles with a kangaroo."],
-    ["L","Lion","reading a storybook","Oswald reads a story to a little lion."],
-    ["M","Monkey","climbing a tree","Oswald climbs a tree with a monkey."],
-    ["N","Narwhal","finding a shiny shell","Oswald finds a shell with a narwhal."],
-    ["O","Owl","looking through a telescope","Oswald and an owl look at the stars."],
-    ["P","Penguin","ice skating together","Oswald ice-skates with a penguin."],
-    ["Q","Quail","planting a flower","Oswald plants a flower with a quail."],
-    ["R","Rabbit","painting a rainbow","Oswald paints a rainbow with a rabbit."],
-    ["S","Seal","balancing a beach ball","Oswald balances a beach ball with a seal."],
-    ["T","Turtle","building a block tower","Oswald builds a tower with a turtle."],
-    ["U","Unicorn","following a star trail","Oswald follows a trail of stars with a unicorn."],
-    ["V","Vulture","making a paper airplane","Oswald folds a paper airplane with a vulture."],
-    ["W","Whale","splashing in the sea","Oswald splashes beside a happy whale."],
-    ["X","X-ray fish","discovering ocean shapes","Oswald discovers ocean shapes with an x-ray fish."],
-    ["Y","Yak","sledding down a hill","Oswald sleds down a hill with a yak."],
-    ["Z","Zebra","dancing to music","Oswald dances with a zebra."]
+    ["A", "Ant", "🐜"],
+    ["B", "Bear", "🐻"],
+    ["C", "Cat", "🐱"],
+    ["D", "Duck", "🦆"],
+    ["E", "Elephant", "🐘"],
+    ["F", "Fox", "🦊"],
+    ["G", "Giraffe", "🦒"],
+    ["H", "Hippo", "🦛"],
+    ["I", "Iguana", "🦎"],
+    ["J", "Jaguar", "🐆"],
+    ["K", "Kangaroo", "🦘"],
+    ["L", "Lion", "🦁"],
+    ["M", "Monkey", "🐒"],
+    ["N", "Narwhal", "🐳"],
+    ["O", "Owl", "🦉"],
+    ["P", "Penguin", "🐧"],
+    ["Q", "Quail", "🐦"],
+    ["R", "Rabbit", "🐰"],
+    ["S", "Seal", "🦭"],
+    ["T", "Turtle", "🐢"],
+    ["U", "Unicorn", "🦄"],
+    ["V", "Vulture", "🦅"],
+    ["W", "Whale", "🐋"],
+    ["X", "X-ray fish", "🐟"],
+    ["Y", "Yak", "🐂"],
+    ["Z", "Zebra", "🦓"]
   ];
-  const letterCards = alphabet.map(([letter, animal, activity, description], designIndex) => ({
+
+  return alphabet.map(([letter, animal, emoji], designIndex) => ({
     name: letter,
-    icon: "",
-    description,
+    icon: emoji,
+    emoji,
+    animal,
+    description: letter + " is for " + animal + ".",
     type: "letter",
     group: "Alphabet",
     symbol: letter,
-    animal,
-    activity,
     designIndex
   }));
-
-  // A number card shows the numeral and that many easy-to-count apples.
-  // Zero intentionally shows an empty basket instead of an apple.
-  const numberCards = Array.from({ length: 21 }, (_, number) => ({
-    name: String(number),
-    icon: "",
-    emoji: number === 0 ? "🧺" : "🍎",
-    description: number === 0
-      ? "Zero means there are no apples in the basket."
-      : `Let's count ${number} ${number === 1 ? "apple" : "apples"} together.`,
-    type: "number",
-    group: "Numbers",
-    symbol: String(number),
-    animal: number === 1 ? "apple" : "apples",
-    activity: "counting",
-    designIndex: number,
-    count: number
-  }));
-
-  return [...letterCards, ...numberCards];
 }
 
 /* DOM elements are collected here once, so the rest of the code can
@@ -148,10 +128,6 @@ const ui = {
   surprise: document.getElementById("surprise-button"),
   melody: document.getElementById("melody-button"),
   soundToggle: document.getElementById("sound-toggle"),
-  backFace: document.getElementById("card-back"),
-  backTitle: document.getElementById("card-back-title"),
-  backDescription: document.getElementById("card-back-description"),
-  reverseButton: document.getElementById("reverse-button"),
   modeButtons: [...document.querySelectorAll("[data-mode]")],
   playStyleButtons: [...document.querySelectorAll("[data-play-style]")],
   aboutDialog: document.getElementById("about-dialog")
@@ -301,130 +277,16 @@ function drawContrastDesign(index) {
   return svg;
 }
 
-/* Original animal portraits use bold vector shapes for infant viewing. */
-/* Toddler cards get a bold, chunky letter plus a hand-drawn vector
-   companion. The letter remains the main event; the little illustration
-   makes each card feel like a tiny picture-book page. */
-/* Draw a distinct storybook scene for each letter. The Oswald-inspired
-   rabbit keeps a recognizable silhouette while the animal, prop, and pose
-   change from card to card. The optional color treatment is for toddler mode. */
-function drawToddlerArt(card, colored = false) {
-  const ns = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(ns, "svg");
-  svg.setAttribute("viewBox", "0 0 400 400");
-  svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", card.name + " — Oswald " + card.activity + " with a " + card.animal);
-  const add = (tag, attrs) => {
-    const node = document.createElementNS(ns, tag);
-    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
-    svg.appendChild(node); return node;
-  };
-  const ink = "#111111", paper = "#ffffff";
-  const palette = ["#ef3340","#f4c542","#55b7a7","#7298e8","#d889c2","#f28c45"];
-  const color = palette[card.designIndex % palette.length];
-  const accent = colored ? color : "#ed1028";
-  add("rect",{x:0,y:0,width:400,height:400,rx:28,fill:colored?"#fff2d8":"#fffdf8"});
-  add("text",{x:28,y:155,"font-family":"Trebuchet MS,Arial,sans-serif","font-size":154,"font-weight":1000,fill:colored?color:ink,stroke:colored?"#fff2d8":"#fffdf8","stroke-width":2,"paint-order":"stroke"}).textContent = card.name;
-  add("path",{d:"M18 345 Q110 329 205 344 T390 340",fill:"none",stroke:colored?"#b9d9a2":"#d8d8d2","stroke-width":7,"stroke-linecap":"round"});
-  const cx=265, cy=245, ax=110, ay=291, prop=card.designIndex%8;
-  // Each letter gets its own story prop: leaf, berry, drum, boat, paint, kite, and more.
-  if(prop===0){add("path",{d:"M176 215 Q212 177 244 218 Q210 245 176 215Z",fill:colored?"#67a85d":paper,stroke:ink,"stroke-width":5});add("path",{d:"M178 216 L237 238",stroke:ink,"stroke-width":4});}
-  if(prop===1){add("circle",{cx:210,cy:194,r:20,fill:accent,stroke:ink,"stroke-width":5});add("circle",{cx:224,cy:182,r:6,fill:paper});}
-  if(prop===2){add("ellipse",{cx:215,cy:220,rx:26,ry:14,fill:colored?"#e3a34f":paper,stroke:ink,"stroke-width":5});add("path",{d:"M190 220 H240",stroke:ink,"stroke-width":4});}
-  if(prop===3){add("path",{d:"M180 192 L222 218 L180 244Z",fill:accent,stroke:ink,"stroke-width":5});add("path",{d:"M180 192 V244",stroke:ink,"stroke-width":4});}
-  if(prop===4){add("rect",{x:190,y:200,width:42,height:35,rx:5,fill:colored?"#f4c542":paper,stroke:ink,"stroke-width":5});add("path",{d:"M211 200 V235 M190 217 H232",stroke:ink,"stroke-width":4});}
-  if(prop===5){add("path",{d:"M190 220 Q210 190 230 220 Q210 250 190 220Z",fill:accent,stroke:ink,"stroke-width":5});}
-  if(prop===6){add("circle",{cx:212,cy:218,r:22,fill:colored?"#78bde7":paper,stroke:ink,"stroke-width":5});add("circle",{cx:204,cy:211,r:5,fill:ink});add("circle",{cx:220,cy:211,r:5,fill:ink});}
-  if(prop===7){add("path",{d:"M190 235 L205 195 L220 235 L235 195",fill:"none",stroke:accent,"stroke-width":8,"stroke-linecap":"round","stroke-linejoin":"round"});}
-  // Long ears, black body, white face and gloves keep the rabbit recognizable.
-  const lean=(card.designIndex%3-1)*8;
-  add("ellipse",{cx:cx-15,cy:cy+58,rx:39,ry:49,fill:ink});
-  add("path",{d:`M${cx-20+lean} ${cy-30} Q${cx-56+lean} ${cy-118} ${cx-31+lean} ${cy-143} Q${cx-5+lean} ${cy-150} ${cx-5+lean} ${cy-35}Z`,fill:ink});
-  add("path",{d:`M${cx+4-lean} ${cy-28} Q${cx+42-lean} ${cy-124} ${cx+57-lean} ${cy-112} Q${cx+72-lean} ${cy-96} ${cx+22-lean} ${cy-23}Z`,fill:ink});
-  add("ellipse",{cx:cx+2,cy:cy-5,rx:43,ry:38,fill:paper,stroke:ink,"stroke-width":5});
-  add("ellipse",{cx:cx-13,cy:cy-8,rx:5,ry:8,fill:ink});add("ellipse",{cx:cx+14,cy:cy-8,rx:5,ry:8,fill:ink});
-  add("ellipse",{cx:cx+2,cy:cy+8,rx:7,ry:5,fill:ink});
-  add("path",{d:`M${cx-8} ${cy+17} Q${cx+2} ${cy+25} ${cx+13} ${cy+16}`,fill:"none",stroke:ink,"stroke-width":3,"stroke-linecap":"round"});
-  const armY=236+(card.designIndex%4)*7, leftHandY=armY-50+(card.designIndex%3)*18, rightHandY=armY-38+(card.designIndex%5)*10;
-  add("path",{d:`M${cx-25} ${armY} Q${cx-65} ${armY-25} ${cx-72} ${leftHandY}`,fill:"none",stroke:ink,"stroke-width":13,"stroke-linecap":"round"});
-  add("path",{d:`M${cx+22} ${armY} Q${cx+58} ${armY-12} ${cx+63} ${rightHandY}`,fill:"none",stroke:ink,"stroke-width":13,"stroke-linecap":"round"});
-  add("circle",{cx:cx-73,cy:leftHandY,r:13,fill:paper,stroke:ink,"stroke-width":4});add("circle",{cx:cx+64,cy:rightHandY,r:13,fill:paper,stroke:ink,"stroke-width":4});
-  add("path",{d:`M${cx-36} ${cy+86} L${cx-48} 337 M${cx+4} ${cy+88} L${cx+18} 337`,fill:"none",stroke:ink,"stroke-width":14,"stroke-linecap":"round"});
-  add("ellipse",{cx:cx-54,cy:340,rx:21,ry:9,fill:ink});add("ellipse",{cx:cx+24,cy:340,rx:21,ry:9,fill:ink});
-  // Draw the companion animal with a different silhouette/detail for its type.
-  const a=card.animal, ac=colored?palette[(card.designIndex+2)%palette.length]:paper;
-  if(a==="Ant"){
-    add("circle",{cx:ax-17,cy:ay-10,r:13,fill:ac,stroke:ink,"stroke-width":4});add("circle",{cx:ax+5,cy:ay-10,r:16,fill:ac,stroke:ink,"stroke-width":4});add("circle",{cx:ax+31,cy:ay-10,r:21,fill:accent,stroke:ink,"stroke-width":4});
-    add("path",{d:`M${ax-20} ${ay-26} l-10 -14 M${ax-9} ${ay-27} l3 -16 M${ax-6} ${ay+1} l-12 18 M${ax+5} ${ay+2} l-3 19 M${ax+20} ${ay+2} l12 17`,stroke:ink,"stroke-width":4,"stroke-linecap":"round"});
-  } else if(["X-ray fish","Whale","Narwhal"].includes(a)){
-    add("path",{d:`M${ax-42} ${ay} Q${ax} ${ay-37} ${ax+35} ${ay} Q${ax} ${ay+36} ${ax-42} ${ay}Z`,fill:ac,stroke:ink,"stroke-width":4});add("path",{d:`M${ax+30} ${ay} l24 -20 v40Z`,fill:accent,stroke:ink,"stroke-width":4});add("circle",{cx:ax-21,cy:ay-4,r:4,fill:ink});
-    if(a==="Narwhal")add("path",{d:`M${ax-10} ${ay-23} l-28 -32 l38 25Z`,fill:paper,stroke:ink,"stroke-width":3});
-    if(a==="Whale")add("path",{d:`M${ax-10} ${ay-25} q-15 -20 0 -25 q12 16 0 25`,fill:"none",stroke:accent,"stroke-width":4});
-    if(a==="X-ray fish")add("path",{d:`M${ax-20} ${ay-15} L${ax+8} ${ay+15} M${ax-5} ${ay-20} L${ax+20} ${ay+10}`,stroke:ink,"stroke-width":3});
-  } else if(["Duck","Quail","Penguin","Owl","Vulture"].includes(a)){
-    add("ellipse",{cx:ax,cy:ay,rx:30,ry:26,fill:ac,stroke:ink,"stroke-width":4});add("circle",{cx:ax+15,cy:ay-22,r:18,fill:ac,stroke:ink,"stroke-width":4});add("circle",{cx:ax+20,cy:ay-25,r:3,fill:ink});
-    if(a==="Duck"||a==="Vulture")add("path",{d:`M${ax+28} ${ay-20} l22 8 l-22 5Z`,fill:accent,stroke:ink,"stroke-width":3});
-    if(a==="Penguin")add("ellipse",{cx:ax,cy:ay+5,rx:15,ry:18,fill:colored?paper:"#d9d9d9"});
-    if(a==="Owl"){add("circle",{cx:ax+9,cy:ay-24,r:9,fill:paper,stroke:ink,"stroke-width":3});add("circle",{cx:ax+9,cy:ay-24,r:3,fill:ink});}
-  } else {
-    add("ellipse",{cx:ax,cy:ay+5,rx:34,ry:25,fill:ac,stroke:ink,"stroke-width":4});add("circle",{cx:ax+20,cy:ay-20,r:20,fill:ac,stroke:ink,"stroke-width":4});add("circle",{cx:ax+25,cy:ay-23,r:3.5,fill:ink});
-    if(["Bear","Cat","Fox","Jaguar","Lion","Rabbit","Zebra","Yak"].includes(a))add("path",{d:`M${ax+5} ${ay-32} l-7 -20 l20 13 M${ax+25} ${ay-34} l10 -17 l5 25`,fill:ac,stroke:ink,"stroke-width":4,"stroke-linejoin":"round"});
-    if(a==="Elephant"||a==="Hippo")add("path",{d:`M${ax+34} ${ay-8} Q${ax+54} ${ay+8} ${ax+37} ${ay+22}`,fill:"none",stroke:ink,"stroke-width":9,"stroke-linecap":"round"});
-    if(a==="Giraffe")add("path",{d:`M${ax+3} ${ay-20} L${ax-3} ${ay-55} L${ax+15} ${ay-55}`,fill:"none",stroke:ac,"stroke-width":13,"stroke-linecap":"round"});
-    if(a==="Turtle")add("path",{d:`M${ax-25} ${ay-7} Q${ax} ${ay-45} ${ax+25} ${ay-7}`,fill:accent,stroke:ink,"stroke-width":4});
-    if(a==="Unicorn")add("path",{d:`M${ax+18} ${ay-37} l8 -24 l8 25Z`,fill:accent,stroke:ink,"stroke-width":3});
-    if(a==="Kangaroo")add("ellipse",{cx:ax-4,cy:ay+5,rx:12,ry:15,fill:accent,stroke:ink,"stroke-width":3});
-    if(a==="Zebra")for(let n=0;n<3;n++)add("path",{d:`M${ax-20+n*13} ${ay-12} l-7 15`,stroke:ink,"stroke-width":4});
-    if(a==="Iguana")add("path",{d:`M${ax-25} ${ay-10} l-12 -10 l-12 8 l-12 -10`,fill:"none",stroke:ink,"stroke-width":4});
-    if(a==="Monkey")add("path",{d:`M${ax-28} ${ay+10} q-35 -8 -22 -35`,fill:"none",stroke:ink,"stroke-width":5,"stroke-linecap":"round"});
-  }
-  return svg;
-}
-
-/* Toddler front: a huge colorful letter paired with a crisp system emoji.
-   The emoji font comes from the device, so artwork stays sharp at every size. */
+/* Toddler cards pair a bold, colorful letter with a crisp device emoji.
+   Using system emoji keeps the pictures sharp without extra image files. */
 function drawToddlerFront(card) {
-  // Letter cards use the hand-drawn story scene; counting cards use a clear grid.
-  if (card.type === "letter") {
-    const storyScene = drawToddlerArt(card, true);
-    storyScene.classList.add("toddler-story-art");
-    return storyScene;
-  }
-
   const wrap = document.createElement("div");
   wrap.className = "toddler-hero";
 
-  const mainSymbol = document.createElement("div");
-  mainSymbol.className = "toddler-big-letter letter-color-" + (card.designIndex % 8);
-  mainSymbol.textContent = card.name;
-  wrap.appendChild(mainSymbol);
-
-  if (card.type === "number") {
-    // Show the quantity visually as well as the numeral.
-    const objects = document.createElement("div");
-    objects.className = "toddler-number-objects";
-    objects.setAttribute("role", "img");
-    objects.setAttribute(
-      "aria-label",
-      card.count === 0 ? "An empty basket: zero apples" : card.count + (card.count === 1 ? " apple" : " apples")
-    );
-
-    if (card.count === 0) {
-      const basket = document.createElement("span");
-      basket.textContent = "🧺";
-      basket.setAttribute("aria-hidden", "true");
-      objects.appendChild(basket);
-    } else {
-      for (let index = 0; index < card.count; index += 1) {
-        const apple = document.createElement("span");
-        apple.textContent = "🍎";
-        apple.setAttribute("aria-hidden", "true");
-        objects.appendChild(apple);
-      }
-    }
-    wrap.appendChild(objects);
-    return wrap;
-  }
+  const letter = document.createElement("div");
+  letter.className = "toddler-big-letter letter-color-" + (card.designIndex % 8);
+  letter.textContent = card.name;
+  wrap.appendChild(letter);
 
   const animal = document.createElement("div");
   animal.className = "toddler-big-emoji";
@@ -432,38 +294,18 @@ function drawToddlerFront(card) {
   animal.setAttribute("role", "img");
   animal.setAttribute("aria-label", card.animal);
   wrap.appendChild(animal);
+
   return wrap;
 }
 
 /* Every card shares the same layout. Only the illustration and labels
    change. This makes adding cards much simpler than writing new HTML. */
-/* Show the illustration side. Called on card changes and by the Reverse button. */
-function showCardFront() {
-  ui.flashcard.classList.remove("is-reversed");
-  ui.backFace.hidden = true;
-  ui.backFace.setAttribute("aria-hidden", "true");
-  ui.flashcard.querySelector(".card-front").setAttribute("aria-hidden", "false");
-}
-
-/* The reverse side gives a caregiver a simple prompt to say out loud. */
-function toggleCardSide() {
-  const showingBack = !ui.flashcard.classList.contains("is-reversed");
-  ui.flashcard.classList.toggle("is-reversed", showingBack);
-  ui.backFace.hidden = !showingBack;
-  ui.backFace.setAttribute("aria-hidden", String(!showingBack));
-  ui.flashcard.querySelector(".card-front").setAttribute("aria-hidden", String(showingBack));
-  if (showingBack) playTone(392, 0.1, 0.014, "sine");
-}
-
 /* Draw the selected card and synchronize its text, progress, and controls. */
 function renderCard() {
   const card = currentCards[currentIndex];
   const isToddler = currentMode === "toddler";
   const isPattern = card.type === "pattern";
   const isBabyEmoji = currentMode === "baby" && card.type === "emoji";
-
-  // Always return to the picture side when the selected card changes.
-  showCardFront();
 
   ui.artwork.replaceChildren();
   ui.artwork.classList.toggle("emoji-art", isBabyEmoji);
@@ -492,11 +334,9 @@ function renderCard() {
     ui.artwork.appendChild(picture);
   }
 
-  ui.word.textContent = isToddler
-    ? card.type === "number" ? "Number " + card.name : card.name + " · " + card.animal
-    : card.name;
+  ui.word.textContent = isToddler ? card.name + " · " + card.animal : card.name;
   ui.label.textContent = isToddler
-    ? card.type === "number" ? "COUNT TOGETHER" : "ABC ANIMAL ADVENTURES"
+    ? "ABC ANIMAL FRIENDS"
     : isPattern ? "20 UNIQUE HIGH-CONTRAST PATTERNS" : "";
 
   // Build the counter as text and a span instead of injecting HTML.
@@ -511,19 +351,12 @@ function renderCard() {
   ui.next.disabled = currentIndex === currentCards.length - 1;
 
   const accessibleCardName = isToddler
-    ? card.type === "number"
-      ? "Number " + card.name + ". " + card.description
-      : card.name + ", " + card.animal
+    ? card.name + ", " + card.animal
     : isPattern
       ? card.name + ", high-contrast pattern"
       : card.name + ", " + card.emoji;
   ui.flashcard.setAttribute("aria-label", accessibleCardName);
 
-  // The reverse side is useful for grown-ups reading the prompt aloud.
-  ui.backTitle.textContent = card.type === "number"
-    ? "Let's count " + card.name
-    : card.name;
-  ui.backDescription.textContent = card.description;
 }
 
 /* Two tiny two-note sounds make Back and Next feel different.
@@ -637,7 +470,6 @@ function setMode(mode) {
 ui.previous.addEventListener("click", () => moveCard(-1));
 ui.next.addEventListener("click", () => moveCard(1));
 ui.surprise.addEventListener("click", chooseSurprise);
-ui.reverseButton.addEventListener("click", showCardFront);
 ui.modeButtons.forEach(button => button.addEventListener("click", () => setMode(button.dataset.mode)));
 ui.playStyleButtons.forEach(button => button.addEventListener("click", () => setPlayStyle(button.dataset.playStyle)));
 
@@ -645,9 +477,6 @@ ui.playStyleButtons.forEach(button => button.addEventListener("click", () => set
    is left alone so the page can still scroll naturally. */
 let pointerStartX = 0;
 let pointerStartY = 0;
-let lastTapTime = 0;
-let lastTapX = 0;
-let lastTapY = 0;
 
 /* Pointer events cover touchscreens, trackpads, and a mouse with one handler.
    Vertical movement remains available for normal page scrolling. */
@@ -658,42 +487,22 @@ ui.cardArea.addEventListener("pointerdown", event => {
 });
 
 ui.cardArea.addEventListener("pointerup", event => {
-  // The Reverse button has its own click handler and is not a swipe/tap target.
-  if (event.target.closest("button")) return;
-
   const deltaX = event.clientX - pointerStartX;
   const deltaY = event.clientY - pointerStartY;
 
   if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
-    lastTapTime = 0;
     moveCard(deltaX < 0 ? 1 : -1);
-    return;
   }
-
-  // Two taps close together on the card reveal or hide its reverse side.
-  const now = Date.now();
-  const tapsAreClose = Math.hypot(event.clientX - lastTapX, event.clientY - lastTapY) < 32;
-  if (now - lastTapTime < 360 && tapsAreClose) {
-    lastTapTime = 0;
-    toggleCardSide();
-    return;
-  }
-
-  lastTapTime = now;
-  lastTapX = event.clientX;
-  lastTapY = event.clientY;
 });
 
 ui.cardArea.addEventListener("pointercancel", () => {
   pointerStartX = 0;
   pointerStartY = 0;
-  lastTapTime = 0;
 });
 document.addEventListener("keydown", event => {
   if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) return;
   if (event.key === "ArrowRight") moveCard(1);
   if (event.key === "ArrowLeft") moveCard(-1);
-  if (event.key === "Escape" && ui.aboutDialog.open) ui.aboutDialog.close();
 });
 
 /* Small card tones are optional; radio audio has its own player controls. */
