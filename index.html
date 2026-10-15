@@ -32,11 +32,15 @@
         <span class="mode-emoji" aria-hidden="true">◐</span><span><strong>Baby</strong><small>High contrast</small></span>
       </button>
       <button class="mode-button" data-mode="toddler" type="button" aria-pressed="false">
-        <span class="mode-emoji" aria-hidden="true">🌈</span><span><strong>Toddler</strong><small>Letters & numbers</small></span>
+        <span class="mode-emoji crayon-mark" aria-hidden="true">🖍️</span><span><strong>Toddler</strong><small>Letters & numbers</small></span>
         <span class="new-tag">GROW</span>
       </button>
     </section>
 
+    <section class="play-style glass-panel" aria-label="Choose how to explore cards">
+      <button class="play-style-button active" data-play-style="play" type="button" aria-pressed="true"><span aria-hidden="true">✋</span><span><strong>Play</strong><small>Explore together</small></span></button>
+      <button class="play-style-button" data-play-style="watch" type="button" aria-pressed="false"><span aria-hidden="true">▶</span><span><strong>Watch</strong><small>Gentle card show</small></span></button>
+    </section>
     <section class="experience" aria-label="Flash card player">
       <div class="collection-row">
         <div><span class="collection-kicker" id="collection-kicker">THE FIRST COLLECTION</span><h2 id="collection-title">Shapes & little things</h2></div>
@@ -55,11 +59,11 @@
               <span class="artwork" id="artwork" aria-hidden="true"></span>
               <span class="art-label" id="art-label">LOOK CLOSELY</span>
             </span>
-            <span class="card-bottom"><span class="card-word" id="card-word">Circle</span><span class="flip-hint">TAP TWICE TO TURN <span aria-hidden="true">↗</span></span></span>
+            <span class="card-bottom"><span class="card-word" id="card-word">Circle</span><span class="flip-hint">DOUBLE-TAP FOR COLOR <span aria-hidden="true">↗</span></span></span>
           </span>
           <span class="card-face card-back">
             <span class="back-sparkle" aria-hidden="true">✦</span>
-            <span class="back-symbol" id="back-symbol">●</span>
+            <span class="back-symbol" id="back-symbol">●</span><span class="color-artwork" id="color-artwork" aria-hidden="true"></span>
             <span class="back-title" id="back-title">A circle</span>
             <span class="back-description" id="back-description">Round and smooth, with no corners.</span>
             <span class="back-prompt">Can you find one together?</span>
