@@ -1,40 +1,41 @@
 # Little Look — Baby Contrast Cards
 
-A small, friendly, mobile-first card experience for shared moments with babies and toddlers. Built with plain HTML, CSS, and JavaScript so a new developer can read it, learn from it, and make it their own.
+A calm, mobile-first flash-card app for sharing visual discoveries with babies and playful learning with toddlers. It is built with plain HTML, CSS, and JavaScript so a new developer can read the source and make it their own.
 
-**Repository:** [Wonka15/Baby-Contrast-Flash-Cards](https://github.com/Wonka15/Baby-Contrast-Flash-Cards)
+**Live app:** https://wonka15.github.io/Baby-Contrast-Flash-Cards/  
+**Repository:** https://github.com/Wonka15/Baby-Contrast-Flash-Cards
 
-## What's included
+## What's in the app
 
-### Baby mode — 100 cards
-- **25 bold shape and pattern cards:** circles, squares, stripes, spirals, waves, checkerboards, and more.
-- **25 nature cards:** flowers, leaves, plants, fruit, carrots, the sun, and the moon.
-- **25 animal cards:** elephants, pandas, butterflies, turtles, whales, and more.
-- **25 everyday cards:** cars, trains, toys, books, and familiar objects.
+### Baby mode — 40 cards
+- **20 original high-contrast patterns** drawn as SVG, using deep black, bright white, and strong red accents.
+- **20 picture cards** featuring simple symbols, everyday fruit, and animals.
+- A clear card counter, progress bar, Back and Next buttons, and a Surprise button.
 
-### Toddler mode
-- All 26 letters of the alphabet, each paired with a little illustration.
-- Numbers 0–20 with a friendly picture and a simple counting prompt.
-- A separate mode switch makes it easy to grow the experience with your child.
+### Toddler mode — 47 cards
+- **26 animal alphabet cards**, from A to Z, with original vector illustrations.
+- **21 counting cards**, from 0 to 20. Each card shows the numeral and a matching quantity of apples; zero uses an empty basket.
+- The collection counter and progress bar update when you switch modes.
 
-### Interaction and atmosphere
-- Swipe left/right to change cards; Back and Next buttons are also available.
-- Double-tap a card to flip it. **Reverse** returns to the picture side.
-- A Surprise button chooses another card.
-- Soft, generated tones accompany card changes and flips; they can be muted.
-- **Melody** plays an original, gentle synthesized tune with very quiet, generated stream-like ambience.
-- Glass-inspired panels, subtle motion, responsive layout, and reduced-motion support.
-- No account, analytics, external audio files, or JavaScript libraries are required.
+### Touch, sound, and music
+- Swipe horizontally or use Back and Next to navigate.
+- Double-tap a card to read its reverse-side prompt. Tap **Reverse** to return to the picture.
+- Surprise chooses a different card.
+- Gentle navigation sounds can be muted.
+- The music panel includes station pages and YouTube embeds. External playback depends on the provider, browser, and network; use the station link if an embed does not play.
+- Responsive glass-inspired styling, visible keyboard focus, and reduced-motion support.
 
-> **Sound note:** Browsers generally require a tap before they allow sound. The first interaction may be the moment audio becomes available. Melody is synthesized in the browser; it is not a recording of classical music.
+## A small, important note for caregivers
+
+Explore together and keep the screen at a comfortable distance. Pause if your baby looks away or seems unsettled. Your voice, face, and interaction matter most; this app is for shared visual play, not medical advice or a replacement for developmental guidance.
 
 ## Run locally
 
 1. Download or clone this repository.
 2. Open `index.html` in a browser.
-3. To preview the app while editing, you can also use a local static server or the Live Server extension in your code editor.
+3. For a more realistic preview while editing, use any local static web server.
 
-The app is static: no server, build step, package installation, or API key is needed.
+The card app itself needs no build step, package installation, API key, or backend service. Choosing a radio station may connect to that provider or to YouTube.
 
 ## Publish with GitHub Pages
 
@@ -42,37 +43,45 @@ The app is static: no server, build step, package installation, or API key is ne
 2. Select **Pages**.
 3. Under **Build and deployment**, choose **Deploy from a branch**.
 4. Select branch `main` and folder `/(root)`, then save.
-5. Wait for the deployment to finish. GitHub will show the website URL in the Pages section.
+5. Wait for the deployment workflow to finish. GitHub shows the published URL in the Pages settings.
 
 ## Beginner-friendly code tour
 
-| File | What it does |
+| File | Purpose |
 | --- | --- |
-| `index.html` | Page structure, buttons, card front/back, and the About dialog. |
-| `styles.css` | Colors, glass effects, layout, responsive rules, and animations. |
-| `app.js` | Card data, SVG shape drawing, navigation, flipping, and generated sounds. |
+| `index.html` | Page structure, controls, reverse side, music player, and About dialog. |
+| `styles.css` | Layout, colors, tactile controls, responsive rules, and animations. |
+| `app.js` | Card data, SVG illustrations, navigation, reverse-side behavior, counting cards, and sound. |
+| `scripts/check-app.mjs` | Dependency-free checks for card counts and HTML/JavaScript references. |
+| `.github/workflows/checks.yml` | Runs the JavaScript syntax check and repository checks on pushes and pull requests. |
+| `.github/workflows/deploy-pages.yml` | Publishes the static site to GitHub Pages. |
 
-### Add a baby card
+### Add a baby pattern
 
-Open `app.js` and find `NATURE_CARDS`, `ANIMAL_CARDS`, or `EVERYDAY_CARDS`. Add another item in the same format:
+1. Add a name and description to `BABY_PATTERN_NAMES` in `app.js`.
+2. Add a matching drawing branch to `drawContrastDesign()` using that card's index.
+3. Run the repository checks before committing.
 
-```js
-["Ladybird", "🐞", "A tiny beetle with spotted wings."]
-```
+### Change a baby picture card
 
-The app combines the four baby collections automatically. For a new geometric pattern, add a card to `SHAPE_CARDS` and add its SVG drawing inside `drawPattern()`.
+Edit `BABY_EMOJIS` and the matching names in the `BABY_CARDS` mapping. Keep both lists the same length so each picture gets the intended name.
 
-### Add a toddler letter or number
+### Add a toddler card
 
-Find `makeToddlerCards()`. The `letters` list contains the alphabet; the number list is generated from 0 through 20. You can add translations or adjust the picture and description there.
+Edit the `alphabet` list inside `makeToddlerCards()` to change letter stories. The 0–20 counting cards are generated from one small loop, so changing the range only requires updating the number-card generator and the checks.
 
 ### Prepare for Spanish
 
-Text labels are gathered in `LANGUAGE_TEXT` near the top of `app.js`. This gives the app a single place to add Spanish interface labels later. Card names and descriptions can then be stored by language instead of being hard-coded into the UI.
+Interface labels are grouped in `LANGUAGE_TEXT` near the top of `app.js`. Card descriptions are currently written in English; full Spanish support will also need translated card names and prompts.
 
-## A gentle reminder for caregivers
+## Checks
 
-Explore cards together, keep the device at a comfortable distance, and pause if your baby looks away or seems unsettled. A caregiver's face, voice, and interaction matter most. This app is for shared visual play, not medical advice or a replacement for developmental guidance.
+The repository includes a lightweight Node.js check with no third-party dependencies:
+
+```sh
+node --check app.js
+node scripts/check-app.mjs
+```
 
 ## License
 
