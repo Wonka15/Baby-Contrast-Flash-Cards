@@ -20,7 +20,7 @@
 const LANGUAGE_TEXT = {
   en: {
     babyMode: "Baby", toddlerMode: "Toddler",
-    babyCollection: "100 unique red, white & black patterns",
+    babyCollection: "20 bold patterns + 20 high-contrast emoji cards",
     toddlerCollection: "A–Z with colorful animal emojis",
     babyKicker: "THE FIRST COLLECTION", toddlerKicker: "GROWING TOGETHER",
     look: "LOOK CLOSELY", backPrompt: "Can you find one together?",
@@ -109,23 +109,38 @@ const EVERYDAY_CARDS = [
   ["Music","🎵","A little melody can make us smile."]
 ].map(([name,icon,description])=>({name,icon,description,type:"picture",group:"Everyday"}));
 
-/* This collection contains 100 baby cards: 25 patterns, 25 nature cards,
-   25 animals, and 25 familiar objects. */
-// Two hundred original vector designs, generated from distinct geometry seeds.
-const BABY_ANIMALS = ["Lion","Elephant","Monkey","Bee","Giraffe","Zebra","Tiger","Panda","Bear","Fox","Rabbit","Cat","Dog","Mouse","Owl","Duck","Penguin","Turtle","Frog","Fish","Whale","Dolphin","Octopus","Butterfly","Ladybug","Snail","Koala","Hippo","Rhino","Crocodile","Parrot","Flamingo","Kangaroo","Gorilla","Cheetah","Deer","Hedgehog","Peacock","Seal","Bat"];
-/* Baby Mode has 100 distinct contrast patterns and 100 unique emoji companions. */
-const BABY_EMOJIS = ["🐼","🐻","🐨","🐯","🦁","🐸","🐵","🐰","🐱","🐶","🐭","🐹","🐷","🐮","🐔","🐧","🐤","🦆","🦉","🦋","🐝","🐞","🐢","🐙","🐠","🐬","🐳","🦀","🐌","🦔","🐘","🦒","🦓","🦛","🦘","🦥","🦦","🦩","🦚","🦜","❤️","🤍","🖤","⭐","🌟","✨","☀️","🌙","☁️","🌈","🍎","🍐","🍊","🍋","🍉","🍇","🍓","🫐","🍒","🍑","🥕","🌽","🥦","🍄","🌻","🌼","🌷","🌹","🌱","🌳","🎈","🎀","🧸","🪁","⚽","🏀","🎾","🪇","🎵","🎶","🚗","🚕","🚌","🚂","🚲","🚀","✈️","🚁","⛵","🚤","🏠","🛏️","🪑","🧦","👒","👟","🍼","🔔","🎁","🧩"];
-
-const BABY_CARDS = Array.from({length:100},(_,i)=>({
-  name: "Pattern "+String(i+1).padStart(3,"0"),
-  icon: BABY_EMOJIS[i],
-  emoji: BABY_EMOJIS[i],
-  description: "A new high-contrast pattern and a friendly surprise.",
-  type: "pattern",
-  art: "contrast",
-  designIndex: i,
-  group: "Baby Patterns"
-}));
+/* Baby Mode is a focused 40-card collection: 20 distinct patterns, then 20 emoji cards. */
+const BABY_PATTERN_NAMES = [
+  ["Hypnotic rings","Nested circles pull the eye toward the center."],
+  ["Checkerboard","Crisp black and white squares with red accents."],
+  ["Double spirals","Two bold spirals curl in opposite directions."],
+  ["Velvet waves","Flowing parallel waves ripple across the card."],
+  ["Harlequin diamonds","Large diamonds alternate like a striking quilt."],
+  ["Red sunburst","Sharp rays burst from a bold central circle."],
+  ["Chessboard maze","A winding grid of black, white and red blocks."],
+  ["Orbiting dots","Oversized dots travel along curved orbital paths."],
+  ["Zigzag lightning","Angular chevrons march across the card."],
+  ["Archway","Nested arches create a tunnel-like rhythm."],
+  ["Concentric squares","Square frames repeat inward with red highlights."],
+  ["Spiral staircase","Rotated bars form a graphic turning staircase."],
+  ["Woven lattice","Crossing ribbons form a chunky woven pattern."],
+  ["Polka-dot field","Bold circles in three sizes form a playful field."],
+  ["Scalloped waves","Repeated scallops create a soft, rhythmic edge."],
+  ["Target rings","Offset target rings make a dramatic bullseye."],
+  ["Triangle tessellation","Alternating triangles create a faceted mosaic."],
+  ["Checker spiral","A spiral path is built from alternating tiles."],
+  ["Half-moon rhythm","Large crescents and circles alternate in bands."],
+  ["Kaleidoscope","Mirrored geometric petals create a bold rosette."]
+];
+const BABY_EMOJIS = ["❤️","🤍","🖤","🔴","⚪","⚫","♥️","♦️","♠️","🃏","🥁","🎈","🌹","🍎","🍒","🍓","🐞","🐙","🐼","🦓"];
+const BABY_CARDS = [
+  ...BABY_PATTERN_NAMES.map(([name,description],index)=>({name,description,type:"pattern",art:"contrast",designIndex:index,group:"Baby Patterns"})),
+  ...BABY_EMOJIS.map((emoji,index)=>({
+    name:["Red heart","White heart","Black heart","Red circle","White circle","Black circle","Heart symbol","Diamond","Spade","Joker","Drum","Balloon","Rose","Apple","Cherries","Strawberry","Ladybug","Octopus","Panda","Zebra"][index],
+    icon:emoji,emoji,description:"A bold, easy-to-see picture in a black, white and red world.",
+    type:"emoji",designIndex:index,group:"Baby Emojis"
+  }))
+];
 
 /* Toddler mode grows with your child: all 26 letters plus numbers 0–20.
    This is intentionally separate from the infant card set. */
@@ -205,6 +220,10 @@ let streamSource = null;
 let streamGain = null;
 let melodyGain = null;
 let melodyStep = 0;
+let activeMusicPreset = 0;
+let musicNoiseSource = null;
+let musicNoiseGain = null;
+const MUSIC_PRESETS = [{name:"Classical-inspired",description:"A gentle original piano-like melody"},{name:"Soothing nature",description:"Soft rain-like ambience and airy tones"},{name:"Baby lullaby",description:"A slow, simple music-box lullaby"}];
 
 /* Return the AudioContext only after a real user action. This respects
    browsers that block sound until a tap or click. */
@@ -236,181 +255,97 @@ function playTone(frequency = 660, duration = 0.11, volume = 0.035, wave = "sine
   oscillator.stop(context.currentTime + duration + 0.02);
 }
 
-/* Generate quiet "stream" ambience from filtered noise. No audio file
-   or external streaming service is used. Volume stays deliberately low. */
-function startStreamAmbience() {
-  const context = getAudioContext();
-  if (!context || streamSource) return;
-  const bufferSize = context.sampleRate * 2;
-  const buffer = context.createBuffer(1, bufferSize, context.sampleRate);
-  const channel = buffer.getChannelData(0);
-  for (let i = 0; i < bufferSize; i++) channel[i] = (Math.random() * 2 - 1) * 0.22;
-  streamSource = context.createBufferSource();
-  streamSource.buffer = buffer;
-  streamSource.loop = true;
-  const filter = context.createBiquadFilter();
-  filter.type = "lowpass";
-  filter.frequency.value = 650;
-  streamGain = context.createGain();
-  streamGain.gain.value = 0.012;
-  streamSource.connect(filter);
-  filter.connect(streamGain);
-  streamGain.connect(context.destination);
-  streamSource.start();
+/* In-app soundscapes are generated locally with Web Audio, not external recordings. */
+function stopMusicLayers() {
+  if(melodyTimer) window.clearInterval(melodyTimer);
+  melodyTimer=null;
+  if(musicNoiseSource){try{musicNoiseSource.stop();musicNoiseSource.disconnect();}catch(_){}}
+  musicNoiseSource=null;
+  if(musicNoiseGain){try{musicNoiseGain.disconnect();}catch(_){}}
+  musicNoiseGain=null;
+  if(melodyGain){try{melodyGain.disconnect();}catch(_){}}
+  melodyGain=null;
 }
-
-/* Play an original, slow, music-box-like tune. This is synthesized in
-   the browser rather than embedding copyrighted classical recordings. */
+function startNatureBed(context) {
+  const size=context.sampleRate*2,buffer=context.createBuffer(1,size,context.sampleRate),channel=buffer.getChannelData(0);
+  for(let i=0;i<size;i++) channel[i]=(Math.random()*2-1)*0.22;
+  musicNoiseSource=context.createBufferSource();musicNoiseSource.buffer=buffer;musicNoiseSource.loop=true;
+  const filter=context.createBiquadFilter();filter.type="lowpass";filter.frequency.value=activeMusicPreset===1?520:850;
+  musicNoiseGain=context.createGain();musicNoiseGain.gain.value=activeMusicPreset===1?0.045:0.008;
+  musicNoiseSource.connect(filter);filter.connect(musicNoiseGain);musicNoiseGain.connect(context.destination);musicNoiseSource.start();
+}
 function playMelodyNote() {
-  if (!melodyGain || !audioContext) return;
-  const notes = [523.25,659.25,783.99,659.25,587.33,698.46,659.25,523.25,493.88,587.33,659.25,587.33];
-  const frequency = notes[melodyStep % notes.length];
-  melodyStep++;
-  const oscillator = audioContext.createOscillator();
-  const noteGain = audioContext.createGain();
-  oscillator.type = "sine";
-  oscillator.frequency.value = frequency;
-  noteGain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-  noteGain.gain.exponentialRampToValueAtTime(0.045, audioContext.currentTime + 0.08);
-  noteGain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 1.25);
-  oscillator.connect(noteGain);
-  noteGain.connect(melodyGain);
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + 1.3);
+  if(!melodyGain||!audioContext)return;
+  const sets=[
+    [261.63,329.63,392,329.63,293.66,349.23,392,523.25,392,329.63,293.66,261.63],
+    [392,0,523.25,0,440,0,587.33,0,523.25,0,392,0],
+    [523.25,392,349.23,392,440,392,329.63,261.63,392,329.63,293.66,261.63]
+  ];
+  const frequency=sets[activeMusicPreset][melodyStep%sets[activeMusicPreset].length];melodyStep++;
+  if(!frequency)return;
+  const oscillator=audioContext.createOscillator(),noteGain=audioContext.createGain();
+  oscillator.type=activeMusicPreset===0?"triangle":"sine";oscillator.frequency.value=frequency;
+  noteGain.gain.setValueAtTime(0.0001,audioContext.currentTime);
+  noteGain.gain.exponentialRampToValueAtTime(activeMusicPreset===1?0.014:0.035,audioContext.currentTime+0.08);
+  noteGain.gain.exponentialRampToValueAtTime(0.0001,audioContext.currentTime+1.4);
+  oscillator.connect(noteGain);noteGain.connect(melodyGain);oscillator.start();oscillator.stop(audioContext.currentTime+1.45);
 }
 function startMelody() {
-  const context = getAudioContext();
-  if (!context || melodyTimer) return;
-  melodyGain = context.createGain();
-  melodyGain.gain.value = 0.45;
-  melodyGain.connect(context.destination);
-  startStreamAmbience();
-  playMelodyNote();
-  melodyTimer = window.setInterval(playMelodyNote, 1250);
-  ui.melody.setAttribute("aria-pressed", "true");
-  ui.melody.setAttribute("aria-label", "Stop gentle melody");
+  const context=getAudioContext();if(!context)return;
+  stopMusicLayers();melodyStep=0;melodyGain=context.createGain();melodyGain.gain.value=Number(document.getElementById("music-volume").value)/100;
+  melodyGain.connect(context.destination);startNatureBed(context);playMelodyNote();
+  melodyTimer=window.setInterval(playMelodyNote,activeMusicPreset===1?1700:1450);
+  ui.melody.setAttribute("aria-pressed","true");ui.melody.setAttribute("aria-label","Stop "+MUSIC_PRESETS[activeMusicPreset].name);
+  document.getElementById("music-status").textContent="Playing · "+MUSIC_PRESETS[activeMusicPreset].name;
+  document.getElementById("music-toggle").textContent="Stop";
 }
 function stopMelody() {
-  if (melodyTimer) window.clearInterval(melodyTimer);
-  melodyTimer = null;
-  if (melodyGain) {
-    const oldGain = melodyGain;
-    oldGain.gain.setTargetAtTime(0, audioContext.currentTime, 0.12);
-    window.setTimeout(() => { try { oldGain.disconnect(); } catch (_) {} }, 600);
-  }
-  melodyGain = null;
-  if (streamSource) {
-    try { streamSource.stop(); streamSource.disconnect(); } catch (_) {}
-    streamSource = null;
-  }
-  if (streamGain) { try { streamGain.disconnect(); } catch (_) {} streamGain = null; }
-  ui.melody.setAttribute("aria-pressed", "false");
-  ui.melody.setAttribute("aria-label", "Play gentle melody");
+  stopMusicLayers();ui.melody.setAttribute("aria-pressed","false");ui.melody.setAttribute("aria-label","Play "+MUSIC_PRESETS[activeMusicPreset].name);
+  document.getElementById("music-status").textContent="Ready · "+MUSIC_PRESETS[activeMusicPreset].name;
+  document.getElementById("music-toggle").textContent="Play";
 }
-
-/* Draw a pattern using simple SVG primitives. SVG keeps the art sharp
-   on retina screens and makes the shapes easy for new developers to edit. */
-function drawPattern(style) {
-  const ns = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(ns, "svg");
-  svg.setAttribute("viewBox", "0 0 400 400");
-  svg.setAttribute("role", "img");
-  svg.setAttribute("aria-label", style + " pattern");
-  const add = (tag, attrs) => {
-    const node = document.createElementNS(ns, tag);
-    Object.entries(attrs).forEach(([key, value]) => node.setAttribute(key, value));
-    svg.appendChild(node);
-    return node;
-  };
-  const ink = "#30372b", cream = "#fffdf6", green = "#b7cf98";
-  add("rect", {x:0,y:0,width:400,height:400,rx:24,fill:cream});
-  if (style === "rings") {
-    [165,132,99,66,33].forEach((r,i)=>add("circle",{cx:200,cy:200,r,fill:i%2?cream:ink}));
-  } else if (style === "oval") {
-    [165,132,99,66,33].forEach((r,i)=>add("ellipse",{cx:200,cy:200,rx:r,ry:r*.68,fill:i%2?cream:ink}));
-  } else if (style === "square" || style === "rectangle" || style === "checker" || style === "woven") {
-    if(style==="checker" || style==="woven"){
-      for(let y=0;y<8;y++)for(let x=0;x<8;x++)if((x+y)%2===0)add("rect",{x:x*50,y:y*50,width:50,height:50,fill:ink});
-      if(style==="woven") for(let y=25;y<400;y+=50)add("path",{d:`M0 ${y} H400`,stroke:green,"stroke-width":10});
-    } else add("rect",{x:style==="square"?65:25,y:style==="square"?65:100,width:style==="square"?270:350,height:style==="square"?270:200,rx:style==="square"?0:8,fill:ink});
-  } else if (style === "triangle" || style === "diamond" || style === "hexagon" || style === "star" || style === "heart" || style === "moon") {
-    const paths = {
-      triangle:"200,48 350,330 50,330",diamond:"200,38 350,200 200,362 50,200",
-      hexagon:"110,45 290,45 365,200 290,355 110,355 35,200",
-      star:"200,30 242,145 365,150 270,228 300,350 200,280 100,350 130,228 35,150 158,145",
-      heart:"M200 345 C170 310 45 220 55 125 C65 35 170 45 200 120 C230 45 335 35 345 125 C355 220 230 310 200 345",
-      moon:"M260 48 C125 60 90 280 250 345 C100 360 35 240 65 145 C95 60 180 25 260 48"
-    };
-    if (style === "heart" || style === "moon") {
-      add("path",{d:paths[style],fill:style==="heart"?"#d98e83":ink});
-    } else {
-      add("polygon",{points:paths[style],fill:ink});
-    }
-  } else if (style === "stripes") {
-    for(let x=0;x<400;x+=48)add("rect",{x,y:0,width:24,height:400,fill:ink});
-  } else if (style === "zigzag") {
-    for(let y=60;y<400;y+=85){let d=`M0 ${y}`;for(let x=0;x<=400;x+=40)d+=` L${x} ${y-28}` ;add("path",{d,fill:"none",stroke:ink,"stroke-width":15,"stroke-linejoin":"round"});}
-  } else if (style === "waves") {
-    for(let y=40;y<420;y+=52){let d=`M0 ${y}`;for(let x=0;x<=400;x+=8)d+=` L${x} ${y+Math.sin(x/400*Math.PI*4)*17}`;add("path",{d,fill:"none",stroke:ink,"stroke-width":10,"stroke-linecap":"round"});}
-  } else if (style === "spiral") {
-    let d="";for(let t=0;t<=1050;t+=4){const a=t*.035,r=3+t*.12;d+=(t?"L":"M")+(200+Math.cos(a)*r).toFixed(1)+" "+(200+Math.sin(a)*r).toFixed(1)+" ";}
-    add("path",{d,fill:"none",stroke:ink,"stroke-width":13,"stroke-linecap":"round"});
-  } else if (style === "dots" || style === "tinyDots" || style === "spots") {
-    const step=style==="tinyDots"?25:style==="spots"?95:70;
-    for(let y=step/2;y<400;y+=step)for(let x=step/2;x<400;x+=step){const r=style==="tinyDots"?4:style==="spots"?22:13+((x+y)%3)*5;add("circle",{cx:x,cy:y,r,fill:(Math.floor(x/step)+Math.floor(y/step))%2?green:ink});}
-  } else if (style === "arches") {
-    for(let i=0;i<7;i++){const width=340-i*42,x=(400-width)/2;add("path",{d:`M${x} 350 V${220-i*17} A${width/2} ${width/2} 0 0 1 ${x+width} ${220-i*17} V350`,fill:"none",stroke:i%2?green:ink,"stroke-width":18,"stroke-linejoin":"round"});}
-  } else if (style === "fan") {
-    for(let i=0;i<9;i++) add("path",{d:`M200 355 L${30+i*42} 80 Q200 20 ${370-i*42} 80 Z`,fill:i%2?green:ink,opacity:.85});
-  } else if (style === "burst") {
-    for(let i=0;i<24;i++){const a=i*Math.PI/12;add("line",{x1:200+Math.cos(a)*30,y1:200+Math.sin(a)*30,x2:200+Math.cos(a)*170,y2:200+Math.sin(a)*170,stroke:ink,"stroke-width":i%2?7:13,"stroke-linecap":"round"});}
-    add("circle",{cx:200,cy:200,r:35,fill:green});
-  } else if (style === "half") {
-    add("circle",{cx:200,cy:200,r:150,fill:cream,stroke:ink,"stroke-width":8});
-    add("path",{d:"M200 50 A150 150 0 0 0 200 350 Z",fill:ink});
-  } else if (style === "cross") {
-    add("rect",{x:155,y:45,width:90,height:310,rx:15,fill:ink});add("rect",{x:45,y:155,width:310,height:90,rx:15,fill:ink});
-  } else {
-    [55,125,195,265,335].forEach((x,i)=>add("circle",{cx:x,cy:200,r:22,fill:i%2?green:ink}));
-  }
-  return svg;
+function skipMusicPreset() {
+  const wasPlaying=Boolean(melodyTimer);activeMusicPreset=(activeMusicPreset+1)%MUSIC_PRESETS.length;
+  updateMusicPresetUI();if(wasPlaying)startMelody();else stopMelody();
 }
-
-/* Draw 200 distinct bold, high-contrast vector designs. */
+function chooseMusicPreset(value) {
+  const wasPlaying=Boolean(melodyTimer);activeMusicPreset=Number(value)||0;updateMusicPresetUI();
+  if(wasPlaying)startMelody();else stopMelody();
+}
+function updateMusicPresetUI() {
+  const preset=MUSIC_PRESETS[activeMusicPreset];
+  document.getElementById("music-preset").value=String(activeMusicPreset);
+  document.getElementById("music-preset-name").textContent=preset.name;
+  document.getElementById("music-preset-description").textContent=preset.description;
+}
+/* Twenty intentionally different hand-designed vector compositions. */
 function drawContrastDesign(index) {
-  const ns="http://www.w3.org/2000/svg", svg=document.createElementNS(ns,"svg");
-  svg.setAttribute("viewBox","0 0 400 400"); svg.setAttribute("role","img");
-  svg.setAttribute("aria-label","Bold contrast design "+(index+1));
-  const add=(tag,attrs)=>{const n=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));svg.appendChild(n);return n;};
-  const family=index%10, v=Math.floor(index/10), black="#050505", white="#ffffff", red="#ed1028", bg=black;
-  add("rect",{x:0,y:0,width:400,height:400,fill:bg});
-  const gap=22+(v%5)*7, accent=red;
-  if(family===0){
-    const cx=200+((v%3)-1)*22,cy=200+((v%4)-1.5)*13;
-    for(let r=190-(v%7)*4,n=0;r>8;r-=22+(v%4)*5,n++)add("circle",{cx,cy,r,fill:n%3===1?bg:n%3===2?accent:white});
-    add("circle",{cx:200,cy:200,r:12+(v%7)*2,fill:accent});
-  }else if(family===1||family===2){
-    const vertical=family===1,step=gap;
-    for(let p=-20,n=0;p<420;p+=step,n++)add("rect",{x:vertical?p:0,y:vertical?0:p,width:vertical?step*(.48+(v%3)*.08):400,height:vertical?400:step*(.48+(v%3)*.08),fill:n%4===v%4?accent:n%2?white:black});
-  }else if(family===3){
-    const cell=28+(v%4)*9;
-    for(let y=0;y<400;y+=cell)for(let x=0;x<400;x+=cell){const n=Math.floor(x/cell)*3+Math.floor(y/cell)+v;add("rect",{x,y,width:cell+1,height:cell+1,fill:n%7===0?accent:(Math.floor(x/cell)+Math.floor(y/cell)+v)%2?white:black});}
-  }else if(family===4){
-    const rays=9+v%10;
-    for(let n=0;n<rays;n++){const a=n/rays*Math.PI*2+v*.13,b=(n+.78)/rays*Math.PI*2+v*.13;add("path",{d:"M200 200 L"+(200+Math.cos(a)*205)+" "+(200+Math.sin(a)*205)+" L"+(200+Math.cos(b)*205)+" "+(200+Math.sin(b)*205)+" Z",fill:n%5===0?accent:n%2?white:black});}
-    add("circle",{cx:200,cy:200,r:28+(v%7)*5,fill:bg,stroke:white,"stroke-width":9});
-  }else if(family===5||family===9){
-    const rows=family===5?9:6+v%5,amp=16+v%5*5;
-    for(let row=0;row<rows;row++){let d="M-10 "+(row*400/rows);for(let x=0;x<=420;x+=8){const y=row*400/rows+Math.sin(x/(24+(v%6)*7)+row*.7+v)*amp;d+=" L"+x+" "+y.toFixed(1);}add("path",{d,fill:"none",stroke:row%4===v%4?accent:row%2?white:black,"stroke-width":12+v%9,"stroke-linecap":"square"});}
-  }else if(family===6){
-    const step=48+(v%4)*10;
-    for(let y=step/2;y<420;y+=step)for(let x=step/2;x<420;x+=step){const n=Math.floor(x/step)+Math.floor(y/step)+v,r=8+((n*7+v*3)%Math.max(12,step*.44));add("circle",{cx:x+((v%3)-1)*5,cy:y,r,fill:n%5===0?accent:n%2?white:black,stroke:n%3===0?white:"none","stroke-width":3});}
-  }else if(family===7){
-    for(let n=0;n<4+v%5;n++){const w=370-n*(24+v%7),x=(400-w)/2,y=370-n*(17+v%5),top=120-n*12;add("path",{d:"M"+x+" "+y+" V"+top+" A"+w/2+" "+w/2+" 0 0 1 "+(x+w)+" "+top+" V"+y,fill:"none",stroke:n%4===v%4?accent:n%2?white:black,"stroke-width":13+v%9});}
-  }else{
-    for(let n=0;n<8+v%5;n++){const size=370-n*(24+v%5),x=(400-size)/2,y=(400-size)/2;add("polygon",{points:"200,"+y+" "+(x+size)+",200 200,"+(y+size)+" "+x+",200",fill:n%4===v%4?accent:n%2?white:black,stroke:bg,"stroke-width":3});}
-  }
-  if(index%3===0)add("circle",{cx:200,cy:200,r:15+(v%4)*5,fill:accent,stroke:white,"stroke-width":5});
+  const ns="http://www.w3.org/2000/svg",svg=document.createElementNS(ns,"svg");
+  svg.setAttribute("viewBox","0 0 400 400");svg.setAttribute("role","img");
+  svg.setAttribute("aria-label",BABY_PATTERN_NAMES[index]?.[0]||"High contrast pattern");
+  const add=(tag,attrs)=>{const node=document.createElementNS(ns,tag);Object.entries(attrs).forEach(([key,value])=>node.setAttribute(key,value));svg.appendChild(node);return node;};
+  const black="#050505",white="#ffffff",red="#ed1028",colors=[black,white,red];
+  add("rect",{x:0,y:0,width:400,height:400,fill:black});
+  if(index===0){for(let r=194,n=0;r>8;r-=18,n++)add("circle",{cx:200,cy:200,r,fill:colors[n%3]});}
+  else if(index===1){for(let y=0;y<400;y+=50)for(let x=0;x<400;x+=50)add("rect",{x,y,width:50,height:50,fill:(x/50+y/50)%2?white:black});add("path",{d:"M-20 320 L320 -20 L420 80 L80 420 Z",fill:red});}
+  else if(index===2){for(let side=0;side<2;side++){let d="";for(let t=0;t<=Math.PI*7;t+=.09){const r=4+t*7.6,a=(side?Math.PI:0)+t,x=200+Math.cos(a)*r,y=200+Math.sin(a)*r;d+=(t===0?"M":" L")+x.toFixed(1)+" "+y.toFixed(1);}add("path",{d,fill:"none",stroke:side?red:white,"stroke-width":11,"stroke-linecap":"round"});}}
+  else if(index===3){for(let row=0;row<12;row++){let d="M-5 "+(row*38);for(let x=0;x<=410;x+=5)d+=" L"+x+" "+(row*38+19*Math.sin(x/25+row*.7));add("path",{d,fill:"none",stroke:row%3===0?red:row%2?white:black,"stroke-width":10});}}
+  else if(index===4){for(let y=-100;y<500;y+=100)for(let x=-100;x<500;x+=100)add("polygon",{points:(x+50)+","+y+" "+(x+100)+","+(y+50)+" "+(x+50)+","+(y+100)+" "+x+","+(y+50),fill:Math.abs((x+y)/100)%3===0?red:Math.abs((x+y)/100)%2?white:black,stroke:black,"stroke-width":5});}
+  else if(index===5){for(let n=0;n<32;n++){const a=n*Math.PI/16,b=(n+.72)*Math.PI/16;add("path",{d:"M200 200 L"+(200+Math.cos(a)*290)+" "+(200+Math.sin(a)*290)+" L"+(200+Math.cos(b)*290)+" "+(200+Math.sin(b)*290)+" Z",fill:n%4===0?red:n%2?white:black});}add("circle",{cx:200,cy:200,r:58,fill:red,stroke:white,"stroke-width":12});}
+  else if(index===6){for(let y=0;y<400;y+=40)for(let x=0;x<400;x+=40){const n=x/40+y/40;add("rect",{x,y,width:40,height:40,fill:n%2?white:black});if((x+y)%120===0)add("rect",{x:x+10,y:y+10,width:20,height:20,fill:red});}add("path",{d:"M20 20 H180 V100 H100 V260 H300 V180 H380",fill:"none",stroke:red,"stroke-width":15});}
+  else if(index===7){add("circle",{cx:200,cy:200,r:115,fill:"none",stroke:white,"stroke-width":8});add("ellipse",{cx:200,cy:200,rx:175,ry:70,fill:"none",stroke:red,"stroke-width":9,transform:"rotate(-35 200 200)"});add("ellipse",{cx:200,cy:200,rx:175,ry:70,fill:"none",stroke:white,"stroke-width":7,transform:"rotate(55 200 200)"});[[200,85,23,red],[85,200,18,white],[315,200,25,red],[200,315,21,white],[75,105,15,red],[320,300,16,white]].forEach(([cx,cy,r,fill])=>add("circle",{cx,cy,r,fill}));}
+  else if(index===8){for(let row=0;row<7;row++){const y=row*65-20;add("path",{d:"M-20 "+y+" L80 "+(y+45)+" L180 "+y+" L280 "+(y+45)+" L420 "+(y-5),fill:"none",stroke:row%3===0?red:white,"stroke-width":25,"stroke-linejoin":"miter"});}}
+  else if(index===9){for(let n=0;n<9;n++){const w=390-n*42,top=35+n*19;add("path",{d:"M"+(200-w/2)+" 410 V"+(top+w/2)+" A"+(w/2)+" "+(w/2)+" 0 0 1 "+(200+w/2)+" "+(top+w/2)+" V410",fill:"none",stroke:n%3===0?red:n%2?white:black,"stroke-width":13});}}
+  else if(index===10){for(let n=0;n<12;n++){const s=390-n*31;add("rect",{x:(400-s)/2,y:(400-s)/2,width:s,height:s,fill:"none",stroke:n%4===0?red:n%2?white:black,"stroke-width":12});}}
+  else if(index===11){for(let n=0;n<13;n++){const s=360-n*25;add("rect",{x:(400-s)/2,y:(400-s)/2,width:s,height:18,fill:n%3===0?red:white,transform:"rotate("+(n*11)+" 200 200)"});}add("circle",{cx:200,cy:200,r:36,fill:black,stroke:red,"stroke-width":12});}
+  else if(index===12){for(let n=-5;n<15;n++){const p=n*42;add("path",{d:"M"+p+" -20 L"+(p+420)+" 420",stroke:n%3===0?red:white,"stroke-width":22});add("path",{d:"M-20 "+p+" L420 "+(p+420),stroke:n%2?black:red,"stroke-width":12});}}
+  else if(index===13){for(let y=35,row=0;y<420;y+=90,row++)for(let x=35+(row%2)*40;x<420;x+=90){const r=(row+Math.round(x/90))%4===0?33:22;add("circle",{cx:x,cy:y,r,fill:(row+Math.round(x/90))%3===0?red:white,stroke:black,"stroke-width":5});}}
+  else if(index===14){for(let row=0;row<8;row++){let d="M-50 "+(row*55+25);for(let x=-50;x<=450;x+=50)d+=" Q"+(x+25)+" "+(row*55-15)+" "+(x+50)+" "+(row*55+25);add("path",{d,fill:"none",stroke:row%3===0?red:white,"stroke-width":14});}}
+  else if(index===15){[[155,165],[270,245]].forEach(([cx,cy],j)=>{for(let n=0;n<7;n++)add("circle",{cx,cy,r:190-n*25,fill:(n+j)%3===0?red:(n+j)%2?white:black});});}
+  else if(index===16){for(let y=0;y<400;y+=50)for(let x=0;x<400;x+=50){const flip=((x/50+y/50)%2)===0;add("polygon",{points:flip?x+","+(y+50)+" "+(x+25)+","+y+" "+(x+50)+","+(y+50):x+","+y+" "+(x+50)+","+y+" "+(x+25)+","+(y+50),fill:(x/50+y/50)%3===0?red:(x/50)%2?white:black,stroke:white,"stroke-width":2});}}
+  else if(index===17){for(let y=0;y<400;y+=25)for(let x=0;x<400;x+=25){const dx=x+12.5-200,dy=y+12.5-200,angle=Math.atan2(dy,dx),radius=Math.hypot(dx,dy),phase=Math.floor((angle+Math.PI)*2+radius/22);if(phase%3!==0)add("rect",{x,y,width:23,height:23,fill:phase%2?white:red});}}
+  else if(index===18){for(let row=0;row<7;row++)for(let col=0;col<5;col++){const cx=col*100+50,cy=row*65+30;add("circle",{cx,cy,r:33,fill:(row+col)%3===0?red:white});add("circle",{cx:cx+17,cy:cy-6,r:30,fill:black});}for(let y=15;y<400;y+=130)add("path",{d:"M0 "+y+" Q200 "+(y+95)+" 400 "+y,fill:"none",stroke:white,"stroke-width":7});}
+  else {for(let n=0;n<16;n++){const a=n*Math.PI/8;add("ellipse",{cx:200+Math.cos(a)*78,cy:200+Math.sin(a)*78,rx:82,ry:26,fill:n%3===0?red:white,stroke:black,"stroke-width":4,transform:"rotate("+(n*22.5)+" "+(200+Math.cos(a)*78)+" "+(200+Math.sin(a)*78)+")"});}add("circle",{cx:200,cy:200,r:48,fill:red,stroke:white,"stroke-width":10});}
   return svg;
 }
 
@@ -570,51 +505,22 @@ function drawToddlerFront(card) {
 /* Every card shares the same layout. Only the illustration and labels
    change. This makes adding cards much simpler than writing new HTML. */
 function renderCard() {
-  const card = currentCards[currentIndex];
-  const isToddler = currentMode === "toddler";
-  const isAnimal = currentMode === "baby" && card.group === "Animals";
-  const isPattern = card.type === "pattern";
-  ui.artwork.replaceChildren();
-  ui.artwork.classList.toggle("emoji-art", false);
-  ui.artwork.classList.toggle("toddler-art", isToddler);
-  ui.artwork.classList.toggle("animal-art", isAnimal);
-  if (isToddler) {
+  const card=currentCards[currentIndex],isToddler=currentMode==="toddler",isPattern=card.type==="pattern",isBabyEmoji=currentMode==="baby"&&card.type==="emoji";
+  ui.artwork.replaceChildren();ui.artwork.classList.toggle("emoji-art",isBabyEmoji);ui.artwork.classList.toggle("toddler-art",isToddler);ui.artwork.classList.toggle("animal-art",false);
+  if(isToddler){
     ui.artwork.appendChild(drawToddlerFront(card));
-    const badge = document.createElement("span");
-    badge.className = "toddler-count-badge number-color-" + (card.designIndex % 8);
-    badge.textContent = String(Math.min(card.designIndex + 1, 25));
-    badge.setAttribute("aria-label", "Number " + badge.textContent);
-    ui.artwork.appendChild(badge);
-    ui.artwork.style.fontSize = "";
-  } else if (isAnimal) {
-    ui.artwork.appendChild(drawAnimalFace(card.name, false));
-    ui.artwork.style.fontSize = "";
-  } else if (isPattern) {
-    ui.artwork.appendChild(drawContrastDesign(card.designIndex));
-    const emoji = document.createElement("span");
-    emoji.className = "baby-pattern-emoji";
-    emoji.textContent = card.emoji;
-    emoji.setAttribute("role", "img");
-    emoji.setAttribute("aria-label", "Baby-friendly emoji: " + card.emoji);
-    ui.artwork.appendChild(emoji);
-    ui.artwork.style.fontSize = "";
-  } else {
-    const picture = document.createElement("span");
-    picture.textContent = card.icon;
-    picture.setAttribute("aria-hidden", "true");
-    ui.artwork.appendChild(picture);
-    ui.artwork.style.fontSize = "";
-  }
-  ui.word.textContent = isToddler ? card.name + " · " + card.animal : card.name;
-  ui.label.textContent = isToddler ? "ABC ANIMAL ADVENTURES" : (isPattern ? "HIGH-CONTRAST PATTERN" : card.group.toUpperCase());
-  ui.count.innerHTML = `${String(currentIndex + 1).padStart(2,"0")} <span>/ ${currentCards.length}</span>`;
-  ui.progress.style.width = `${((currentIndex + 1) / currentCards.length) * 100}%`;
-  ui.progressLabel.textContent = isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
-  ui.previous.disabled = currentIndex === 0;
-  ui.next.disabled = currentIndex === currentCards.length - 1;
-  ui.flashcard.setAttribute("aria-label", isToddler
-    ? `${card.name}, ${card.animal}, number ${Math.min(card.designIndex + 1, 25)}`
-    : isPattern ? `${card.name}, high-contrast pattern with emoji ${card.emoji}` : card.name);
+    const badge=document.createElement("span");badge.className="toddler-count-badge number-color-"+(card.designIndex%8);badge.textContent=String(Math.min(card.designIndex+1,25));badge.setAttribute("aria-label","Number "+badge.textContent);ui.artwork.appendChild(badge);ui.artwork.style.fontSize="";
+  }else if(isPattern){ui.artwork.appendChild(drawContrastDesign(card.designIndex));ui.artwork.style.fontSize="";}
+  else if(isBabyEmoji){
+    const stage=document.createElement("div");stage.className="baby-emoji-stage emoji-tone-"+(card.designIndex%5);
+    const emoji=document.createElement("span");emoji.className="baby-emoji-symbol";emoji.textContent=card.emoji;emoji.setAttribute("role","img");emoji.setAttribute("aria-label",card.name);stage.appendChild(emoji);ui.artwork.appendChild(stage);ui.artwork.style.fontSize="";
+  }else{const picture=document.createElement("span");picture.textContent=card.icon;picture.setAttribute("aria-hidden","true");ui.artwork.appendChild(picture);ui.artwork.style.fontSize="";}
+  ui.word.textContent=isToddler?card.name+" · "+card.animal:card.name;
+  ui.label.textContent=isToddler?"ABC ANIMAL ADVENTURES":isPattern?"20 UNIQUE HIGH-CONTRAST PATTERNS":"20 HIGH-CONTRAST EMOJI CARDS";
+  ui.count.innerHTML=String(currentIndex+1).padStart(2,"0")+' <span>/ '+currentCards.length+"</span>";
+  ui.progress.style.width=((currentIndex+1)/currentCards.length*100)+"%";ui.progressLabel.textContent=isToddler?"GROWING TOGETHER":"A LITTLE AT A TIME";
+  ui.previous.disabled=currentIndex===0;ui.next.disabled=currentIndex===currentCards.length-1;
+  ui.flashcard.setAttribute("aria-label",isToddler?card.name+", "+card.animal+", number "+Math.min(card.designIndex+1,25):isPattern?card.name+", high-contrast pattern":card.name+", "+card.emoji);
 }
 
 /* Move to a card. Direction determines the soft swipe sound pitch. */
@@ -677,7 +583,7 @@ function setMode(mode) {
     button.classList.toggle("active", selected);
     button.setAttribute("aria-pressed", String(selected));
   });
-  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "100 unique patterns + 100 emoji companions";
+  ui.collectionTitle.textContent = mode === "toddler" ? language.toddlerCollection : "20 unique patterns + 20 emoji cards";
   ui.collectionKicker.textContent = mode === "toddler" ? language.toddlerKicker : language.babyKicker;
   renderCard();
   playTone(523.25, 0.12, 0.02);
@@ -717,6 +623,21 @@ ui.soundToggle.addEventListener("click", () => {
 ui.melody.addEventListener("click", () => {
   if (melodyTimer) stopMelody();
   else startMelody();
+});
+document.getElementById("music-toggle").addEventListener("click", () => { if(melodyTimer) stopMelody(); else startMelody(); });
+document.getElementById("music-skip").addEventListener("click", skipMusicPreset);
+document.getElementById("music-preset").addEventListener("change", event => chooseMusicPreset(event.target.value));
+document.getElementById("music-volume").addEventListener("input", event => {
+  const volume=Number(event.target.value)/100;
+  document.querySelector("#music-volume + output").textContent=event.target.value+"%";
+  if(melodyGain) melodyGain.gain.value=volume;
+  if(musicNoiseGain) musicNoiseGain.gain.value=(activeMusicPreset===1?0.045:0.008)*volume;
+});
+document.getElementById("glass-opacity").addEventListener("input", event => {
+  const value=Number(event.target.value)/100;
+  document.documentElement.style.setProperty("--glass-alpha",String(value));
+  document.documentElement.style.setProperty("--glass-edge-alpha",String(Math.min(1,value+0.25)));
+  document.querySelector("#glass-opacity + output").textContent=event.target.value+"%";
 });
 
 /* A tiny About dialog keeps explanatory copy out of the main experience. */
