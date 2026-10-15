@@ -141,3 +141,21 @@ button:disabled{opacity:.38;cursor:not-allowed}
 @media(min-width:700px){.app{padding-top:28px}.welcome{padding-top:38px}.flashcard{aspect-ratio:1/1.02}.artwork{font-size:170px}.experience{max-width:600px;margin:0 auto}.welcome{max-width:600px;margin:0 auto}.mode-switch{max-width:600px;margin-left:auto;margin-right:auto}.topbar{max-width:600px;margin:0 auto}}
 @media(max-width:420px){.app{padding:12px 12px 22px}.play-style-button{padding:8px 7px;gap:6px}.play-style-button>span:first-child{width:26px;height:26px}.play-style-button small{font-size:8px}.topbar{padding:10px 11px}.brand small{font-size:9px}.brand strong{font-size:15px}.round-tool{padding:9px 10px}.welcome{padding-top:27px}.mode-button{gap:8px;padding:10px 8px}.mode-emoji{width:34px;height:34px}.new-tag{display:none}.collection-row h2{font-size:18px}.flashcard{border-radius:24px}.card-face{border-radius:23px}.art-backdrop{margin:8px 8px 0;border-radius:18px}.card-bottom{padding:13px 15px 15px}.flip-hint{font-size:7px}.reverse-button{top:10px;right:10px;padding:8px 9px}.controls{grid-template-columns:1fr 1.55fr 44px;gap:7px}.control-button{min-height:46px;padding:10px 8px}.parent-note{padding:14px;gap:10px}.footer{gap:8px;font-size:8px}.footer button{font-size:8px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+
+/* High-contrast infant artwork overrides: never use pale card faces. */
+.card-front{background:#050505!important;color:#fff}
+.card-front .art-backdrop{background:#050505!important}
+.card-front .art-backdrop:before{background:transparent!important;box-shadow:none!important}
+.card-front .art-label{color:#fff!important;text-shadow:0 1px 4px #000}
+.card-front .sparkle{color:#ed1028}
+.card-front .card-word{color:#fff}
+.card-front .flip-hint{color:#ff3348}
+.card-front .card-bottom{background:#050505}
+.card-back{background:#a90018!important;color:#fff}
+.card-back .back-title,.card-back .back-description{color:#fff}
+.card-back .back-prompt{background:#050505;color:#fff}
+.card-back .back-sparkle{color:#fff}
+.card-back .color-artwork{width:86%;height:auto;aspect-ratio:1;margin:4px auto 8px}
+.card-back .color-artwork svg{width:100%;height:100%;max-width:100%;max-height:100%;border-radius:12px}
+.card-back .back-description,.card-back .back-prompt{display:none}
+.card-back .back-title{font-size:clamp(17px,4vw,23px);margin-top:3px}
