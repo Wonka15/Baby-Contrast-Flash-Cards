@@ -130,9 +130,36 @@ const ui = {
   soundToggle: document.getElementById("sound-toggle"),
   modeButtons: [...document.querySelectorAll("[data-mode]")],
   playStyleButtons: [...document.querySelectorAll("[data-play-style]")],
-  aboutDialog: document.getElementById("about-dialog")
+  aboutDialog: document.getElementById("about-dialog"),
+  arModeButton: document.getElementById("ar-mode-button")
 };
 const toddlerCards = makeToddlerCards();
+
+/* AR Mode Deck uses the exact 26 animals requested. The browser's native
+   emoji artwork gets layered shadows and highlights for a 3D-style look. */
+const AR_ANIMALS = [
+  ["Octopus", "🐙"], ["Spider", "🕷️"], ["Fly", "🪰"], ["Snail", "🐌"],
+  ["Ladybug", "🐞"], ["Caterpillar", "🐛"], ["Worm", "🪱"], ["Butterfly", "🦋"],
+  ["Bee", "🐝"], ["Horse", "🐴"], ["Wolf", "🐺"], ["Whale", "🐳"],
+  ["Fish", "🐟"], ["Crab", "🦀"], ["Seal", "🦭"], ["Guide dog", "🦮"],
+  ["Otter", "🦦"], ["Squirrel", "🐿️"], ["Hedgehog", "🦔"], ["Chick", "🐣"],
+  ["Frog", "🐸"], ["Panda", "🐼"], ["Koala", "🐨"], ["Dog", "🐶"],
+  ["Rabbit", "🐰"], ["Fox", "🦊"]
+];
+function makeARCards() {
+  return AR_ANIMALS.map(([animal, emoji], designIndex) => ({
+    name: animal,
+    animal,
+    emoji,
+    icon: emoji,
+    symbol: animal.charAt(0).toUpperCase(),
+    description: animal + " in the AR Mode Deck.",
+    type: "ar",
+    group: "AR Mode Deck",
+    designIndex
+  }));
+}
+const arCards = makeARCards();
 let currentMode = "baby";
 let playStyle = "play";
 let watchTimer = null;
@@ -298,21 +325,63 @@ function drawToddlerFront(card) {
   return wrap;
 }
 
+/* A dedicated hero layout gives the special deck a bright blue initial,
+   dimensional emoji shadows, and decorative diamond sparkles. */
+function drawARFront(card) {
+  const wrap = document.createElement("div");
+  wrap.className = "ar-hero";
+
+  const sparkle = document.createElement("span");
+  sparkle.className = "ar-card-sparkle ar-card-sparkle-one";
+  sparkle.setAttribute("aria-hidden", "true");
+  sparkle.textContent = "✦";
+  wrap.appendChild(sparkle);
+
+  const letter = document.createElement("div");
+  letter.className = "ar-big-letter";
+  letter.textContent = card.symbol;
+  letter.setAttribute("aria-hidden", "true");
+  wrap.appendChild(letter);
+
+  const animal = document.createElement("div");
+  animal.className = "ar-big-emoji";
+  animal.textContent = card.emoji;
+  animal.setAttribute("role", "img");
+  animal.setAttribute("aria-label", card.animal);
+  wrap.appendChild(animal);
+
+  const caption = document.createElement("div");
+  caption.className = "ar-animal-name";
+  caption.textContent = card.animal;
+  wrap.appendChild(caption);
+
+  const secondSparkle = document.createElement("span");
+  secondSparkle.className = "ar-card-sparkle ar-card-sparkle-two";
+  secondSparkle.setAttribute("aria-hidden", "true");
+  secondSparkle.textContent = "✧";
+  wrap.appendChild(secondSparkle);
+  return wrap;
+}
+
 /* Every card shares the same layout. Only the illustration and labels
    change. This makes adding cards much simpler than writing new HTML. */
 /* Draw the selected card and synchronize its text, progress, and controls. */
 function renderCard() {
   const card = currentCards[currentIndex];
   const isToddler = currentMode === "toddler";
+  const isAR = currentMode === "ar";
   const isPattern = card.type === "pattern";
   const isBabyEmoji = currentMode === "baby" && card.type === "emoji";
 
   ui.artwork.replaceChildren();
   ui.artwork.classList.toggle("emoji-art", isBabyEmoji);
   ui.artwork.classList.toggle("toddler-art", isToddler);
+  ui.artwork.classList.toggle("ar-art", isAR);
   ui.artwork.classList.toggle("animal-art", false);
 
-  if (isToddler) {
+  if (isAR) {
+    ui.artwork.appendChild(drawARFront(card));
+  } else if (isToddler) {
     ui.artwork.appendChild(drawToddlerFront(card));
   } else if (isPattern) {
     ui.artwork.appendChild(drawContrastDesign(card.designIndex));
@@ -334,10 +403,14 @@ function renderCard() {
     ui.artwork.appendChild(picture);
   }
 
-  ui.word.textContent = isToddler ? card.name + " · " + card.animal : card.name;
-  ui.label.textContent = isToddler
-    ? "ABC ANIMAL FRIENDS"
-    : isPattern ? "20 UNIQUE HIGH-CONTRAST PATTERNS" : "";
+  ui.word.textContent = isAR
+    ? card.animal
+    : isToddler ? card.name + " · " + card.animal : card.name;
+  ui.label.textContent = isAR
+    ? "AR MODE DECK · DIMENSIONAL ANIMALS"
+    : isToddler
+      ? "ABC ANIMAL FRIENDS"
+      : isPattern ? "20 UNIQUE HIGH-CONTRAST PATTERNS" : "";
 
   // Build the counter as text and a span instead of injecting HTML.
   const currentCount = document.createTextNode(String(currentIndex + 1).padStart(2, "0"));
@@ -346,15 +419,17 @@ function renderCard() {
   ui.count.replaceChildren(currentCount, totalCount);
 
   ui.progress.style.width = ((currentIndex + 1) / currentCards.length * 100) + "%";
-  ui.progressLabel.textContent = isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
+  ui.progressLabel.textContent = isAR ? "SPARKLE · EXPLORE · DISCOVER" : isToddler ? "GROWING TOGETHER" : "A LITTLE AT A TIME";
   ui.previous.disabled = currentIndex === 0;
   ui.next.disabled = currentIndex === currentCards.length - 1;
 
-  const accessibleCardName = isToddler
-    ? card.name + ", " + card.animal
-    : isPattern
-      ? card.name + ", high-contrast pattern"
-      : card.name + ", " + card.emoji;
+  const accessibleCardName = isAR
+    ? card.animal + ", dimensional emoji card, letter " + card.symbol
+    : isToddler
+      ? card.name + ", " + card.animal
+      : isPattern
+        ? card.name + ", high-contrast pattern"
+        : card.name + ", " + card.emoji;
   ui.flashcard.setAttribute("aria-label", accessibleCardName);
 
 }
@@ -446,7 +521,7 @@ document.addEventListener("visibilitychange", () => {
 /* Changing stages always starts the new collection at its first card. */
 function setMode(mode) {
   currentMode = mode;
-  currentCards = mode === "toddler" ? toddlerCards : BABY_CARDS;
+  currentCards = mode === "ar" ? arCards : mode === "toddler" ? toddlerCards : BABY_CARDS;
   currentIndex = 0;
 
   ui.modeButtons.forEach(button => {
@@ -455,13 +530,16 @@ function setMode(mode) {
     button.setAttribute("aria-pressed", String(selected));
   });
 
-  // Keep the collection heading in sync with the language and card data.
-  ui.collectionTitle.textContent = mode === "toddler"
-    ? language.toddlerCollection
-    : language.babyCollection;
-  ui.collectionKicker.textContent = mode === "toddler"
-    ? language.toddlerKicker
-    : language.babyKicker;
+  // Keep the special-deck button and collection heading in sync with the mode.
+  const isAR = mode === "ar";
+  ui.arModeButton.classList.toggle("active", isAR);
+  ui.arModeButton.setAttribute("aria-pressed", String(isAR));
+  ui.collectionTitle.textContent = isAR
+    ? "26 dimensional animal emojis"
+    : mode === "toddler" ? language.toddlerCollection : language.babyCollection;
+  ui.collectionKicker.textContent = isAR
+    ? "THE SPARKLING 3D-STYLE COLLECTION"
+    : mode === "toddler" ? language.toddlerKicker : language.babyKicker;
 
   renderCard();
   playTone(523.25, 0.12, 0.02);
@@ -471,6 +549,7 @@ ui.previous.addEventListener("click", () => moveCard(-1));
 ui.next.addEventListener("click", () => moveCard(1));
 ui.surprise.addEventListener("click", chooseSurprise);
 ui.modeButtons.forEach(button => button.addEventListener("click", () => setMode(button.dataset.mode)));
+ui.arModeButton.addEventListener("click", () => setMode("ar"));
 ui.playStyleButtons.forEach(button => button.addEventListener("click", () => setPlayStyle(button.dataset.playStyle)));
 
 /* Track a horizontal finger movement to change cards. Vertical movement
