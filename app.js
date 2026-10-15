@@ -173,7 +173,7 @@ const ANIMATED_TWO_PATTERNS = [
   ["Dancing Zigzags", "Angular lines glide from side to side.", "zigzag"],
   ["Color Chessboard", "Checker squares slowly cycle through black, white and red.", "chess"],
   ["Curved Pulse", "Curved bands gently shift between red, white and black.", "curves"],
-  ["Blue Wave", "Blue and white waves travel across a deep black field.", "wave"],
+  ["Red Wave", "Red and white waves travel across a deep black field.", "wave"],
   ["Orbiting Dots", "Bright dots circle around a calm central point.", "orbits"],
   ["Sliding Tiles", "Diagonal blocks slide past one another.", "tiles"],
   ["Expanding Rings", "Concentric rings grow and settle in a slow rhythm.", "rings"],
