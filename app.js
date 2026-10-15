@@ -422,6 +422,11 @@ function drawARFront(card) {
     wrap.classList.remove("water-dunking");
     void wrap.offsetWidth;
     wrap.classList.add("water-dunking");
+    // A tiny two-note glissando makes a soft, water-like plip only on touch.
+    if (soundsEnabled) {
+      playTone(880, 0.07, 0.018, "sine");
+      window.setTimeout(() => playTone(620, 0.12, 0.014, "sine"), 55);
+    }
     animal.setAttribute("aria-pressed", "true");
     splashTimer = window.setTimeout(() => {
       wrap.classList.remove("water-dunking");
@@ -482,21 +487,29 @@ function drawARFront(card) {
    hand movement does not overwhelm little learners with constant effects. */
 function triggerMotionBurst(hero) {
   if (!hero || currentMode !== "ar") return;
-  window.clearTimeout(motionBurstTimer);
-  hero.classList.remove("water-dunking", "motion-burst");
+  // Movement shakes the animal and gently animates decorations; it never dunks it.
+  hero.classList.remove("motion-burst");
   void hero.offsetWidth;
-  hero.classList.add("water-dunking", "motion-burst");
-  motionBurstTimer = window.setTimeout(() => {
-    hero.classList.remove("water-dunking", "motion-burst");
-  }, 1350);
+  hero.classList.add("motion-burst");
+  window.clearTimeout(motionBurstTimer);
+  motionBurstTimer = window.setTimeout(() => hero.classList.remove("motion-burst"), 520);
 }
 
 function handleDeviceMotion(event) {
   if (!motionEffectsEnabled || currentMode !== "ar" || document.hidden) return;
-  const now = Date.now();
-  if (now - lastMotionBurstAt < 950) return;
+  const hero = ui.artwork.querySelector(".ar-hero");
+  if (!hero) return;
 
-  // Prefer gravity-free acceleration; compare gravity readings as a fallback.
+  // Gravity direction makes stars and gems drift with the phone's tilt.
+  const tilt = event.accelerationIncludingGravity;
+  if (tilt && Number.isFinite(tilt.x) && Number.isFinite(tilt.y)) {
+    const dx = Math.max(-1, Math.min(1, tilt.x / 9.81));
+    const dy = Math.max(-1, Math.min(1, tilt.y / 9.81));
+    hero.style.setProperty("--motion-x", (dx * 18).toFixed(1) + "px");
+    hero.style.setProperty("--motion-y", (dy * 18).toFixed(1) + "px");
+  }
+
+  // Prefer gravity-free acceleration to detect a real shake, not a normal tilt.
   let strength = 0;
   if (event.acceleration && Number.isFinite(event.acceleration.x)) {
     const { x = 0, y = 0, z = 0 } = event.acceleration;
@@ -514,10 +527,10 @@ function handleDeviceMotion(event) {
     lastGravity = current;
   }
 
-  if (strength > 12) {
+  const now = Date.now();
+  if (strength > 12 && now - lastMotionBurstAt >= 260) {
     lastMotionBurstAt = now;
-    triggerMotionBurst(ui.artwork.querySelector(".ar-hero"));
-    playTone(740, 0.08, 0.012, "sine");
+    triggerMotionBurst(hero);
   }
 }
 
