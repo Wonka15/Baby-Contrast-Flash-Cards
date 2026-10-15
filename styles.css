@@ -523,6 +523,10 @@ button:disabled{opacity:.38;cursor:not-allowed}
 }
 .ar-motion-button:focus-visible{outline:3px solid #0878e8;outline-offset:3px}
 .ar-motion-button.is-enabled{background:linear-gradient(145deg,#d9fff3,#a9f2e2);color:#075f57}
+/* Once enabled, let the shake control fade into the background so it won't cover the animal. */
+.ar-motion-button.is-enabled{opacity:.38;transition:opacity .45s ease,background .2s,color .2s}
+.ar-motion-button.is-enabled:focus-visible,.ar-motion-button.is-enabled:active{opacity:1}
+@media(prefers-reduced-motion:reduce){.ar-motion-button.is-enabled{transition:none}}
 .ar-hero.motion-burst{background:radial-gradient(ellipse at 50% 40%,#ffffff 0%,#d8fbff 30%,#8de4ff 68%,#a5caff 100%)}
 .ar-hero.motion-burst .ar-card-sparkle{animation:ar-motion-sparkle 650ms ease-out 2}
 .ar-hero.motion-burst .ar-big-letter{filter:drop-shadow(0 0 15px #21bfff9c)}
