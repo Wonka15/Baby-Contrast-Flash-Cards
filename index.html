@@ -65,7 +65,7 @@
         <span class="mode-emoji" aria-hidden="true">◐</span><span><strong>Baby</strong><small>High contrast</small></span>
       </button>
       <button class="mode-button" data-mode="toddler" type="button" aria-pressed="false">
-        <span class="mode-emoji crayon-mark" aria-hidden="true">🖍️</span><span><strong>Toddler</strong><small>A–Z animal adventures</small></span>
+        <span class="mode-emoji crayon-mark" aria-hidden="true">🖍️</span><span><strong>Toddler</strong><small>A–Z + numbers 0–20</small></span>
         <span class="new-tag">GROW</span>
       </button>
     </section>
@@ -89,6 +89,14 @@
               <span class="art-label" id="art-label">LOOK CLOSELY</span>
             </div>
             <div class="card-bottom"><span class="card-word" id="card-word">Pattern 001</span></div>
+          </div>
+
+          <!-- The reverse side gives caregivers a short prompt to read aloud. -->
+          <div class="card-face card-back" id="card-back" hidden aria-hidden="true">
+            <span class="card-back-kicker">A LITTLE MORE TO SEE</span>
+            <h3 id="card-back-title">Pattern</h3>
+            <p id="card-back-description">Look closely together.</p>
+            <button id="reverse-button" class="reverse-button" type="button">← Reverse</button>
           </div>
         </div>
       </div>
