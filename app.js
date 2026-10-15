@@ -750,6 +750,17 @@ ui.cardArea.addEventListener("pointerup", event => {
 
   if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY) * 1.25) {
     moveCard(deltaX < 0 ? 1 : -1);
+    return;
+  }
+
+  // Baby Mode + Play: a gentle tap briefly enlarges the whole card.
+  // Swipes still navigate normally, and Watch mode remains unchanged.
+  if (currentMode === "baby" && playStyle === "play" &&
+      Math.abs(deltaX) < 12 && Math.abs(deltaY) < 12 &&
+      event.target.closest("#flashcard")) {
+    ui.flashcard.classList.remove("baby-card-tap-pop");
+    void ui.flashcard.offsetWidth; // Restart the little pop on every tap.
+    ui.flashcard.classList.add("baby-card-tap-pop");
   }
 });
 
